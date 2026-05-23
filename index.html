@@ -251,7 +251,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.0.4</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.0.5</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -417,9 +417,15 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 
 </div><!-- end #app -->
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
 <script>
 
-var _APP_VERSION="v2.0.4";
+var _APP_VERSION="v2.0.5";
 
 // ── SELF CHECK-IN MODE ────────────────────────────────────────────────────────
 var SELF_CI_MODE = window.location.search.indexOf('selfcheckin=true') >= 0;
