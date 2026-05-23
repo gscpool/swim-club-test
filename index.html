@@ -251,7 +251,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.0.3</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.0.4</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -418,7 +418,8 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 </div><!-- end #app -->
 
 <script>
-var _APP_VERSION="v2.0.3";
+
+var _APP_VERSION="v2.0.4";
 
 // ── SELF CHECK-IN MODE ────────────────────────────────────────────────────────
 var SELF_CI_MODE = window.location.search.indexOf('selfcheckin=true') >= 0;
@@ -497,7 +498,7 @@ var db=null,fbReady=false;
     window._delMemberFB=function(id){_db.collection('members').doc(id).delete().catch(function(e){console.error(e);});};
     window._saveVisitFB=function(v){var c=Object.assign({},v);var id=c.id;delete c.id;_db.collection('visits').doc(id).set(c).catch(function(e){console.error(e);});};
     fbReady=true;
-    document.getElementById('setup-banner').classList.remove('show');
+    var _sb=document.getElementById('setup-banner');if(_sb)_sb.classList.remove('show');
     setSyncPill('online');
     // Load config first, then boot
     _db.collection('config').doc('settings').get().then(function(doc){
@@ -509,7 +510,7 @@ var db=null,fbReady=false;
         }
       }
       rebuildFromConfig();
-      document.getElementById('today-lbl').textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+      var _tl=document.getElementById('topbar-date');if(_tl)_tl.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}).toUpperCase();
       if(!SCI_MODE&&!APPLY_MODE){updateUIForRole();renderAll();}
       if(APPLY_MODE){initApplyMode();}
   initLayout();
@@ -529,7 +530,7 @@ var db=null,fbReady=false;
       });
     }).catch(function(){
       rebuildFromConfig();
-      document.getElementById('today-lbl').textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+      var _tl=document.getElementById('topbar-date');if(_tl)_tl.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}).toUpperCase();
       if(!SCI_MODE&&!APPLY_MODE){updateUIForRole();renderAll();}
       if(APPLY_MODE){initApplyMode();}
   initLayout();
@@ -4312,6 +4313,30 @@ function resetMigrationFlag(){
 }
 
 function doSeasonReset(){if(!confirm('Reset all guest pass counts for the new season?'))return;members=members.map(function(m){return Object.assign({},m,{guestsUsed:0,guestsTotal:GUEST_PASSES[m.type]!==undefined?GUEST_PASSES[m.type]:m.guestsTotal});});lSet('gsc_members',members);renderAll();closeSettings();showToast('Season reset complete');}
+
+
+// ── BOOT ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function(){
+  // Set topbar date
+  var d = new Date();
+  var dateEl = document.getElementById('topbar-date');
+  if(dateEl) dateEl.textContent = d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}).toUpperCase();
+
+  // Early hide for special modes
+  if(window.location.search.indexOf('selfcheckin=true') >= 0){
+    var app = document.getElementById('app');
+    var shell = document.getElementById('sci-shell');
+    if(app) app.style.display = 'none';
+    if(shell) shell.classList.add('on');
+  }
+  if(window.location.search.indexOf('apply=true') >= 0){
+    var app2 = document.getElementById('app');
+    if(app2) app2.style.display = 'none';
+  }
+
+  initLayout();
+  tryInitFirebase();
+});
 
 </script>
 </body>
