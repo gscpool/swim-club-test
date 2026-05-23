@@ -177,7 +177,7 @@ body{background:var(--sand);color:var(--tx)}
 .sci-success-name{font-size:22px;font-weight:800;color:var(--gr)}
 .sci-success-sub{font-size:14px;color:var(--mu)}
 /* ANNOUNCEMENTS */
-#announce-bar{background:var(--or);padding:10px 14px;display:flex;align-items:center;gap:10px;flex:0 0 auto;width:100%;z-index:10}
+#announce-bar{background:var(--or);padding:10px 14px;display:flex;align-items:center;gap:10px;flex:0 0 auto;width:100%;z-index:10;max-height:44px;overflow:hidden}
 .announce-text{font-size:13px;font-weight:700;color:#fff;font-family:'Inter',sans-serif;line-height:1.4;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* CHECK-IN TAB */
 .ci-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--mu);padding:10px 13px 5px;background:var(--sand)}
@@ -251,7 +251,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.0.5</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.0.6</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -425,7 +425,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 
 <script>
 
-var _APP_VERSION="v2.0.5";
+var _APP_VERSION="v2.0.6";
 
 // ── SELF CHECK-IN MODE ────────────────────────────────────────────────────────
 var SELF_CI_MODE = window.location.search.indexOf('selfcheckin=true') >= 0;
