@@ -30,7 +30,7 @@ body{background:var(--sand);color:var(--tx)}
 .topbar-title{font-family:'Inter',sans-serif;font-size:18px;color:var(--or);line-height:1.2;font-weight:600;letter-spacing:-.2px}
 .topbar-date{font-size:11px;color:rgba(255,255,255,.55);margin-top:1px}
 .topbar-right{display:flex;align-items:center;gap:6px}
-.sync-pill{background:rgba(255,255,255,.1);border-radius:20px;padding:5px 10px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:5px;color:#fff}
+.sync-pill{background:rgba(255,255,255,.1);border-radius:20px;padding:5px 10px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:5px;color:#fff;white-space:nowrap;flex-shrink:0}gn-items:center;gap:5px;color:#fff}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;flex-shrink:0}
 .ibtn{background:rgba(255,255,255,.1);border:none;color:#fff;width:44px;height:44px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
 .ibtn:active{background:var(--or)}
@@ -250,12 +250,12 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.0.2</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.0.3</div>
       </div>
     </div>
     <div class="topbar-right">
       <div class="sync-pill" id="sync-pill"><div class="sync-dot" id="sync-dot"></div><span id="sync-txt">...</span></div>
-      <div style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;align-items:center;gap:4px"><span id="login-username-display" style="font-size:10px;font-weight:700;color:rgba(255,255,255,.8);max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span></div><button class="ibtn" id="login-btn" onclick="openLogin()"><span id="login-icon">🔒</span></button><button id="layout-btn" onclick="cycleLayout()" style="background:rgba(255,255,255,.1);border:none;color:#fff;height:44px;padding:0 10px;border-radius:9px;font-size:10px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;white-space:nowrap;letter-spacing:.3px">VIEW</button><button class="ibtn" id="settings-btn" onclick="openSettings()" style="display:none">⚙️</button>
+      <div style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;align-items:center;gap:4px"><span id="login-username-display" style="font-size:10px;font-weight:700;color:rgba(255,255,255,.8);max-width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span></div><button class="ibtn" id="login-btn" onclick="openLogin()"><span id="login-icon">🔒</span></button><button id="layout-btn" onclick="cycleLayout()" style="background:rgba(255,255,255,.1);border:none;color:#fff;height:36px;padding:0 8px;border-radius:9px;font-size:9px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;white-space:nowrap;letter-spacing:.3px">VIEW</button><button class="ibtn" id="settings-btn" onclick="openSettings()" style="display:none">⚙️</button>
     </div>
   </div>
 
@@ -417,7 +417,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 </div><!-- end #app -->
 
 <script>
-var _APP_VERSION="v2.0.2";
+var _APP_VERSION="v2.0.3";
 
 // ── SELF CHECK-IN MODE ────────────────────────────────────────────────────────
 var SELF_CI_MODE = window.location.search.indexOf('selfcheckin=true') >= 0;
