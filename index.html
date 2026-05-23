@@ -40,7 +40,7 @@ body{background:var(--sand);color:var(--tx)}
 .tab.on{color:var(--or);border-bottom:3px solid var(--or);background:rgba(250,70,22,.08)}
 .pane{display:none;flex:1;overflow-y:auto;flex-direction:column;-webkit-overflow-scrolling:touch}
 .pane.on{display:flex}
-.rlist{display:flex;flex-direction:column;gap:8px;padding:10px}
+.rlist{display:flex;flex-direction:column;gap:8px;padding:10px;flex:1;overflow-y:auto}
 .mcard{background:var(--wh);border-radius:var(--r);padding:14px 13px;box-shadow:var(--sh);display:flex;align-items:center;gap:11px;cursor:pointer;transition:transform .1s;border-left:4px solid var(--bll);border-top:none;border-right:none;border-bottom:none;-webkit-appearance:none;appearance:none}
 .mcard:active{transform:scale(.98)}
 #pane-ci .mcard{padding:16px 14px;min-height:72px}
@@ -180,8 +180,8 @@ body{background:var(--sand);color:var(--tx)}
 #announce-bar{background:var(--or);padding:10px 14px;display:flex;align-items:center;gap:10px;flex:0 0 auto;width:100%;z-index:10;max-height:44px;overflow:hidden}
 .announce-text{font-size:13px;font-weight:700;color:#fff;font-family:'Inter',sans-serif;line-height:1.4;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* CHECK-IN TAB */
-.ci-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--mu);padding:10px 13px 5px;background:var(--sand)}
-.ci-alpha-row{display:flex;flex-wrap:wrap;gap:7px;padding:10px 13px 12px;background:var(--sand);border-bottom:1px solid var(--sand2);justify-content:center;align-content:center}
+.ci-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--mu);padding:10px 13px 5px;background:var(--sand);flex-shrink:0}
+.ci-alpha-row{display:flex;flex-wrap:wrap;gap:7px;padding:10px 13px 12px;background:var(--sand);border-bottom:1px solid var(--sand2);justify-content:center;align-content:center;flex-shrink:0}
 .ci-alpha-btn{min-width:44px;height:44px;padding:0 8px;border-radius:10px;border:2px solid var(--sand2);background:#fff;font-size:16px;font-weight:700;color:var(--bl);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;box-shadow:0 1px 4px rgba(0,0,0,.07)}
 .ci-alpha-btn.on{background:var(--or);border-color:var(--or);color:#fff;box-shadow:0 2px 8px rgba(250,70,22,.3)}
 .ci-alpha-btn:active{transform:scale(.93)}
@@ -205,7 +205,7 @@ body.layout-iphone .tabs .tab{font-size:10px;padding:8px 2px}
 body.layout-iphone .ci-alpha-btn{min-width:40px;height:40px;font-size:14px}
 body.layout-iphone .mname{font-size:14px}
 
-body.layout-laptop #app{max-width:1280px;margin:0 auto;display:grid;grid-template-rows:auto auto 1fr}
+body.layout-laptop #app{max-width:1280px;margin:0 auto}
 body.layout-laptop .pane.on{display:flex}
 body.layout-laptop .mcard{padding:12px 14px}
 body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
@@ -251,7 +251,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.0.6</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.0.7</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -289,8 +289,8 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
     <div style="padding:8px 13px 0;background:var(--sand)">
       <div id="dir-filter-strip" style="display:flex;gap:6px;flex-wrap:wrap;padding-bottom:8px"></div>
     </div>
-    <div id="dir-alpha-strip" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 13px 10px;justify-content:center;align-content:center;background:var(--sand);border-bottom:1px solid var(--sand2)"></div>
-    <div class="rlist" id="dir-body"></div>
+    <div id="dir-alpha-strip" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 13px 10px;justify-content:center;align-content:center;background:var(--sand);border-bottom:1px solid var(--sand2);flex-shrink:0"></div>
+    <div class="rlist" id="dir-list"></div>
   </div>
 
   <!-- APPLICATIONS PANE -->
@@ -425,7 +425,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 
 <script>
 
-var _APP_VERSION="v2.0.6";
+var _APP_VERSION="v2.0.7";
 
 // ── SELF CHECK-IN MODE ────────────────────────────────────────────────────────
 var SELF_CI_MODE = window.location.search.indexOf('selfcheckin=true') >= 0;
