@@ -176,8 +176,8 @@ body{background:var(--sand);color:var(--tx)}
 .sci-success-name{font-size:22px;font-weight:800;color:var(--gr)}
 .sci-success-sub{font-size:14px;color:var(--mu)}
 /* ANNOUNCEMENTS */
-#announce-bar{background:var(--or);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;width:100%;z-index:10}
-.announce-text{font-size:13px;font-weight:700;color:#fff;font-family:'Inter',sans-serif;line-height:1.4;flex:1}
+#announce-bar{background:var(--or);padding:10px 14px;display:flex;align-items:center;gap:10px;flex:0 0 auto;width:100%;z-index:10}
+.announce-text{font-size:13px;font-weight:700;color:#fff;font-family:'Inter',sans-serif;line-height:1.4;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* CHECK-IN TAB */
 .ci-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--mu);padding:10px 13px 5px;background:var(--sand)}
 .ci-alpha-row{display:flex;flex-wrap:wrap;gap:7px;padding:10px 13px 12px;background:var(--sand);border-bottom:1px solid var(--sand2);justify-content:center;align-content:center}
@@ -250,12 +250,12 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.0.1</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.0.2</div>
       </div>
     </div>
     <div class="topbar-right">
       <div class="sync-pill" id="sync-pill"><div class="sync-dot" id="sync-dot"></div><span id="sync-txt">...</span></div>
-      <div style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;align-items:center;gap:4px"><span id="login-username-display" style="font-size:10px;font-weight:700;color:rgba(255,255,255,.8);max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span></div><button class="ibtn" id="login-btn" onclick="openLogin()"><span id="login-icon">🔒</span></button><button class="ibtn" id="layout-btn" onclick="cycleLayout()" title="Layout: Default" style="font-size:12px;font-weight:700">⊞</button><button class="ibtn" id="settings-btn" onclick="openSettings()" style="display:none">⚙️</button>
+      <div style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;align-items:center;gap:4px"><span id="login-username-display" style="font-size:10px;font-weight:700;color:rgba(255,255,255,.8);max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span></div><button class="ibtn" id="login-btn" onclick="openLogin()"><span id="login-icon">🔒</span></button><button id="layout-btn" onclick="cycleLayout()" style="background:rgba(255,255,255,.1);border:none;color:#fff;height:44px;padding:0 10px;border-radius:9px;font-size:10px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;white-space:nowrap;letter-spacing:.3px">VIEW</button><button class="ibtn" id="settings-btn" onclick="openSettings()" style="display:none">⚙️</button>
     </div>
   </div>
 
@@ -269,7 +269,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
   </div>
 
   <!-- ANNOUNCEMENT BAR - full width above all panes -->
-  <div id="announce-bar" style="display:none"><div class="announce-text" id="announce-text"></div></div>
+  <div id="announce-bar" style="display:none;flex-shrink:0"><div class="announce-text" id="announce-text"></div></div>
 
   <!-- CHECK-IN PANE -->
   <div id="pane-ci" class="pane on">
@@ -417,7 +417,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 </div><!-- end #app -->
 
 <script>
-var _APP_VERSION="v2.0.1";
+var _APP_VERSION="v2.0.2";
 
 // ── SELF CHECK-IN MODE ────────────────────────────────────────────────────────
 var SELF_CI_MODE = window.location.search.indexOf('selfcheckin=true') >= 0;
@@ -2369,12 +2369,20 @@ function cycleLayout(){
   var next=(current+1)%modes.length;
   if(modes[next]) body.classList.add(modes[next]);
   var btn=document.getElementById('layout-btn');
-  if(btn) btn.title='Layout: '+labels[next];
+  if(btn){btn.title='Layout: '+labels[next];btn.textContent=labels[next].toUpperCase();}
   try{localStorage.setItem('gsc_layout',modes[next]);}catch(e){}
   showToast('Layout: '+labels[next]);
 }
 function initLayout(){
-  try{var saved=localStorage.getItem('gsc_layout');if(saved)document.body.classList.add(saved);}catch(e){}
+  try{
+    var saved=localStorage.getItem('gsc_layout');
+    if(saved){
+      document.body.classList.add(saved);
+      var labels={'':'VIEW','layout-ipad':'IPAD','layout-iphone':'IPHONE','layout-laptop':'LAPTOP'};
+      var btn=document.getElementById('layout-btn');
+      if(btn) btn.textContent=labels[saved]||'VIEW';
+    }
+  }catch(e){}
 }
 
 function renderAll(){renderCI();renderDir();renderRep();renderAnnouncement();}
