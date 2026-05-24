@@ -197,6 +197,7 @@ body{background:var(--sand);color:var(--tx)}
 @media(min-width:400px){.rstat-grid{grid-template-columns:repeat(3,1fr)}}
 @media(min-width:600px){.rstat-grid{grid-template-columns:repeat(4,1fr)}}
 
+#login-overlay{transition:opacity .2s;}
 /* LAYOUT MODES */
 body.layout-ipad #app{max-width:1024px;margin:0 auto}
 body.layout-ipad .tabs .tab{font-size:13px;padding:12px 8px}
@@ -256,7 +257,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.1.0</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.1.1</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -430,7 +431,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 
 <script>
 
-var _APP_VERSION="v2.1.0";
+var _APP_VERSION="v2.1.1";
 
 // ── SELF CHECK-IN MODE ────────────────────────────────────────────────────────
 var SELF_CI_MODE = window.location.search.indexOf('selfcheckin=true') >= 0;
@@ -700,7 +701,7 @@ function openMissModal(memberId){
   _missSteps=buildMissSteps(m);
   if(!_missSteps.length){openMember(memberId,true);return;}
   document.getElementById('miss-member-name').textContent=m.first+' '+m.last;
-  document.getElementById('miss-overlay').style.display='flex';
+  var _mso=document.getElementById('miss-overlay');if(_mso){_mso.style.display='flex';_mso.classList.add('open');}
   renderMissStep();
 }
 
@@ -1245,7 +1246,7 @@ function miNext(){
     // Update local members array immediately so getMissingSteps won't loop
     var localIdx=members.findIndex(function(x){return x.id===miMemberId;});
     if(localIdx>=0) members[localIdx]=Object.assign({},members[localIdx],miData);
-    document.getElementById('mi-overlay').style.display='none';
+    var _mc=document.getElementById('mi-overlay');_mc.style.display='none';_mc.classList.remove('open');
     showToast('Member info saved ✓','ok');
     // Short delay to let Firebase sync, then proceed
     setTimeout(function(){
@@ -2287,11 +2288,11 @@ function openAppReview(appId){
     +'<button data-appid="'+a.id+'" onclick="saveAppNote(this.dataset.appid)" style="width:100%;padding:11px;background:var(--bl);border:none;color:#fff;border-radius:10px;font-size:13px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Save Notes</button>';
   html+='</div>';
   body.innerHTML=html;
-  document.getElementById('appreview-overlay').style.display='flex';
+  var _ao=document.getElementById('appreview-overlay');_ao.style.display='flex';_ao.classList.add('open');
 }
 
 function closeAppReview(){
-  document.getElementById('appreview-overlay').style.display='none';
+  var _ac=document.getElementById('appreview-overlay');_ac.style.display='none';_ac.classList.remove('open');
 }
 
 function voteApplication(appId, vote){
@@ -3766,14 +3767,14 @@ function renderIncidents(){
 function openNewIncident(){
   document.getElementById('inc-modal-title').textContent='New Incident';
   document.getElementById('inc-modal-body').innerHTML=buildIncidentForm(null);
-  document.getElementById('inc-overlay').style.display='flex';
+  var _io=document.getElementById('inc-overlay');_io.style.display='flex';_io.classList.add('open');
 }
 
 function viewIncident(id){
   var inc=incidents.find(function(x){return x.id===id;}); if(!inc) return;
   document.getElementById('inc-modal-title').textContent='Incident Report';
   document.getElementById('inc-modal-body').innerHTML=buildIncidentForm(inc);
-  document.getElementById('inc-overlay').style.display='flex';
+  var _io=document.getElementById('inc-overlay');_io.style.display='flex';_io.classList.add('open');
 }
 
 function buildIncidentForm(inc){
@@ -3854,7 +3855,7 @@ function saveFollowupNote(id){
 }
 
 function closeIncident(){
-  document.getElementById('inc-overlay').style.display='none';
+  var _ic=document.getElementById('inc-overlay');_ic.style.display='none';_ic.classList.remove('open');
 }
 
 function saveTimeoutSetting(){
