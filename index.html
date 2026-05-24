@@ -95,7 +95,7 @@ body{background:var(--sand);color:var(--tx)}
 .btn-o{width:100%;padding:13px;border-radius:11px;background:var(--orl);border:2px solid var(--or);color:var(--ord);font-size:14px;font-weight:700;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;cursor:pointer}
 .ci-checkin-btn{width:100%;padding:16px;border-radius:11px;background:var(--or);border:none;color:#fff;font-size:18px;font-weight:700;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;cursor:pointer}
 .quick-ci-btn{width:100%;padding:10px;border:none;background:var(--or);color:#fff;font-size:13px;font-weight:700;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;cursor:pointer;border-radius:9px;display:flex;align-items:center;justify-content:center;gap:5px}
-.quick-ci-btn:active{background:var(--ord)}
+.quick-ci-btn:active{opacity:.85}
 .nanny-card{background:var(--pu)22;border:1.5px solid var(--pu);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--pu)}
 .fab{position:fixed;bottom:max(80px,env(safe-area-inset-bottom,0px));right:16px;width:56px;height:56px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:26px;box-shadow:0 4px 18px rgba(250,70,22,.4);cursor:pointer;display:none;align-items:center;justify-content:center;z-index:50}
 .fab.show{display:flex}
@@ -216,6 +216,29 @@ body.layout-laptop .pane.on{display:flex}
 body.layout-laptop .mcard{padding:12px 14px}
 body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 
+
+/* ── MEMBER CHECK-IN PANEL ──────────────────────────────────────── */
+.ci-section-lbl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);padding:4px 0 8px;margin-top:2px}
+.ci-checklist{display:flex;flex-direction:column;gap:6px;margin-bottom:4px}
+.ci-check-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--sand);border-radius:var(--r-sm);cursor:pointer;transition:background .1s;-webkit-appearance:none;border:none;width:100%;text-align:left;font-family:-apple-system,sans-serif}
+.ci-check-item:active{background:var(--sand2)}
+.ci-check-item input[type=checkbox]{width:22px;height:22px;accent-color:var(--or);flex-shrink:0;cursor:pointer}
+.ci-check-item label{font-size:15px;font-weight:600;color:var(--bld);cursor:pointer;flex:1;line-height:1.3}
+.ci-add-btn{display:flex;align-items:center;gap:8px;padding:10px 14px;background:transparent;border:1.5px dashed var(--sand2);border-radius:var(--r-sm);cursor:pointer;color:var(--mu);font-size:13px;font-weight:600;font-family:-apple-system,sans-serif;width:100%;text-align:left;transition:background .1s}
+.ci-add-btn:active{background:var(--sand)}
+/* Guest passes row */
+.gp-counter-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ci-lbl{font-size:14px;font-weight:700;color:var(--bld)}
+.ci-sub{font-size:12px;color:var(--mu);margin-top:2px}
+.ctr{display:flex;align-items:center;gap:14px}
+.cval{font-size:22px;font-weight:800;color:var(--bld);min-width:28px;text-align:center;font-variant-numeric:tabular-nums}
+.cbtn{width:44px;height:44px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:22px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .1s,background .1s}
+.cbtn:active{transform:scale(.9);background:var(--ord)}
+/* Guest pass section card */
+.gp-section{background:var(--sand);border-radius:var(--r-sm);padding:12px 14px;border:1px solid var(--sand2)}
+/* Already checked in */
+.ci-already{background:var(--grl);color:var(--gr);font-size:13px;font-weight:700;padding:10px 14px;border-radius:var(--r-sm);text-align:center;border:1.5px solid var(--gr)}
+
 </style>
 </head>
 <body>
@@ -257,7 +280,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.1.1</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.1.2</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -431,7 +454,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 
 <script>
 
-var _APP_VERSION="v2.1.1";
+var _APP_VERSION="v2.1.2";
 
 // ── SELF CHECK-IN MODE ────────────────────────────────────────────────────────
 var SELF_CI_MODE = window.location.search.indexOf('selfcheckin=true') >= 0;
@@ -2840,7 +2863,7 @@ function openMember(id,ciMode){
       var canAddSec=getTypeConfig(m.type).maxAdults>1&&!getTypeConfig(m.type).requireSecond&&!(m.secFirst||m.secLast);
       var adultsSection='<div class="ci-section-lbl">Adults</div><div class="ci-checklist" id="ci-adult-list">';
       // Primary adult
-      adultsSection+='<div class="ci-check-item" id="ci-a0" onclick="ciToggle(\'ci-a0\')"><input type="checkbox" id="chk-a0" onchange="ciToggle(\'ci-a0\')"><label for="chk-a0">'+m.first+' '+m.last+' <span style="opacity:.5;font-size:11px">(primary)</span></label></div>';
+      adultsSection+='<button class="ci-check-item" id="ci-a0" onclick="ciToggle(\'ci-a0\')"><input type="checkbox" id="chk-a0" checked><label for="chk-a0">'+m.first+' '+m.last+'<span style="opacity:.5;font-size:11px;font-weight:400;margin-left:6px">(primary)</span></label></button>';
       // Secondary adult
       if(m.secFirst||m.secLast){
         adultsSection+='<div class="ci-check-item" id="ci-a1" onclick="ciToggle(\'ci-a1\')"><input type="checkbox" id="chk-a1" onchange="ciToggle(\'ci-a1\')"><label for="chk-a1">'+(m.secFirst||'')+' '+(m.secLast||'')+'</label></div>';
@@ -2864,7 +2887,7 @@ function openMember(id,ciMode){
       }
       // Guest passes counter
       var gpSection=m.guestsTotal>0
-        ?'<div style="border-top:1px solid rgba(255,255,255,.15);padding-top:10px"><div class="gp-counter-row"><div><div class="ci-lbl">&#x1F3AB; Guest Passes</div><div class="ci-sub">'+m.guestsTotal+' allotted &middot; '+(m.guestsUsed||0)+' used &middot; '+rem+' remaining</div></div><div class="ctr"><button class="cbtn" onclick="adjGuests(-1)">&minus;</button><div class="cval" id="ci-guests">0</div><button class="cbtn" onclick="adjGuests(1)">+</button></div></div><div id="gp-live-status" style="margin-top:6px"></div></div>'
+        ?'<div class="gp-section"><div class="gp-counter-row"><div><div class="ci-lbl">🎟 Guest Passes</div><div class="ci-sub">'+m.guestsTotal+' allotted · '+(m.guestsUsed||0)+' used · '+rem+' remaining</div></div><div class="ctr"><button class="cbtn" onclick="adjGuests(-1)">−</button><div class="cval" id="ci-guests">0</div><button class="cbtn" onclick="adjGuests(1)">+</button></div></div><div id="gp-live-status" style="margin-top:6px"></div></div>'
         :'';
       // Build missing info prompt if needed
       var missing=getMissingSteps(m);
@@ -2892,7 +2915,7 @@ function openMember(id,ciMode){
         +kidsSection
         +gpSection
         +'<div id="ci-over-note"></div>'
-        +(canQuickCheckIn(m)?'<button class="quick-ci-btn" style="border-radius:9px;margin-bottom:4px;font-size:15px;padding:13px" onclick="quickCheckIn(\''+m.id+'\',event)">&#x26A1; Quick Check In All &nbsp;&mdash;&nbsp; one tap</button>':'')
+        +(canQuickCheckIn(m)?'<button class="quick-ci-btn" onclick="quickCheckIn(\''+m.id+'\',event)">⚡ Quick Check In All — one tap</button>':'')
         +'<button class="ci-checkin-btn" onclick="doCheckin(\''+m.id+'\')">&#x2705; Check In'+(checkedToday?' Again':'')+'</button></div>';
     }
   }
