@@ -11,23 +11,28 @@
 <style>
 :root{
   --or:#FA4616;--ord:#c93a12;--orl:#fff0ec;
-  --bl:#003087;--bld:#00205c;--bll:#dce6f7;--bllt:#dce6f7;
+  --bl:#003087;--bld:#00205C;--bll:#dce6f7;--bllt:#dce6f7;
   --wh:#fff;--sand:#fdf8f4;--sand2:#f0e9e1;
   --tx:#1a1a2e;--mu:#6b7280;
   --gr:#166534;--grl:#dcfce7;
   --re:#991b1b;--rel:#fee2e2;
   --am:#92400e;--aml:#fef3c7;
   --pu:#5b21b6;--pul:#ede9ff;
-  --r:13px;--sh:0 3px 16px rgba(0,48,135,.11);
+  /* Standardized radius scale: 8/12/16/22 */
+  --r:12px;--r-sm:8px;--r-lg:16px;--r-xl:22px;
+  /* Standardized spacing: 4pt grid */
+  --sp-xs:4px;--sp-sm:8px;--sp-md:12px;--sp-lg:16px;--sp-xl:20px;
+  --sh:0 2px 12px rgba(0,32,92,.08),0 1px 3px rgba(0,32,92,.06);
+  --sh-lg:0 8px 32px rgba(0,32,92,.14),0 2px 8px rgba(0,32,92,.08);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 body{background:var(--sand);color:var(--tx)}
 #app{display:flex;flex-direction:column;height:100%;overflow:hidden}
-.topbar{background:var(--bld);color:#fff;padding:9px 12px 8px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:3px solid var(--or)}
+.topbar{background:var(--bld);color:#fff;padding:max(9px,env(safe-area-inset-top)) 12px 8px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:3px solid var(--or)}
 .topbar-left{display:flex;align-items:center;gap:10px}
 .topbar-logo{width:38px;height:38px;border-radius:50%;object-fit:cover}
-.topbar-title{font-family:'Inter',sans-serif;font-size:18px;color:var(--or);line-height:1.2;font-weight:600;letter-spacing:-.2px}
+.topbar-title{font-family:-apple-system,'SF Pro Display','Inter',sans-serif;font-size:18px;color:var(--or);line-height:1.2;font-weight:600;letter-spacing:-.2px}
 .topbar-date{font-size:11px;color:rgba(255,255,255,.55);margin-top:1px}
 .topbar-right{display:flex;align-items:center;gap:6px}
 .sync-pill{background:rgba(255,255,255,.1);border-radius:20px;padding:5px 10px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:5px;color:#fff;white-space:nowrap;flex-shrink:0}
@@ -36,20 +41,20 @@ body{background:var(--sand);color:var(--tx)}
 .ibtn{background:rgba(255,255,255,.1);border:none;color:#fff;width:44px;height:44px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
 .ibtn:active{background:var(--or)}
 .tabs{background:var(--bl);display:flex;flex-shrink:0}
-.tab{flex:1;padding:10px 2px;border:none;background:none;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:rgba(255,255,255,.65);cursor:pointer;border-bottom:3px solid transparent;transition:all .15s}
+.tab{flex:1;padding:11px 2px;border:none;background:none;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.2px;text-transform:uppercase;color:rgba(255,255,255,.6);cursor:pointer;border-bottom:3px solid transparent;transition:color .15s,border-color .15s}
 .tab.on{color:var(--or);border-bottom:3px solid var(--or);background:rgba(250,70,22,.08)}
-.pane{display:none;flex:1;overflow-y:auto;flex-direction:column;-webkit-overflow-scrolling:touch}
+.pane{display:none;flex:1;overflow-y:auto;flex-direction:column;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .pane.on{display:flex}
 .rlist{display:flex;flex-direction:column;gap:8px;padding:10px;flex:1;overflow-y:auto}
-.mcard{background:var(--wh);border-radius:var(--r);padding:14px 13px;box-shadow:var(--sh);display:flex;align-items:center;gap:11px;cursor:pointer;transition:transform .1s;border-left:4px solid var(--bll);border-top:none;border-right:none;border-bottom:none;-webkit-appearance:none;appearance:none}
-.mcard:active{transform:scale(.98)}
+.mcard{background:var(--wh);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);display:flex;align-items:center;gap:12px;cursor:pointer;transition:transform .12s;border-left:4px solid var(--bll);border:none;border-left:4px solid var(--bll);-webkit-appearance:none;appearance:none}
+.mcard:active{transform:scale(.97);box-shadow:none}
 #pane-ci .mcard{padding:16px 14px;min-height:72px}
 #pane-ci .mname{font-size:18px}
 #pane-ci .mmeta{font-size:12px}
 .mavatar{width:40px;height:40px;border-radius:50%;background:var(--bld);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0}
 .minfo{flex:1;min-width:0}
-.mname{font-size:15px;font-weight:700;color:var(--bld)}
-.mmeta{font-size:11px;color:var(--mu);margin-top:2px;display:flex;gap:5px;flex-wrap:wrap}
+.mname{font-size:16px;font-weight:700;color:var(--bld);letter-spacing:-.2px}
+.mmeta{font-size:12px;color:var(--mu);margin-top:3px;display:flex;gap:6px;flex-wrap:wrap}
 .mroster{font-size:11px;color:var(--mu);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
 .badge-bl{background:var(--bll);color:var(--bl)}
@@ -65,59 +70,59 @@ body{background:var(--sand);color:var(--tx)}
 .empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--mu);gap:8px;padding:40px;text-align:center}
 .empty .ico{font-size:46px}
 .empty p{font-size:14px;font-weight:500}
-.overlay{position:fixed;inset:0;background:rgba(0,32,92,.5);z-index:100;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:100;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s}
 .overlay.open{opacity:1;pointer-events:all}
 .mm-overlay .sheet{max-width:520px}
-.sheet{background:var(--wh);border-radius:20px 20px 0 0;padding:18px 16px 32px;width:100%;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.sheet-handle{width:40px;height:4px;background:var(--sand2);border-radius:2px;margin:0 auto 14px}
+.sheet{background:var(--wh);border-radius:20px 20px 0 0;padding:18px 16px max(32px,env(safe-area-inset-bottom));width:100%;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.sheet-handle{width:36px;height:5px;background:var(--sand2);border-radius:3px;margin:0 auto 16px}
 .mclose{background:var(--sand);border:none;width:44px;height:44px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--mu)}
 .irow{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--sand)}
 .ilbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);min-width:72px;padding-top:2px}
 .ival{font-size:13px;color:var(--tx);flex:1}
-.sec-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mu)}
-.ci-panel{background:var(--wh);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--sh)}
+.sec-lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--mu)}
+.ci-panel{background:var(--wh);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--sh-lg)}
 .ci-title{font-size:17px;font-weight:800;color:var(--bld)}
-.ci-row{display:flex;align-items:center;gap:10px;background:var(--sand);border-radius:10px;padding:10px 12px;cursor:pointer;-webkit-appearance:none;border:none;width:100%;text-align:left;font-family:'Inter',sans-serif}
+.ci-row{display:flex;align-items:center;gap:12px;background:var(--sand);border-radius:var(--r-sm);padding:12px 14px;cursor:pointer;-webkit-appearance:none;border:none;width:100%;text-align:left;font-family:-apple-system,'SF Pro Display','Inter',sans-serif}
 .ci-row.checked{background:var(--bll)}
 .ci-name{font-size:15px;font-weight:600;color:var(--bld);flex:1}
 .ci-tag{font-size:10px;color:var(--mu);font-weight:500}
-.ci-chk{width:22px;height:22px;border-radius:6px;border:2px solid var(--sand2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.ci-chk{width:26px;height:26px;border-radius:7px;border:2px solid var(--sand2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
 .ci-chk.on{background:var(--or);border-color:var(--or)}
-.ci-add{background:var(--sand);border:1.5px dashed var(--sand2);border-radius:10px;padding:10px 12px;cursor:pointer;color:var(--mu);font-size:13px;font-weight:600;font-family:'Inter',sans-serif;width:100%;text-align:left}
-.btn-p{width:100%;padding:15px;border-radius:11px;background:var(--bl);border:none;color:#fff;font-size:16px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer}
-.btn-s{width:100%;padding:13px;border-radius:11px;background:var(--sand);border:2px solid var(--sand2);color:var(--tx);font-size:14px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer}
-.btn-d{width:100%;padding:13px;border-radius:11px;background:var(--rel);border:2px solid var(--re);color:var(--re);font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer}
-.btn-o{width:100%;padding:13px;border-radius:11px;background:var(--orl);border:2px solid var(--or);color:var(--ord);font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer}
-.ci-checkin-btn{width:100%;padding:16px;border-radius:11px;background:var(--or);border:none;color:#fff;font-size:18px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer}
-.quick-ci-btn{width:100%;padding:10px;border:none;background:var(--or);color:#fff;font-size:13px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;border-radius:9px;display:flex;align-items:center;justify-content:center;gap:5px}
+.ci-add{background:var(--sand);border:1.5px dashed var(--sand2);border-radius:10px;padding:10px 12px;cursor:pointer;color:var(--mu);font-size:13px;font-weight:600;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;width:100%;text-align:left}
+.btn-p{width:100%;padding:15px;border-radius:var(--r);background:var(--bl);border:none;color:#fff;font-size:16px;font-weight:700;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;cursor:pointer}
+.btn-s{width:100%;padding:13px;border-radius:var(--r);background:var(--sand);border:2px solid var(--sand2);color:var(--tx);font-size:14px;font-weight:600;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;cursor:pointer}
+.btn-d{width:100%;padding:13px;border-radius:var(--r);background:var(--rel);border:2px solid var(--re);color:var(--re);font-size:14px;font-weight:700;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;cursor:pointer}
+.btn-o{width:100%;padding:13px;border-radius:11px;background:var(--orl);border:2px solid var(--or);color:var(--ord);font-size:14px;font-weight:700;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;cursor:pointer}
+.ci-checkin-btn{width:100%;padding:16px;border-radius:11px;background:var(--or);border:none;color:#fff;font-size:18px;font-weight:700;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;cursor:pointer}
+.quick-ci-btn{width:100%;padding:10px;border:none;background:var(--or);color:#fff;font-size:13px;font-weight:700;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;cursor:pointer;border-radius:9px;display:flex;align-items:center;justify-content:center;gap:5px}
 .quick-ci-btn:active{background:var(--ord)}
 .nanny-card{background:var(--pu)22;border:1.5px solid var(--pu);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--pu)}
-.fab{position:fixed;bottom:80px;right:16px;width:56px;height:56px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:26px;box-shadow:0 4px 18px rgba(250,70,22,.4);cursor:pointer;display:none;align-items:center;justify-content:center;z-index:50}
+.fab{position:fixed;bottom:max(80px,env(safe-area-inset-bottom,0px));right:16px;width:56px;height:56px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:26px;box-shadow:0 4px 18px rgba(250,70,22,.4);cursor:pointer;display:none;align-items:center;justify-content:center;z-index:50}
 .fab.show{display:flex}
 .sbar{padding:10px;background:var(--wh);border-bottom:1px solid var(--sand2)}
-.sinput{width:100%;padding:11px 14px;border:2px solid var(--sand2);border-radius:10px;font-size:15px;font-family:'Inter',sans-serif;background:var(--sand);outline:none}
+.sinput{width:100%;padding:11px 14px;border:2px solid var(--sand2);border-radius:10px;font-size:15px;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;background:var(--sand);outline:none}
 .sclr{position:absolute;right:20px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:16px;color:var(--mu);cursor:pointer}
-.alpha-btn{min-width:44px;height:44px;border-radius:10px;border:2px solid var(--sand2);background:#fff;font-size:15px;font-weight:700;color:var(--bl);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.alpha-btn{min-width:44px;height:44px;min-height:44px;border-radius:10px;border:2px solid var(--sand2);background:#fff;font-size:15px;font-weight:700;color:var(--bl);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.07)}
 .alpha-btn.on{background:var(--or);border-color:var(--or);color:#fff;box-shadow:0 2px 8px rgba(250,70,22,.3)}
 .alpha-btn:active{transform:scale(.93)}
-.fi,.fs{padding:14px 13px;border:2px solid var(--sand2);border-radius:10px;font-size:16px;font-family:'Inter',sans-serif;color:var(--tx);background:var(--sand);outline:none;width:100%;transition:border-color .15s}
+.fi,.fs{padding:14px 13px;border:1.5px solid var(--sand2);border-radius:var(--r-sm);font-size:16px;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;color:var(--tx);background:var(--sand);outline:none;width:100%;transition:border-color .15s}
 .fi:focus,.fs:focus{border-color:var(--bl)}
-.fl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);display:block;margin-bottom:5px}
+.fl{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--mu);display:block;margin-bottom:6px}
 .fg{display:flex;flex-direction:column;gap:0;flex:1}
 .frow{display:flex;gap:8px}
 .fnote{font-size:12px;color:var(--mu);line-height:1.4}
 .vlog{display:flex;flex-direction:column;gap:4px}
 .vitem{display:flex;justify-content:space-between;font-size:12px;padding:5px 8px;background:var(--sand);border-radius:7px}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--bld);color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;font-weight:600;z-index:9999;opacity:0;pointer-events:none;transition:opacity .2s;white-space:nowrap;max-width:90vw}
+.toast{position:fixed;bottom:max(20px,env(safe-area-inset-bottom,20px));left:50%;transform:translateX(-50%);background:rgba(26,26,46,.95);color:#fff;padding:12px 20px;border-radius:var(--r-xl);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-size:13px;font-weight:600;z-index:9999;opacity:0;pointer-events:none;transition:opacity .2s;white-space:nowrap;max-width:90vw}
 .toast.show{opacity:1}
 .toast.ok{background:var(--gr)}
 .toast.err,.toast.warn{background:var(--am)}
 .gp-row{display:flex;align-items:center;justify-content:space-between;background:var(--sand);border-radius:10px;padding:10px 12px;border:1px solid var(--sand2)}
 .cbtn{width:48px;height:48px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
-.gp-buy{width:100%;padding:11px;border-radius:11px;background:var(--or);border:none;color:#fff;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer}
-.gp-skip{width:100%;padding:11px;border-radius:11px;background:var(--sand);border:2px solid var(--sand2);color:var(--tx);font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer}
-.exp-btn{width:100%;padding:11px;border-radius:10px;background:var(--bll);border:1.5px solid var(--bl);color:var(--bld);font-size:13px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;text-align:left}
-.imp-btn{width:100%;padding:11px;border-radius:10px;background:var(--orl);border:1.5px solid var(--or);color:var(--ord);font-size:13px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;text-align:left}
+.gp-buy{width:100%;padding:11px;border-radius:11px;background:var(--or);border:none;color:#fff;font-size:14px;font-weight:700;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;cursor:pointer}
+.gp-skip{width:100%;padding:11px;border-radius:11px;background:var(--sand);border:2px solid var(--sand2);color:var(--tx);font-size:14px;font-weight:700;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;cursor:pointer}
+.exp-btn{width:100%;padding:11px;border-radius:10px;background:var(--bll);border:1.5px solid var(--bl);color:var(--bld);font-size:13px;font-weight:700;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;cursor:pointer;text-align:left}
+.imp-btn{width:100%;padding:11px;border-radius:10px;background:var(--orl);border:1.5px solid var(--or);color:var(--ord);font-size:13px;font-weight:700;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;cursor:pointer;text-align:left}
 .rep-list{display:flex;flex-direction:column;gap:4px}
 .rep-row{padding:8px 10px;background:var(--sand);border-radius:8px;display:flex;flex-direction:column;gap:2px}
 .rep-name{font-size:13px;font-weight:700;color:var(--bld)}
@@ -170,7 +175,7 @@ body{background:var(--sand);color:var(--tx)}
 .sci-pin-dot{width:16px;height:16px;border-radius:50%;background:var(--sand2);transition:background .1s}
 .sci-pin-dot.filled{background:var(--bld)}
 .sci-numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.sci-num{background:var(--sand);border:none;border-radius:12px;font-size:22px;font-weight:700;padding:16px;cursor:pointer;font-family:Inter,sans-serif;color:var(--bld);transition:transform .1s;-webkit-appearance:none}
+.sci-num{background:var(--sand);border:none;border-radius:12px;font-size:22px;font-weight:700;padding:16px;cursor:pointer;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;color:var(--bld);transition:transform .1s;-webkit-appearance:none}
 .sci-num:active{transform:scale(.93);background:var(--sand2)}
 .sci-success{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:12px;text-align:center}
 .sci-check{font-size:80px;line-height:1}
@@ -178,11 +183,11 @@ body{background:var(--sand);color:var(--tx)}
 .sci-success-sub{font-size:14px;color:var(--mu)}
 /* ANNOUNCEMENTS */
 #announce-bar{background:var(--or);padding:10px 14px;display:flex;align-items:center;gap:10px;flex:0 0 auto;width:100%;z-index:10;max-height:44px;overflow:hidden}
-.announce-text{font-size:13px;font-weight:700;color:#fff;font-family:'Inter',sans-serif;line-height:1.4;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.announce-text{font-size:14px;font-weight:600;color:#fff;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;line-height:1.3;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* CHECK-IN TAB */
 .ci-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--mu);padding:10px 13px 5px;background:var(--sand);flex-shrink:0}
 .ci-alpha-row{display:flex;flex-wrap:wrap;gap:7px;padding:10px 13px 12px;background:var(--sand);border-bottom:1px solid var(--sand2);justify-content:center;align-content:center;flex-shrink:0}
-.ci-alpha-btn{min-width:44px;height:44px;padding:0 8px;border-radius:10px;border:2px solid var(--sand2);background:#fff;font-size:16px;font-weight:700;color:var(--bl);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.ci-alpha-btn{min-width:44px;height:44px;min-height:44px;padding:0 8px;border-radius:10px;border:2px solid var(--sand2);background:#fff;font-size:16px;font-weight:700;color:var(--bl);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;box-shadow:0 1px 4px rgba(0,0,0,.07)}
 .ci-alpha-btn.on{background:var(--or);border-color:var(--or);color:#fff;box-shadow:0 2px 8px rgba(250,70,22,.3)}
 .ci-alpha-btn:active{transform:scale(.93)}
 .predict-card{background:#fff;border-radius:var(--r);padding:14px 13px;box-shadow:var(--sh);display:flex;align-items:center;gap:10px;cursor:pointer;border-left:4px solid var(--or);transition:transform .1s;min-height:60px}
@@ -251,12 +256,12 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.0.9</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.1.0</div>
       </div>
     </div>
     <div class="topbar-right">
       <div class="sync-pill" id="sync-pill"><div class="sync-dot" id="sync-dot"></div><span id="sync-txt">...</span></div>
-      <div style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;align-items:center;gap:4px"><span id="login-username-display" style="font-size:10px;font-weight:700;color:rgba(255,255,255,.8);max-width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span></div><button class="ibtn" id="login-btn" onclick="openLogin()"><span id="login-icon">🔒</span></button><button id="layout-btn" onclick="cycleLayout()" style="background:rgba(255,255,255,.1);border:none;color:#fff;height:36px;padding:0 8px;border-radius:9px;font-size:9px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;white-space:nowrap;letter-spacing:.3px">VIEW</button><button class="ibtn" id="settings-btn" onclick="openSettings()" style="display:none">⚙️</button>
+      <div style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;align-items:center;gap:4px"><span id="login-username-display" style="font-size:10px;font-weight:700;color:rgba(255,255,255,.8);max-width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span></div><button class="ibtn" id="login-btn" onclick="openLogin()"><span id="login-icon">🔒</span></button><button id="layout-btn" onclick="cycleLayout()" style="background:rgba(255,255,255,.1);border:none;color:#fff;height:36px;padding:0 8px;border-radius:9px;font-size:11px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;white-space:nowrap;letter-spacing:.3px">VIEW</button><button class="ibtn" id="settings-btn" onclick="openSettings()" style="display:none">⚙️</button>
     </div>
   </div>
 
@@ -302,7 +307,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
   <!-- INCIDENTS PANE -->
   <div id="pane-inc" class="pane">
     <div style="padding:12px;flex-shrink:0">
-      <button onclick="openNewIncident()" style="width:100%;padding:14px;background:var(--re);border:none;color:#fff;border-radius:11px;font-size:16px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer" onclick="openNewIncident()">⚠️ Log New Incident</button>
+      <button onclick="openNewIncident()" style="width:100%;padding:14px;background:var(--re);border:none;color:#fff;border-radius:11px;font-size:16px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer" onclick="openNewIncident()">⚠️ Log New Incident</button>
     </div>
     <div class="rep-scroll" id="inc-body"></div>
     <button class="fab" id="inc-fab" onclick="openNewIncident()" style="display:none">+</button>
@@ -372,8 +377,8 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
       <div class="fg"><label class="fl" style="color:rgba(255,255,255,.6)">Username</label><input class="fi" id="login-user" type="text" autocomplete="username" autocorrect="off" autocapitalize="off" placeholder="Enter username"></div>
       <div class="fg"><label class="fl" style="color:rgba(255,255,255,.6)">Password</label><input class="fi" id="login-pass" type="password" autocomplete="current-password" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"></div>
       <div id="login-err" style="color:#fca5a5;font-size:13px;font-weight:600;text-align:center;min-height:18px"></div>
-      <button onclick="doLogin()" style="width:100%;padding:15px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:16px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Sign In</button>
-      <button onclick="closeLogin()" style="width:100%;padding:12px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);border-radius:11px;font-size:14px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">Continue as Attendant</button>
+      <button onclick="doLogin()" style="width:100%;padding:15px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:16px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Sign In</button>
+      <button onclick="closeLogin()" style="width:100%;padding:12px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);border-radius:11px;font-size:14px;font-weight:600;font-family:-apple-system,sans-serif;cursor:pointer">Continue as Attendant</button>
     </div>
   </div>
 
@@ -425,7 +430,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 
 <script>
 
-var _APP_VERSION="v2.0.9";
+var _APP_VERSION="v2.1.0";
 
 // ── SELF CHECK-IN MODE ────────────────────────────────────────────────────────
 var SELF_CI_MODE = window.location.search.indexOf('selfcheckin=true') >= 0;
@@ -981,8 +986,8 @@ function buildInlineMissingForm(m){
   if(tc.maxAdults>1){
     html+='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.5)">Household — Adults</div>';
     html+='<div style="display:flex;gap:8px">';
-    html+='<button id="ilf-a1" onclick="ilfSelectAdults(1)" style="flex:1;padding:14px;border-radius:10px;font-size:16px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff">1 Adult</button>';
-    html+='<button id="ilf-a2" onclick="ilfSelectAdults(2)" style="flex:1;padding:14px;border-radius:10px;font-size:16px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff">2 Adults</button>';
+    html+='<button id="ilf-a1" onclick="ilfSelectAdults(1)" style="flex:1;padding:14px;border-radius:10px;font-size:16px;font-weight:800;font-family:-apple-system,sans-serif;cursor:pointer;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff">1 Adult</button>';
+    html+='<button id="ilf-a2" onclick="ilfSelectAdults(2)" style="flex:1;padding:14px;border-radius:10px;font-size:16px;font-weight:800;font-family:-apple-system,sans-serif;cursor:pointer;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff">2 Adults</button>';
     html+='</div>';
     html+='<div id="ilf-sec-fields" style="display:none;flex-direction:column;gap:8px">';
     html+='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.5)">Second Adult Name</div>';
@@ -1003,11 +1008,11 @@ function buildInlineMissingForm(m){
       html+='<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><input class="fi ilf-kid" value="'+k+'" placeholder="Child name" style="flex:1"><button onclick="this.parentElement.remove()" style="background:var(--rel);border:none;color:var(--re);width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:16px;flex-shrink:0">&#x2715;</button></div>';
     });
     html+='</div>';
-    html+='<button onclick="ilfAddKid()" style="width:100%;padding:10px;background:rgba(255,255,255,.1);border:1.5px dashed rgba(255,255,255,.3);border-radius:9px;color:rgba(255,255,255,.7);font-size:13px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">&#xFF0B; Add Child</button>';
+    html+='<button onclick="ilfAddKid()" style="width:100%;padding:10px;background:rgba(255,255,255,.1);border:1.5px dashed rgba(255,255,255,.3);border-radius:9px;color:rgba(255,255,255,.7);font-size:13px;font-weight:600;font-family:-apple-system,sans-serif;cursor:pointer">&#xFF0B; Add Child</button>';
   }
 
   // Save button
-  html+='<button onclick="ilfSave(\''+m.id+'\')" style="width:100%;padding:15px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:17px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;margin-top:4px">&#x2713; Save &amp; Continue to Check-In</button>';
+  html+='<button onclick="ilfSave(\''+m.id+'\')" style="width:100%;padding:15px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:17px;font-weight:800;font-family:-apple-system,sans-serif;cursor:pointer;margin-top:4px">&#x2713; Save &amp; Continue to Check-In</button>';
   html+='</div>';
   return html;
 }
@@ -1018,8 +1023,8 @@ function ilfSelectAdults(n){
   var b1=document.getElementById('ilf-a1');
   var b2=document.getElementById('ilf-a2');
   var sec=document.getElementById('ilf-sec-fields');
-  if(b1) b1.style.cssText='flex:1;padding:14px;border-radius:10px;font-size:16px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;border:2px solid '+(n===1?'var(--or)':'rgba(255,255,255,.3)')+';background:'+(n===1?'var(--or)':'rgba(255,255,255,.1)')+';color:#fff';
-  if(b2) b2.style.cssText='flex:1;padding:14px;border-radius:10px;font-size:16px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;border:2px solid '+(n===2?'var(--or)':'rgba(255,255,255,.3)')+';background:'+(n===2?'var(--or)':'rgba(255,255,255,.1)')+';color:#fff';
+  if(b1) b1.style.cssText='flex:1;padding:14px;border-radius:10px;font-size:16px;font-weight:800;font-family:-apple-system,sans-serif;cursor:pointer;border:2px solid '+(n===1?'var(--or)':'rgba(255,255,255,.3)')+';background:'+(n===1?'var(--or)':'rgba(255,255,255,.1)')+';color:#fff';
+  if(b2) b2.style.cssText='flex:1;padding:14px;border-radius:10px;font-size:16px;font-weight:800;font-family:-apple-system,sans-serif;cursor:pointer;border:2px solid '+(n===2?'var(--or)':'rgba(255,255,255,.3)')+';background:'+(n===2?'var(--or)':'rgba(255,255,255,.1)')+';color:#fff';
   if(sec) sec.style.display=n===2?'flex':'none';
 }
 
@@ -1149,8 +1154,8 @@ function miSelectAdults(n){
   // Update button styles
   var b1=document.getElementById('mi-a1');
   var b2=document.getElementById('mi-a2');
-  if(b1) b1.style.cssText='flex:1;font-size:18px;font-weight:800;padding:18px;width:100%;border-radius:11px;cursor:pointer;font-family:Inter,sans-serif;'+(n===1?'background:var(--or);color:#fff;border:2px solid var(--or)':'background:var(--sand);color:var(--tx);border:2px solid var(--sand2)');
-  if(b2) b2.style.cssText='flex:1;font-size:18px;font-weight:800;padding:18px;width:100%;border-radius:11px;cursor:pointer;font-family:Inter,sans-serif;'+(n===2?'background:var(--or);color:#fff;border:2px solid var(--or)':'background:var(--sand);color:var(--tx);border:2px solid var(--sand2)');
+  if(b1) b1.style.cssText='flex:1;font-size:18px;font-weight:800;padding:18px;width:100%;border-radius:11px;cursor:pointer;font-family:-apple-system,sans-serif;'+(n===1?'background:var(--or);color:#fff;border:2px solid var(--or)':'background:var(--sand);color:var(--tx);border:2px solid var(--sand2)');
+  if(b2) b2.style.cssText='flex:1;font-size:18px;font-weight:800;padding:18px;width:100%;border-radius:11px;cursor:pointer;font-family:-apple-system,sans-serif;'+(n===2?'background:var(--or);color:#fff;border:2px solid var(--or)':'background:var(--sand);color:var(--tx);border:2px solid var(--sand2)');
   // If 2 adults selected, ensure second-adult step is in the list
   if(n===2&&miSteps.indexOf('second-adult')===-1){
     var ci=miSteps.indexOf('adults');
@@ -1521,7 +1526,7 @@ function sciShowSetup() {
   body.innerHTML = '<div class="sci-title">First Time Setup</div>'
     + '<div class="sci-sub2">Enter the 6-digit setup code provided by the attendant at the gate.</div>'
     + '<div class="fg"><label class="fl">Setup Code</label><input class="fi" id="sci-setup-inp" type="tel" maxlength="6" placeholder="••••••" style="font-size:24px;text-align:center;letter-spacing:8px" oninput="this.value=this.value.replace(/\D/g,\'\')"></div>'
-    + '<button onclick="sciVerifySetupCode()" style="width:100%;padding:14px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:16px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Continue</button>';
+    + '<button onclick="sciVerifySetupCode()" style="width:100%;padding:14px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:16px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Continue</button>';
 }
 
 function sciVerifySetupCode() {
@@ -1552,7 +1557,7 @@ function sciShowCreatePin(isReset) {
     + '<div class="sci-sub2">Choose a 6-digit PIN you will use every visit.</div>'
     + '<div class="sci-pin-display" id="sci-dots">' + sciRenderDots(0) + '</div>'
     + sciNumpad('sciEnterCreatePin')
-    + '<button onclick="sciClearPin()" style="background:none;border:none;color:var(--mu);font-size:13px;font-family:Inter,sans-serif;cursor:pointer;padding:4px">Clear</button>';
+    + '<button onclick="sciClearPin()" style="background:none;border:none;color:var(--mu);font-size:13px;font-family:-apple-system,sans-serif;cursor:pointer;padding:4px">Clear</button>';
 }
 
 function sciEnterCreatePin(n) {
@@ -1572,7 +1577,7 @@ function sciShowConfirmPin(firstPin) {
     + '<div class="sci-sub2">Enter your PIN again to confirm.</div>'
     + '<div class="sci-pin-display" id="sci-dots">' + sciRenderDots(0) + '</div>'
     + sciNumpad('sciEnterConfirmPin')
-    + '<button onclick="sciShowCreatePin()" style="background:none;border:none;color:var(--mu);font-size:13px;font-family:Inter,sans-serif;cursor:pointer;padding:4px">Back</button>';
+    + '<button onclick="sciShowCreatePin()" style="background:none;border:none;color:var(--mu);font-size:13px;font-family:-apple-system,sans-serif;cursor:pointer;padding:4px">Back</button>';
   window._sciFirstPin = firstPin;
 }
 
@@ -1619,8 +1624,8 @@ function sciShowPinEntry() {
     + '<div class="sci-pin-display" id="sci-dots">' + sciRenderDots(0) + '</div>'
     + sciNumpad('sciEnterPin')
     + '<div style="display:flex;justify-content:center;gap:16px;margin-top:4px">'
-    + '<button onclick="sciClearPin()" style="background:none;border:none;color:var(--mu);font-size:13px;font-family:Inter,sans-serif;cursor:pointer;padding:4px">Clear</button>'
-    + '<button onclick="sciForgetDevice()" style="background:none;border:none;color:var(--mu);font-size:13px;font-family:Inter,sans-serif;cursor:pointer;padding:4px">Not you?</button>'
+    + '<button onclick="sciClearPin()" style="background:none;border:none;color:var(--mu);font-size:13px;font-family:-apple-system,sans-serif;cursor:pointer;padding:4px">Clear</button>'
+    + '<button onclick="sciForgetDevice()" style="background:none;border:none;color:var(--mu);font-size:13px;font-family:-apple-system,sans-serif;cursor:pointer;padding:4px">Not you?</button>'
     + '</div>';
 }
 
@@ -1691,11 +1696,11 @@ function sciShowCheckin() {
     + '<div><div style="font-size:13px;font-weight:700;color:var(--bld)">Guest Passes</div>'
     + '<div style="font-size:11px;color:var(--mu)">' + rem + ' remaining</div></div>'
     + '<div style="display:flex;align-items:center;gap:12px">'
-    + '<button onclick="sciAdjGuests(-1)" style="width:36px;height:36px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:20px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif">-</button>'
+    + '<button onclick="sciAdjGuests(-1)" style="width:36px;height:36px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:20px;font-weight:700;cursor:pointer;font-family:-apple-system,sans-serif">-</button>'
     + '<span id="sci-guests" style="font-size:20px;font-weight:800;min-width:24px;text-align:center">0</span>'
-    + '<button onclick="sciAdjGuests(1)" style="width:36px;height:36px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:20px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif">+</button>'
+    + '<button onclick="sciAdjGuests(1)" style="width:36px;height:36px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:20px;font-weight:700;cursor:pointer;font-family:-apple-system,sans-serif">+</button>'
     + '</div></div></div>';
-  html += '<button onclick="sciSubmitCheckin()" style="width:100%;padding:16px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:18px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer">Check In</button>';
+  html += '<button onclick="sciSubmitCheckin()" style="width:100%;padding:16px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:18px;font-weight:800;font-family:-apple-system,sans-serif;cursor:pointer">Check In</button>';
   body.innerHTML = html;
   window._sciGuestRem = rem;
 }
@@ -1707,7 +1712,7 @@ function sciAdjGuests(d) {
   if (_sciGuests > rem) {
     document.getElementById('sci-body').innerHTML = '<div class="sci-title" style="color:var(--am)">No Passes Remaining</div>'
       + '<div class="sci-sub2">You have no guest passes left. Please see the attendant for assistance.</div>'
-      + '<button onclick="sciShowCheckin()" style="width:100%;padding:14px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--tx)">Back</button>';
+      + '<button onclick="sciShowCheckin()" style="width:100%;padding:14px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--tx)">Back</button>';
     return;
   }
   var el = document.getElementById('sci-guests');
@@ -1885,7 +1890,7 @@ function renderApplyForm(){
     +'<div style="font-size:15px;font-weight:800;color:var(--bld);margin-bottom:8px">Access Code Required</div>'
     +'<div style="font-size:13px;color:var(--mu);margin-bottom:12px">Please enter the access code provided by a current member or the club.</div>'
     +'<div class="fg"><label class="fl">Access Code</label><input class="fi" id="apply-code" placeholder="Enter code" autocapitalize="none" autocorrect="off"></div>'
-    +'<button onclick="verifyApplyCode()" style="width:100%;padding:14px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:16px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;margin-top:8px">Continue</button>'
+    +'<button onclick="verifyApplyCode()" style="width:100%;padding:14px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:16px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;margin-top:8px">Continue</button>'
     +'</div></div>';
 }
 
@@ -1911,7 +1916,7 @@ function renderApplyTypeSelect(){
     +'<div style="font-size:13px;color:var(--mu);margin-bottom:14px">Choose the membership type that best fits your household.</div>'
     +'<div style="display:flex;flex-direction:column;gap:10px">'
     +types.map(function(t){
-      return'<button data-type="'+t.key+'" onclick="selectApplyType(this.dataset.type)" style="width:100%;padding:16px;background:'+(applyData.mtype===t.key?'var(--bld)':'var(--sand)')+';border:2px solid '+(applyData.mtype===t.key?'var(--bld)':'var(--sand2)')+';border-radius:12px;cursor:pointer;text-align:left;font-family:Inter,sans-serif;transition:all .15s">'
+      return'<button data-type="'+t.key+'" onclick="selectApplyType(this.dataset.type)" style="width:100%;padding:16px;background:'+(applyData.mtype===t.key?'var(--bld)':'var(--sand)')+';border:2px solid '+(applyData.mtype===t.key?'var(--bld)':'var(--sand2)')+';border-radius:12px;cursor:pointer;text-align:left;font-family:-apple-system,sans-serif;transition:all .15s">'
         +'<div style="display:flex;align-items:center;gap:12px">'
         +'<div style="font-size:28px">'+t.icon+'</div>'
         +'<div><div style="font-size:16px;font-weight:800;color:'+(applyData.mtype===t.key?'#fff':'var(--bld)')+'">'+t.label+'</div>'
@@ -1919,7 +1924,7 @@ function renderApplyTypeSelect(){
         +'</div></button>';
     }).join('')
     +'</div></div>'
-    +'<button id="apply-type-next" onclick="applyTypeNext()" style="width:100%;padding:14px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:16px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;'+(applyData.mtype?'':'opacity:.5')+'">Next →</button>'
+    +'<button id="apply-type-next" onclick="applyTypeNext()" style="width:100%;padding:14px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:16px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;'+(applyData.mtype?'':'opacity:.5')+'">Next →</button>'
     +'</div>';
 }
 
@@ -1973,8 +1978,8 @@ function renderApplyStep1(){
     +'</select></div>'
     +'</div>'
     +'<div style="display:flex;gap:8px">'
-    +'<button onclick="renderApplyTypeSelect()" style="flex:1;padding:13px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--tx)">&larr; Back</button>'
-    +'<button onclick="applyStep1Next()" style="flex:2;padding:14px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Next &rarr;</button>'
+    +'<button onclick="renderApplyTypeSelect()" style="flex:1;padding:13px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--tx)">&larr; Back</button>'
+    +'<button onclick="applyStep1Next()" style="flex:2;padding:14px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Next &rarr;</button>'
     +'</div>'
     +'</div>';
 }
@@ -2021,11 +2026,11 @@ function renderApplyStep2(){
         +'<button onclick="this.parentElement.remove()" style="background:var(--rel);border:none;color:var(--re);width:36px;height:36px;border-radius:8px;cursor:pointer;flex-shrink:0;font-size:16px">&#x2715;</button>'
         +'</div>';
     })).join('')+'</div>'
-    +'<button onclick="afAddKid()" style="width:100%;padding:10px;background:var(--sand);border:1.5px dashed var(--sand2);border-radius:9px;font-size:13px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer;color:var(--mu)">&#xFF0B; Add Child</button>':'')
+    +'<button onclick="afAddKid()" style="width:100%;padding:10px;background:var(--sand);border:1.5px dashed var(--sand2);border-radius:9px;font-size:13px;font-weight:600;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--mu)">&#xFF0B; Add Child</button>':'')
     +'</div>'
     +'<div style="display:flex;gap:8px">'
-    +'<button onclick="renderApplyStep1()" style="flex:1;padding:13px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--tx)">&larr; Back</button>'
-    +'<button onclick="applyStep2Next()" style="flex:2;padding:13px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Next &rarr;</button>'
+    +'<button onclick="renderApplyStep1()" style="flex:1;padding:13px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--tx)">&larr; Back</button>'
+    +'<button onclick="applyStep2Next()" style="flex:2;padding:13px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Next &rarr;</button>'
     +'</div></div>';
 }
 
@@ -2085,8 +2090,8 @@ function renderApplyStep3(){
     +'<textarea class="fi" id="af-why" rows="3" style="resize:vertical" placeholder="Tell us a bit about your family and why you want to join...">'+(applyData.why||'')+'</textarea></div>'
     +'</div>'
     +'<div style="display:flex;gap:8px">'
-    +'<button onclick="renderApplyStep2()" style="flex:1;padding:13px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--tx)">&larr; Back</button>'
-    +'<button onclick="applyStep3Next()" style="flex:2;padding:13px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Next &rarr;</button>'
+    +'<button onclick="renderApplyStep2()" style="flex:1;padding:13px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--tx)">&larr; Back</button>'
+    +'<button onclick="applyStep3Next()" style="flex:2;padding:13px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Next &rarr;</button>'
     +'</div></div>';
 }
 
@@ -2120,8 +2125,8 @@ function renderApplyStep4(){
     +'<div class="fg"><label class="fl">Date</label><input class="fi" id="af-sigdate" type="date" value="'+(applyData.sigDate||new Date().toISOString().slice(0,10))+'"></div>'
     +'</div>'
     +'<div style="display:flex;gap:8px">'
-    +'<button onclick="renderApplyStep3()" style="flex:1;padding:13px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--tx)">&larr; Back</button>'
-    +'<button onclick="submitApplication()" style="flex:2;padding:13px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Submit Application</button>'
+    +'<button onclick="renderApplyStep3()" style="flex:1;padding:13px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--tx)">&larr; Back</button>'
+    +'<button onclick="submitApplication()" style="flex:2;padding:13px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Submit Application</button>'
     +'</div></div>';
 }
 
@@ -2207,10 +2212,10 @@ function appCard(a,majority){
     +'<div style="font-size:11px;color:var(--mu)">Need '+majority+'</div>'
     +'</div>':'')
     +'<div style="display:flex;gap:8px">'
-    +'<button data-appid="'+a.id+'" onclick="openAppReview(this.dataset.appid)" style="flex:2;padding:9px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:9px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--tx)">View Details</button>'
+    +'<button data-appid="'+a.id+'" onclick="openAppReview(this.dataset.appid)" style="flex:2;padding:9px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:9px;font-size:13px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--tx)">View Details</button>'
     +(a.status==='pending'&&can('canVoteApplications')&&!myVote?
-      '<button data-appid="'+a.id+'" onclick="voteApplication(this.dataset.appid,&quot;approve&quot;)" style="flex:1;padding:9px;background:var(--grl);border:1.5px solid var(--gr);border-radius:9px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--gr)">✔ Approve</button>'
-      +'<button data-appid="'+a.id+'" onclick="voteApplication(this.dataset.appid,&quot;reject&quot;)" style="flex:1;padding:9px;background:var(--rel);border:1.5px solid var(--re);border-radius:9px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--re)">✖ Reject</button>'
+      '<button data-appid="'+a.id+'" onclick="voteApplication(this.dataset.appid,&quot;approve&quot;)" style="flex:1;padding:9px;background:var(--grl);border:1.5px solid var(--gr);border-radius:9px;font-size:12px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--gr)">✔ Approve</button>'
+      +'<button data-appid="'+a.id+'" onclick="voteApplication(this.dataset.appid,&quot;reject&quot;)" style="flex:1;padding:9px;background:var(--rel);border:1.5px solid var(--re);border-radius:9px;font-size:12px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--re)">✖ Reject</button>'
     :myVote?'<div style="flex:2;padding:9px;text-align:center;font-size:12px;font-weight:700;color:var(--mu)">Voted: '+myVote+'</div>':'')
     +'</div></div>';
 }
@@ -2260,8 +2265,8 @@ function openAppReview(appId){
     }
     if(!myVote){
       html+='<div style="display:flex;gap:8px">'
-        +'<button data-appid="'+a.id+'" onclick="voteApplication(this.dataset.appid,&quot;approve&quot;);closeAppReview();" style="flex:1;padding:13px;background:var(--grl);border:2px solid var(--gr);border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--gr)">✔ Approve</button>'
-        +'<button data-appid="'+a.id+'" onclick="voteApplication(this.dataset.appid,&quot;reject&quot;);closeAppReview();" style="flex:1;padding:13px;background:var(--rel);border:2px solid var(--re);border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--re)">✖ Reject</button>'
+        +'<button data-appid="'+a.id+'" onclick="voteApplication(this.dataset.appid,&quot;approve&quot;);closeAppReview();" style="flex:1;padding:13px;background:var(--grl);border:2px solid var(--gr);border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--gr)">✔ Approve</button>'
+        +'<button data-appid="'+a.id+'" onclick="voteApplication(this.dataset.appid,&quot;reject&quot;);closeAppReview();" style="flex:1;padding:13px;background:var(--rel);border:2px solid var(--re);border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--re)">✖ Reject</button>'
         +'</div>';
     } else {
       html+='<div style="text-align:center;font-size:13px;font-weight:700;color:var(--mu);padding:8px">You voted: '+myVote+'</div>';
@@ -2272,14 +2277,14 @@ function openAppReview(appId){
     html+='<div style="border-top:1px solid var(--sand2);padding-top:10px;display:flex;flex-direction:column;gap:8px">'
       +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--mu)">Admin Override</div>'
       +'<div style="display:flex;gap:8px">'
-      +'<button data-appid="'+a.id+'" onclick="adminApproveApp(this.dataset.appid)" style="flex:1;padding:11px;background:var(--gr);border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:#fff">Force Approve</button>'
-      +'<button data-appid="'+a.id+'" onclick="adminRejectApp(this.dataset.appid)" style="flex:1;padding:11px;background:var(--re);border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:#fff">Force Reject</button>'
+      +'<button data-appid="'+a.id+'" onclick="adminApproveApp(this.dataset.appid)" style="flex:1;padding:11px;background:var(--gr);border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:#fff">Force Approve</button>'
+      +'<button data-appid="'+a.id+'" onclick="adminRejectApp(this.dataset.appid)" style="flex:1;padding:11px;background:var(--re);border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:#fff">Force Reject</button>'
       +'</div></div>';
   }
   // Admin notes
   html+='<div class="fg"><label class="fl">Admin Notes</label>'
     +'<textarea class="fi" id="app-admin-note" rows="2" style="resize:vertical" placeholder="Internal notes about this application...">'+(a.adminNotes||'')+'</textarea></div>'
-    +'<button data-appid="'+a.id+'" onclick="saveAppNote(this.dataset.appid)" style="width:100%;padding:11px;background:var(--bl);border:none;color:#fff;border-radius:10px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Save Notes</button>';
+    +'<button data-appid="'+a.id+'" onclick="saveAppNote(this.dataset.appid)" style="width:100%;padding:11px;background:var(--bl);border:none;color:#fff;border-radius:10px;font-size:13px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Save Notes</button>';
   html+='</div>';
   body.innerHTML=html;
   document.getElementById('appreview-overlay').style.display='flex';
@@ -2553,7 +2558,7 @@ function doQuickCI(mid,evt){
 function cardHTML(m,ciMode){
   var chip=chipInfo(m);
   var chipHtml='<div class="gchip '+chip.cls+'">'+chip.lbl+'</div>';
-  return'<button class="mcard '+cardCls(m)+'" onclick="openMember(&quot;'+m.id+'&quot;,'+ciMode+')" style="width:100%;text-align:left;font-family:Inter,sans-serif">'
+  return'<button class="mcard '+cardCls(m)+'" onclick="openMember(&quot;'+m.id+'&quot;,'+ciMode+')" style="width:100%;text-align:left;font-family:-apple-system,sans-serif">'
     +'<div class="mavatar">'+(m.last||'?')[0]+'</div>'
     +'<div class="minfo">'
     +'<div class="mname">'+m.last+', '+m.first+'</div>'
@@ -2685,7 +2690,7 @@ function renderCI(){
       var timeLabel=nowH<12?'this morning':nowH<17?'this afternoon':'this evening';
       el.innerHTML='<div class="ci-section-title" style="background:var(--sand)">&#x1F52E; Likely here '+timeLabel+' (based on history)</div>'
         +predicted.map(function(m){
-          return '<button class="predict-card" onclick="openMember(&quot;'+m.id+'&quot;,true)" style="width:100%;text-align:left;font-family:Inter,sans-serif;border:none;cursor:pointer">'
+          return '<button class="predict-card" onclick="openMember(&quot;'+m.id+'&quot;,true)" style="width:100%;text-align:left;font-family:-apple-system,sans-serif;border:none;cursor:pointer">'
             +'<div class="mavatar">'+(m.last||'?')[0]+'</div>'
             +'<div class="minfo"><div class="mname">'+m.last+', '+m.first+'</div>'
             +'<div class="predict-meta">'+m.type+' &middot; '+(m.status==='paid'?'<span style="color:var(--gr);font-weight:700">Paid</span>':'<span style="color:var(--re);font-weight:700">'+m.status+'</span>')+'</div>'
@@ -2815,7 +2820,7 @@ function openMember(id,ciMode){
       var unpaidWarn='';
       if(m.status==='unpaid'){
         var mid=m.id;
-        unpaidWarn='<div class="unpaid-warning"><div class="unpaid-warning-title">&#x26A0;&#xFE0F; Payment Outstanding</div><p>This membership has not paid for the current season.</p><div class="unpaid-days">'+unpaidDays+' / '+GRACE_DAYS+' grace days used</div><p style="font-size:12px;color:var(--re);font-weight:600">Check-in blocked after day 3 without payment.</p><div id="pay-alert-container"><button id="pay-alert-btn" data-mid="'+mid+'" onclick="sendPaymentAlert(this.dataset.mid)" style="width:100%;margin-top:4px;padding:10px;background:var(--or);border:none;color:#fff;border-radius:9px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">&#x1F4E7; Member has paid — Submit for Review</button></div></div>';
+        unpaidWarn='<div class="unpaid-warning"><div class="unpaid-warning-title">&#x26A0;&#xFE0F; Payment Outstanding</div><p>This membership has not paid for the current season.</p><div class="unpaid-days">'+unpaidDays+' / '+GRACE_DAYS+' grace days used</div><p style="font-size:12px;color:var(--re);font-weight:600">Check-in blocked after day 3 without payment.</p><div id="pay-alert-container"><button id="pay-alert-btn" data-mid="'+mid+'" onclick="sendPaymentAlert(this.dataset.mid)" style="width:100%;margin-top:4px;padding:10px;background:var(--or);border:none;color:#fff;border-radius:9px;font-size:13px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">&#x1F4E7; Member has paid — Submit for Review</button></div></div>';
       }
       else if(m.status==='pending'){unpaidWarn='<div style="background:var(--aml);border:2px solid var(--am);border-radius:10px;padding:10px 13px;font-size:13px;color:var(--am);font-weight:600;text-align:center">&#x23F3; Payment pending &mdash; please follow up</div>';}
       var adultNames=[];
@@ -2839,7 +2844,7 @@ function openMember(id,ciMode){
       if(m.secFirst||m.secLast){
         adultsSection+='<div class="ci-check-item" id="ci-a1" onclick="ciToggle(\'ci-a1\')"><input type="checkbox" id="chk-a1" onchange="ciToggle(\'ci-a1\')"><label for="chk-a1">'+(m.secFirst||'')+' '+(m.secLast||'')+'</label></div>';
       } else if(needsSecondName){
-        adultsSection+='<div class="ci-check-item missing-name"><span style="font-size:13px;color:#ffd4c8">&#x26A0; Second adult name required for Couples membership</span><button onclick="ciPromptSecondAdult(\''+m.id+'\')" style="margin-left:auto;padding:5px 10px;background:var(--or);border:none;color:#fff;border-radius:7px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;white-space:nowrap">Add Name</button></div>';
+        adultsSection+='<div class="ci-check-item missing-name"><span style="font-size:13px;color:#ffd4c8">&#x26A0; Second adult name required for Couples membership</span><button onclick="ciPromptSecondAdult(\''+m.id+'\')" style="margin-left:auto;padding:5px 10px;background:var(--or);border:none;color:#fff;border-radius:7px;font-size:12px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;white-space:nowrap">Add Name</button></div>';
       } else if(canAddSec){
         adultsSection+='<button class="ci-add-btn" onclick="ciPromptSecondAdult(\''+m.id+'\')" id="ci-add-sec-btn">&#xFF0B; Add second adult</button>';
       }
@@ -2867,7 +2872,7 @@ function openMember(id,ciMode){
         missingBanner='<div style="background:#fef3c7;border:2px solid #f59e0b;border-radius:10px;padding:12px;margin-bottom:4px">'
         +'<div style="font-weight:800;font-size:13px;color:#92400e;margin-bottom:6px">&#x26A0;&#xFE0F; Missing Member Info Required</div>'
         +'<div style="font-size:12px;color:#92400e;margin-bottom:8px">Please complete all required info before checking in.</div>'
-        +'<button onclick="openMissingInfo(\''+m.id+'\')" style="width:100%;padding:13px;background:#f59e0b;border:none;color:#fff;border-radius:9px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;margin-top:2px">&#x270F;&#xFE0F; Complete Member Info</button>'
+        +'<button onclick="openMissingInfo(\''+m.id+'\')" style="width:100%;padding:13px;background:#f59e0b;border:none;color:#fff;border-radius:9px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;margin-top:2px">&#x270F;&#xFE0F; Complete Member Info</button>'
         +'</div>';
       }
       var panelBg=m.status==='paid'?'var(--wh)':'var(--wh)';
@@ -2929,7 +2934,7 @@ function ciPromptSecondAdult(memberId){
   row.className='ci-check-item';
   row.style.gap='6px';
   row.innerHTML='<input class="ci-inline-input" id="ci-sec-name-input" placeholder="Second adult first &amp; last name" autofocus>'
-    +'<button onclick="ciSaveSecondAdult(\''+memberId+'\')" style="padding:6px 10px;background:var(--or);border:none;color:#fff;border-radius:7px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Save</button>';
+    +'<button onclick="ciSaveSecondAdult(\''+memberId+'\')" style="padding:6px 10px;background:var(--or);border:none;color:#fff;border-radius:7px;font-size:12px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Save</button>';
   btn.parentNode.replaceChild(row,btn);
   setTimeout(function(){var inp=document.getElementById('ci-sec-name-input');if(inp)inp.focus();},50);
 }
@@ -2955,7 +2960,7 @@ function ciAddKidInline(){
   row.style.cssText='display:flex;gap:6px;align-items:center';
   var newId='ci-k-new-'+Date.now();
   row.innerHTML='<input class="ci-inline-input" id="'+newId+'" placeholder="Child first name">'
-    +'<button onclick="ciConfirmNewKid(\''+newId+'\')" style="padding:6px 10px;background:var(--or);border:none;color:#fff;border-radius:7px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;white-space:nowrap">Add</button>';
+    +'<button onclick="ciConfirmNewKid(\''+newId+'\')" style="padding:6px 10px;background:var(--or);border:none;color:#fff;border-radius:7px;font-size:12px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;white-space:nowrap">Add</button>';
   list.insertBefore(row,addBtn);
   setTimeout(function(){var inp=document.getElementById(newId);if(inp)inp.focus();},50);
 }
@@ -3075,7 +3080,7 @@ document.getElementById('ed-body').innerHTML=
   +'<div class="frow"><div class="fg"><label class="fl">City</label><input class="fi" id="ef-city" value="'+(m.city||'')+'" placeholder="Gibsonville"></div><div class="fg"><label class="fl">State</label><input class="fi" id="ef-state" value="'+(m.state||'NC')+'" placeholder="NC"></div></div>'
   +'<div class="fg"><label class="fl">Zip Code</label><input class="fi" id="ef-zip" value="'+(m.zip||'')+'" placeholder="27249" style="max-width:140px"></div>'
   +'<div class="fg"><label class="fl">Membership Type</label><select class="fs" id="ef-type" onchange="typeChanged()">'+CONFIG.membershipTypes.map(function(t){return'<option value="'+t.key+'"'+(m.type===t.key?' selected':'')+'>'+t.label+(t.requireSecond?' (2 adults required)':t.maxAdults>1&&t.allowChildren?' (adults + children)':t.adults===1&&!t.allowChildren?' (1 adult)':t.maxAdults===2&&!t.allowChildren?' (2 adults)':'')+' &mdash; '+t.guestPasses+' passes'+'</option>';}).join('')+'</select></div>'
-  +'<div class="fg"><label class="fl">Payment Status</label><div style="display:flex;gap:8px;align-items:center"><div style="flex:1;padding:11px 13px;border:2px solid var(--sand2);border-radius:10px;background:var(--sand);font-size:16px;color:var(--tx)" id="status-display">'+({paid:'Paid',pending:'Pending',unpaid:'Unpaid'}[m.status||'paid']||'Paid')+'</div><input type="hidden" id="ef-status" value="'+(m.status||'paid')+'"><button onclick="changePaymentStatus()" style="padding:11px 13px;background:var(--bl);border:none;color:#fff;border-radius:10px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;white-space:nowrap">&#x1F511; Change</button></div></div>'
+  +'<div class="fg"><label class="fl">Payment Status</label><div style="display:flex;gap:8px;align-items:center"><div style="flex:1;padding:11px 13px;border:2px solid var(--sand2);border-radius:10px;background:var(--sand);font-size:16px;color:var(--tx)" id="status-display">'+({paid:'Paid',pending:'Pending',unpaid:'Unpaid'}[m.status||'paid']||'Paid')+'</div><input type="hidden" id="ef-status" value="'+(m.status||'paid')+'"><button onclick="changePaymentStatus()" style="padding:11px 13px;background:var(--bl);border:none;color:#fff;border-radius:10px;font-size:13px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;white-space:nowrap">&#x1F511; Change</button></div></div>'
   +'<div class="sec-lbl">Guest Passes</div>'
   +'<div class="frow"><div class="fg"><label class="fl">Used</label><input class="fi" id="ef-gused" type="number" min="0" value="'+(m.guestsUsed||0)+'"></div><div class="fg"><label class="fl">Total Allotted</label><input class="fi" id="ef-gtotal" type="number" min="0" value="'+(m.guestsTotal!==undefined?m.guestsTotal:GUEST_PASSES[m.type||'Individual'])+'"></div></div>'
   +'<div class="sec-lbl">Household Roster</div>'
@@ -3186,7 +3191,7 @@ function renderRep(){
   // ── KPI card builder ─────────────────────────────────────────────────────
   function stat(val, lbl, color, chartId){
     var chartBtn=chartId
-      ?'<button onclick="showRepChart(\''+chartId+'\')" style="margin-top:8px;background:none;border:none;padding:0;cursor:pointer;font-size:11px;font-weight:700;color:'+color+';opacity:.7;font-family:Inter,sans-serif;letter-spacing:.3px">View Chart ›</button>'
+      ?'<button onclick="showRepChart(\''+chartId+'\')" style="margin-top:8px;background:none;border:none;padding:0;cursor:pointer;font-size:11px;font-weight:700;color:'+color+';opacity:.7;font-family:-apple-system,sans-serif;letter-spacing:.3px">View Chart ›</button>'
       :'';
     return '<div class="rstat" style="--rcolor:'+color+'">'
       +'<div class="rstat-val">'+val+'</div>'
@@ -3898,13 +3903,13 @@ function showUserManagementUI(users){
         +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
         +'<div><div style="font-weight:700;font-size:14px">'+u.displayName+'</div>'
         +'<div style="font-size:11px;color:var(--mu)">@'+u.username+' &middot; '+u.roleLabel+'</div></div>'
-        +'<button onclick="deleteStaffUser(&quot;'+u.id+'&quot;)" style="background:var(--rel);border:none;color:var(--re);padding:6px 10px;border-radius:8px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Remove</button>'
+        +'<button onclick="deleteStaffUser(&quot;'+u.id+'&quot;)" style="background:var(--rel);border:none;color:var(--re);padding:6px 10px;border-radius:8px;font-size:12px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Remove</button>'
         +'</div>'
         +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">'+PERMS.map(function(p){
           return'<label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--tx);cursor:pointer">'
             +'<input type="checkbox" data-uid="'+u.id+'" data-perm="'+p.key+'" onchange="updateUserPerm(this)"'+(perms[p.key]?' checked':'')+' style="accent-color:var(--or)"> '+p.label+'</label>';
         }).join('')+'</div>'
-        +'<button data-uid="'+u.id+'" data-name="'+u.displayName+'" onclick="resetUserPassword(this.dataset.uid,this.dataset.name)" style="margin-top:8px;background:var(--bll);border:none;color:var(--bl);padding:7px 12px;border-radius:8px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;width:100%">Reset Password</button>'
+        +'<button data-uid="'+u.id+'" data-name="'+u.displayName+'" onclick="resetUserPassword(this.dataset.uid,this.dataset.name)" style="margin-top:8px;background:var(--bll);border:none;color:var(--bl);padding:7px 12px;border-radius:8px;font-size:12px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;width:100%">Reset Password</button>'
         +'</div>';
     });
   } else {
@@ -3922,7 +3927,7 @@ function showUserManagementUI(users){
       return'<label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">'
         +'<input type="checkbox" class="nu-perm" data-perm="'+p.key+'" style="accent-color:var(--or)"'+(DEFAULT_PERMISSIONS.board[p.key]?' checked':'')+'>'+p.label+'</label>';
     }).join('')+'</div>'
-    +'<button onclick="addStaffUser()" style="width:100%;padding:12px;background:var(--or);border:none;color:#fff;border-radius:10px;font-size:14px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Add User</button>'
+    +'<button onclick="addStaffUser()" style="width:100%;padding:12px;background:var(--or);border:none;color:#fff;border-radius:10px;font-size:14px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Add User</button>'
     +'</div>';
   html+='</div>';
   // Show in a modal
@@ -4023,7 +4028,7 @@ function sciShowSetup(){
     +'</div>'
     +'<div class="fg"><label class="fl">Setup Code (from attendant)</label>'
     +'<input class="fi" id="sci-setup-code" type="tel" maxlength="6" placeholder="______" style="font-size:24px;text-align:center;letter-spacing:8px"></div>'
-    +'<button onclick="verifySciSetupCode()" style="width:100%;padding:16px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:17px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Continue</button>'
+    +'<button onclick="verifySciSetupCode()" style="width:100%;padding:16px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:17px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Continue</button>'
     +'<div id="sci-setup-err" style="color:var(--re);font-size:13px;font-weight:600;text-align:center;min-height:18px"></div>';
   document.getElementById('sci-body').innerHTML=html;
 }
@@ -4121,7 +4126,7 @@ function renderSciPinEntry(){
     }).join('')
     +'</div>'
     +'<div id="sci-pin-err" style="color:var(--re);font-size:13px;font-weight:600;text-align:center;min-height:18px"></div>'
-    +'<button onclick="sciForgetDevice()" style="margin-top:12px;background:none;border:none;color:var(--mu);font-size:12px;cursor:pointer;font-family:Inter,sans-serif">Not '+m.first+'? Tap here</button>';
+    +'<button onclick="sciForgetDevice()" style="margin-top:12px;background:none;border:none;color:var(--mu);font-size:12px;cursor:pointer;font-family:-apple-system,sans-serif">Not '+m.first+'? Tap here</button>';
   document.getElementById('sci-body').innerHTML=html;
 }
 
@@ -4200,15 +4205,15 @@ function sciShowCheckin(){
       +'<div><div style="font-size:13px;font-weight:700;color:var(--bld)">🎟 Guest Passes</div>'
       +'<div style="font-size:11px;color:var(--mu)">'+rem+' of '+m.guestsTotal+' remaining</div></div>'
       +'<div style="display:flex;align-items:center;gap:12px">'
-      +'<button onclick="sciAdjGuests(-1)" style="width:44px;height:44px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:22px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif">−</button>'
+      +'<button onclick="sciAdjGuests(-1)" style="width:44px;height:44px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:22px;font-weight:700;cursor:pointer;font-family:-apple-system,sans-serif">−</button>'
       +'<div style="font-size:22px;font-weight:800;color:var(--bld);min-width:24px;text-align:center" id="sci-guests-count">0</div>'
-      +'<button onclick="sciAdjGuests(1)" style="width:44px;height:44px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:22px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif">+</button>'
+      +'<button onclick="sciAdjGuests(1)" style="width:44px;height:44px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:22px;font-weight:700;cursor:pointer;font-family:-apple-system,sans-serif">+</button>'
       +'</div></div>'
       +'<div id="sci-gp-status"></div>'
       +'</div>';
   }
 
-  html+='<button onclick="sciSubmitCheckin(&quot;'+m.id+'&quot;)" style="width:100%;padding:18px;background:var(--or);border:none;color:#fff;border-radius:12px;font-size:18px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;margin-top:4px">✅ Check In</button>';
+  html+='<button onclick="sciSubmitCheckin(&quot;'+m.id+'&quot;)" style="width:100%;padding:18px;background:var(--or);border:none;color:#fff;border-radius:12px;font-size:18px;font-weight:800;font-family:-apple-system,sans-serif;cursor:pointer;margin-top:4px">✅ Check In</button>';
 
   document.getElementById('sci-body').innerHTML=html;
   window._sciGuests=0;
