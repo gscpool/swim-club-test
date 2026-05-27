@@ -547,6 +547,8 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 
 
 
+
+
 var _APP_VERSION="v1.9.1";
 
 // ── SELF CHECK-IN MODE ────────────────────────────────────────────────────────
@@ -3393,7 +3395,7 @@ function openMember(id,ciMode){
       // ── Build checklist ──────────────────────────────────────
       var needsSecondName=getTypeConfig(m.type).requireSecond&&!(m.secFirst||m.secLast);
       var canAddSec=getTypeConfig(m.type).maxAdults>1&&!getTypeConfig(m.type).requireSecond&&!(m.secFirst||m.secLast);
-      var adultsSection='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0 10px;border-bottom:2px solid rgba(255,255,255,.15)">'+'<div><div style="font-size:15px;font-weight:800;color:var(--bld)">Adults</div>'+'<div style="font-size:11px;color:var(--mu);margin-top:1px">Tap each adult who is here today</div></div>'+'<button onclick="selectAllAdults()" style="padding:8px 16px;background:var(--bl);border:none;border-radius:9px;font-size:12px;font-weight:700;color:#fff;font-family:-apple-system,sans-serif;cursor:pointer">Select All Adults</button></div>'+'<span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu)">Adults</span>'+'<button onclick="selectAllAdults()" style="padding:4px 10px;background:var(--bll);border:1.5px solid var(--bl);border-radius:8px;font-size:11px;font-weight:700;color:var(--bl);font-family:-apple-system,sans-serif;cursor:pointer">Select All</button></div><div class="ci-checklist" id="ci-adult-list">';
+      var adultsSection='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0 10px;border-bottom:2px solid rgba(255,255,255,.15)">'+'<div><div style="font-size:15px;font-weight:800;color:var(--bld)">Adults</div>'+'<div style="font-size:11px;color:var(--mu);margin-top:1px">Tap each adult who is here today</div></div>'+'<button onclick="selectAllAdults()" style="padding:8px 16px;background:var(--bl);border:none;border-radius:9px;font-size:12px;font-weight:700;color:#fff;font-family:-apple-system,sans-serif;cursor:pointer">Select All Adults</button></div>'+'<div class="ci-checklist" id="ci-adult-list">';
       // Primary adult
       adultsSection+='<div class="ci-check-item" id="ci-a0" onclick="ciToggle(\'ci-a0\')"><input type="checkbox" id="chk-a0" onchange="ciToggle(\'ci-a0\')"><label for="chk-a0">'+m.first+' '+m.last+' <span style="opacity:.5;font-size:11px">(primary)</span></label></div>';
       // Secondary adult
@@ -3408,7 +3410,7 @@ function openMember(id,ciMode){
       // Children checklist
       var kidsSection='';
       if(kidNames.length||m.type==='Family'||m.type==='Board'||m.type==='Comp'){
-        kidsSection='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0 10px;border-bottom:2px solid rgba(255,255,255,.15);margin-top:10px">'+'<div><div style="font-size:15px;font-weight:800;color:var(--bld)">Children</div>'+'<div style="font-size:11px;color:var(--mu);margin-top:1px">Tap each child who is here today</div></div>'+'<button onclick="selectAllKids()" style="padding:8px 16px;background:var(--bl);border:none;border-radius:9px;font-size:12px;font-weight:700;color:#fff;font-family:-apple-system,sans-serif;cursor:pointer">Select All Children</button></div>'+'<span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu)">Children</span>'+'<button onclick="selectAllKids()" style="padding:4px 10px;background:var(--bll);border:1.5px solid var(--bl);border-radius:8px;font-size:11px;font-weight:700;color:var(--bl);font-family:-apple-system,sans-serif;cursor:pointer">Select All</button></div><div class="ci-checklist" id="ci-kids-list">';
+        kidsSection='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0 10px;border-bottom:2px solid rgba(255,255,255,.15);margin-top:10px">'+'<div><div style="font-size:15px;font-weight:800;color:var(--bld)">Children</div>'+'<div style="font-size:11px;color:var(--mu);margin-top:1px">Tap each child who is here today</div></div>'+'<button onclick="selectAllKids()" style="padding:8px 16px;background:var(--bl);border:none;border-radius:9px;font-size:12px;font-weight:700;color:#fff;font-family:-apple-system,sans-serif;cursor:pointer">Select All Children</button></div>'+'<div class="ci-checklist" id="ci-kids-list">';
         kidNames.forEach(function(k,i){
           kidsSection+='<div class="ci-check-item" id="ci-k'+i+'" onclick="ciToggle(\'ci-k'+i+'\')">'
             +'<input type="checkbox" id="chk-k'+i+'" onchange="ciToggle(\'ci-k'+i+'\')">'
@@ -3448,7 +3450,26 @@ function openMember(id,ciMode){
       +'</div>';
   })()
       }
-      var panelBg='#ffffff'
+      var panelBg='#ffffff';
+      // Status bar
+      var statusBar=m.status==='paid'
+        ?'<div style="background:#dcfce7;border:2px solid #22c55e;border-radius:var(--r-sm);padding:12px 14px;text-align:center;font-size:15px;font-weight:800;color:#166534">&#x2705; PAID &mdash; Good to go!</div>'
+        :m.status==='unpaid'
+          ?'<div style="background:var(--rel);border:2px solid var(--re);border-radius:var(--r-sm);padding:12px 14px;text-align:center;font-size:14px;font-weight:800;color:var(--re)">&#x26A0;&#xFE0F; UNPAID &mdash; Collect payment</div>'
+          :m.status==='pending'
+            ?'<div style="background:var(--aml);border:2px solid var(--am);border-radius:var(--r-sm);padding:12px 14px;text-align:center;font-size:14px;font-weight:800;color:var(--am)">&#x23F3; PENDING &mdash; Follow up on payment</div>'
+            :'';
+      // Assemble the ci-panel
+      html+='<div class="ci-panel" style="background:'+panelBg+'">'
+        +'<div class="ci-title">&#x1F40A; Today\'s Visit</div>'
+        +statusBar
+        +missingBanner
+        +adultsSection
+        +kidsSection
+        +gpSection
+        +'<div id="ci-over-note"></div>'
+        +'<button class="ci-checkin-btn" onclick="processCheckin()">&#x2705; Check In'+(checkedToday?' Again':'')+'</button>'
+        +'</div>';
     }
   }
   if(mv.length){html+='<div><div class="sec-lbl" style="margin-bottom:6px">Recent Visits</div><div class="vlog">'+mv.slice(0,15).map(function(v){var p=[];if(v.adults>0)p.push(v.adults+'A');if(v.children>0)p.push(v.children+'C');if(v.guestPasses>0)p.push('&#x1F3AB;&times;'+v.guestPasses);return'<div class="vitem"><span>'+fmtDate(v.ts)+' '+fmtTime(v.ts)+'</span><span style="color:var(--mu)">'+(p.join(' &middot; ')||'member only')+'</span></div>';}).join('')+'</button></div>';}
@@ -4908,6 +4929,8 @@ document.addEventListener('DOMContentLoaded', function(){
   if(_pill){_pill.style.display='flex';_pill.innerHTML='<div style="width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4)"></div>...';}
   tryInitFirebase();
 });
+
+
 
 
 
