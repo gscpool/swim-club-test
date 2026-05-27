@@ -81,7 +81,7 @@ body{background:var(--sand);color:var(--tx)}
 .ilbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);min-width:72px;padding-top:2px}
 .ival{font-size:13px;color:var(--tx);flex:1}
 .sec-lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--mu)}
-.ci-panel{background:var(--wh);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--sh-lg)}
+.ci-panel{background:#fff;border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:10px;border:1.5px solid var(--sand2)}
 .ci-title{font-size:17px;font-weight:800;color:var(--bld)}
 .ci-row{display:flex;align-items:center;gap:12px;background:var(--sand);border-radius:var(--r-sm);padding:12px 14px;cursor:pointer;-webkit-appearance:none;border:none;width:100%;text-align:left;font-family:-apple-system,'SF Pro Display','Inter',sans-serif}
 .ci-row.checked{background:var(--bll)}
@@ -222,11 +222,12 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 /* ── MEMBER CHECK-IN PANEL ──────────────────────────────────────── */
 .ci-section-lbl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);padding:4px 0 8px;margin-top:2px}
 .ci-checklist{display:flex;flex-direction:column;gap:6px;margin-bottom:4px}
-.ci-check-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--sand);border-radius:var(--r-sm);cursor:pointer;transition:background .1s;-webkit-appearance:none;border:none;width:100%;text-align:left;font-family:-apple-system,sans-serif}
+.ci-check-item.checked{background:var(--grl)!important;border-color:var(--gr)!important}
+.ci-check-item{display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--sand);border-radius:var(--r-sm);cursor:pointer;transition:all .1s;-webkit-appearance:none;border:2px solid transparent;width:100%;text-align:left;font-family:-apple-system,sans-serif}
 .ci-check-item:active{background:var(--sand2)}
 .ci-check-item input[type=checkbox]{width:22px;height:22px;accent-color:var(--or);flex-shrink:0;cursor:pointer}
-.ci-check-item label{font-size:15px;font-weight:600;color:var(--bld);cursor:pointer;flex:1;line-height:1.3}
-.ci-add-btn{display:flex;align-items:center;gap:8px;padding:10px 14px;background:transparent;border:1.5px dashed var(--sand2);border-radius:var(--r-sm);cursor:pointer;color:var(--mu);font-size:13px;font-weight:600;font-family:-apple-system,sans-serif;width:100%;text-align:left;transition:background .1s}
+.ci-check-item label{font-size:16px;font-weight:700;color:var(--bld);cursor:pointer;flex:1;line-height:1.3}
+.ci-add-btn{display:flex;align-items:center;gap:8px;padding:10px 14px;background:transparent;border:2px dashed var(--bl);border-radius:var(--r-sm);cursor:pointer;color:var(--bl);font-size:13px;font-weight:600;font-family:-apple-system,sans-serif;width:100%;text-align:left;transition:background .1s}
 .ci-add-btn:active{background:var(--sand)}
 /* Guest passes row */
 .gp-counter-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
@@ -316,7 +317,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.3.4</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.3.5</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -525,6 +526,9 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script>
+
+
+
 
 
 
@@ -3389,7 +3393,7 @@ function openMember(id,ciMode){
       // ── Build checklist ──────────────────────────────────────
       var needsSecondName=getTypeConfig(m.type).requireSecond&&!(m.secFirst||m.secLast);
       var canAddSec=getTypeConfig(m.type).maxAdults>1&&!getTypeConfig(m.type).requireSecond&&!(m.secFirst||m.secLast);
-      var adultsSection='<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0 6px">'+'<span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu)">Adults</span>'+'<button onclick="selectAllAdults()" style="padding:4px 10px;background:var(--bll);border:1.5px solid var(--bl);border-radius:8px;font-size:11px;font-weight:700;color:var(--bl);font-family:-apple-system,sans-serif;cursor:pointer">Select All</button></div><div class="ci-checklist" id="ci-adult-list">';
+      var adultsSection='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0 10px;border-bottom:2px solid rgba(255,255,255,.15)">'+'<div><div style="font-size:15px;font-weight:800;color:var(--bld)">Adults</div>'+'<div style="font-size:11px;color:var(--mu);margin-top:1px">Tap each adult who is here today</div></div>'+'<button onclick="selectAllAdults()" style="padding:8px 16px;background:var(--bl);border:none;border-radius:9px;font-size:12px;font-weight:700;color:#fff;font-family:-apple-system,sans-serif;cursor:pointer">Select All Adults</button></div>'+'<span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu)">Adults</span>'+'<button onclick="selectAllAdults()" style="padding:4px 10px;background:var(--bll);border:1.5px solid var(--bl);border-radius:8px;font-size:11px;font-weight:700;color:var(--bl);font-family:-apple-system,sans-serif;cursor:pointer">Select All</button></div><div class="ci-checklist" id="ci-adult-list">';
       // Primary adult
       adultsSection+='<div class="ci-check-item" id="ci-a0" onclick="ciToggle(\'ci-a0\')"><input type="checkbox" id="chk-a0" onchange="ciToggle(\'ci-a0\')"><label for="chk-a0">'+m.first+' '+m.last+' <span style="opacity:.5;font-size:11px">(primary)</span></label></div>';
       // Secondary adult
@@ -3404,7 +3408,7 @@ function openMember(id,ciMode){
       // Children checklist
       var kidsSection='';
       if(kidNames.length||m.type==='Family'||m.type==='Board'||m.type==='Comp'){
-        kidsSection='<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0 6px;margin-top:4px">'+'<span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu)">Children</span>'+'<button onclick="selectAllKids()" style="padding:4px 10px;background:var(--bll);border:1.5px solid var(--bl);border-radius:8px;font-size:11px;font-weight:700;color:var(--bl);font-family:-apple-system,sans-serif;cursor:pointer">Select All</button></div><div class="ci-checklist" id="ci-kids-list">';
+        kidsSection='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0 10px;border-bottom:2px solid rgba(255,255,255,.15);margin-top:10px">'+'<div><div style="font-size:15px;font-weight:800;color:var(--bld)">Children</div>'+'<div style="font-size:11px;color:var(--mu);margin-top:1px">Tap each child who is here today</div></div>'+'<button onclick="selectAllKids()" style="padding:8px 16px;background:var(--bl);border:none;border-radius:9px;font-size:12px;font-weight:700;color:#fff;font-family:-apple-system,sans-serif;cursor:pointer">Select All Children</button></div>'+'<span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu)">Children</span>'+'<button onclick="selectAllKids()" style="padding:4px 10px;background:var(--bll);border:1.5px solid var(--bl);border-radius:8px;font-size:11px;font-weight:700;color:var(--bl);font-family:-apple-system,sans-serif;cursor:pointer">Select All</button></div><div class="ci-checklist" id="ci-kids-list">';
         kidNames.forEach(function(k,i){
           kidsSection+='<div class="ci-check-item" id="ci-k'+i+'" onclick="ciToggle(\'ci-k'+i+'\')">'
             +'<input type="checkbox" id="chk-k'+i+'" onchange="ciToggle(\'ci-k'+i+'\')">'
@@ -3444,26 +3448,7 @@ function openMember(id,ciMode){
       +'</div>';
   })()
       }
-      var panelBg=m.status==='paid'
-        ?'linear-gradient(135deg,#064e3b,#065f46)'
-        :(m.status==='unpaid'?'linear-gradient(135deg,#7f1d1d,#991b1b)':'linear-gradient(135deg,#78350f,#92400e)');
-      var statusBar=m.status==='paid'
-        ?'<div style="background:rgba(134,239,172,.2);border:1.5px solid rgba(134,239,172,.4);color:#bbf7d0;font-weight:800;font-size:14px;padding:8px 12px;border-radius:9px;text-align:center">&#x2705; PAID &mdash; Good to go!</div>'
-        :(m.status==='unpaid'
-          ?'<div style="background:rgba(254,202,202,.2);border:1.5px solid rgba(254,202,202,.4);color:#fecaca;font-weight:800;font-size:14px;padding:8px 12px;border-radius:9px;text-align:center">&#x1F6AB; UNPAID &mdash; Payment required</div>'
-          :'<div style="background:rgba(253,230,138,.2);border:1.5px solid rgba(253,230,138,.4);color:#fde68a;font-weight:800;font-size:14px;padding:8px 12px;border-radius:9px;text-align:center">&#x23F3; PENDING &mdash; Follow up on payment</div>');
-      html+='<div class="ci-panel" style="background:'+panelBg+'">'
-        +'<div class="ci-title">&#x1F40A; Today\'s Visit</div>'
-        +missingBanner
-        +statusBar
-        +(checkedToday?'<div class="ci-already">&#x2713; Already checked in today</div>':'')
-        +unpaidWarn
-        +adultsSection
-        +kidsSection
-        +gpSection
-        +'<div id="ci-over-note"></div>'
-        
-        +'<button class="ci-checkin-btn" onclick="processCheckin()">&#x2705; Check In'+(checkedToday?' Again':'')+'</button></div>';
+      var panelBg='#ffffff'
     }
   }
   if(mv.length){html+='<div><div class="sec-lbl" style="margin-bottom:6px">Recent Visits</div><div class="vlog">'+mv.slice(0,15).map(function(v){var p=[];if(v.adults>0)p.push(v.adults+'A');if(v.children>0)p.push(v.children+'C');if(v.guestPasses>0)p.push('&#x1F3AB;&times;'+v.guestPasses);return'<div class="vitem"><span>'+fmtDate(v.ts)+' '+fmtTime(v.ts)+'</span><span style="color:var(--mu)">'+(p.join(' &middot; ')||'member only')+'</span></div>';}).join('')+'</button></div>';}
@@ -4923,6 +4908,9 @@ document.addEventListener('DOMContentLoaded', function(){
   if(_pill){_pill.style.display='flex';_pill.innerHTML='<div style="width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4)"></div>...';}
   tryInitFirebase();
 });
+
+
+
 
 
 
