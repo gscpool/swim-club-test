@@ -48,9 +48,9 @@ body{background:var(--sand);color:var(--tx)}
 .rlist{display:flex;flex-direction:column;gap:8px;padding:10px;flex:1;overflow-y:auto}
 .mcard{background:var(--wh);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);display:flex;align-items:center;gap:12px;cursor:pointer;transition:transform .12s;border-left:4px solid var(--bll);border:none;border-left:4px solid var(--bll);-webkit-appearance:none;appearance:none}
 .mcard:active{transform:scale(.97);box-shadow:none}
-#pane-ci .mcard{padding:16px 14px;min-height:72px}
-#pane-ci .mname{font-size:18px}
-#pane-ci .mmeta{font-size:12px}
+#pane-ci .mcard{padding:12px 14px;min-height:60px}
+#pane-ci .mname{font-size:16px}
+#pane-ci .mmeta{font-size:11px}
 .mavatar{width:40px;height:40px;border-radius:50%;background:var(--bld);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0}
 .minfo{flex:1;min-width:0}
 .mname{font-size:16px;font-weight:700;color:var(--bld);letter-spacing:-.2px}
@@ -186,9 +186,10 @@ body{background:var(--sand);color:var(--tx)}
 #announce-bar{background:var(--or);padding:10px 14px;display:flex;align-items:center;gap:10px;flex:0 0 auto;width:100%;z-index:10;max-height:44px;overflow:hidden}
 .announce-text{font-size:14px;font-weight:600;color:#fff;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;line-height:1.3;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* CHECK-IN TAB */
-.ci-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--mu);padding:10px 13px 5px;background:var(--sand);flex-shrink:0}
-.ci-alpha-row{display:flex;flex-wrap:wrap;gap:7px;padding:10px 13px 12px;background:var(--sand);border-bottom:1px solid var(--sand2);justify-content:center;align-content:center;flex-shrink:0}
-.ci-alpha-btn{min-width:44px;height:44px;min-height:44px;padding:0 8px;border-radius:10px;border:2px solid var(--sand2);background:#fff;font-size:16px;font-weight:700;color:var(--bl);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.ci-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mu);padding:6px 13px 4px;background:var(--sand);flex-shrink:0}
+.ci-alpha-row::-webkit-scrollbar{display:none}
+.ci-alpha-row{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;padding:8px 13px;background:var(--sand);border-bottom:1px solid var(--sand2);flex-shrink:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
+.ci-alpha-btn{min-width:38px;width:38px;height:38px;min-height:38px;padding:0;border-radius:9px;border:1.5px solid var(--sand2);background:#fff;font-size:14px;font-weight:700;color:var(--bl);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;box-shadow:0 1px 3px rgba(0,0,0,.06);flex-shrink:0}
 .ci-alpha-btn.on{background:var(--or);border-color:var(--or);color:#fff;box-shadow:0 2px 8px rgba(250,70,22,.3)}
 .ci-alpha-btn:active{transform:scale(.93)}
 .predict-card{background:#fff;border-radius:var(--r);padding:14px 13px;box-shadow:var(--sh);display:flex;align-items:center;gap:10px;cursor:pointer;border-left:4px solid var(--or);transition:transform .1s;min-height:60px}
@@ -240,6 +241,40 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 /* Already checked in */
 .ci-already{background:var(--grl);color:var(--gr);font-size:13px;font-weight:700;padding:10px 14px;border-radius:var(--r-sm);text-align:center;border:1.5px solid var(--gr)}
 
+
+/* Status badges */
+.b-paid{background:#dcfce7;color:#166534;border:1.5px solid #86efac}
+.b-unpaid{background:#fee2e2;color:#991b1b;border:1.5px solid #fca5a5}
+.b-pending{background:#fef3c7;color:#92400e;border:1.5px solid #fcd34d}
+.b-inactive{background:#f3f4f6;color:#6b7280;border:1.5px solid #d1d5db}
+.b-terminated{background:#fee2e2;color:#7f1d1d;border:1.5px solid #f87171}
+/* Type badges */
+.b-family{background:var(--bll);color:var(--bl)}
+.b-ind{background:var(--aml);color:var(--am)}
+.b-couples{background:var(--pul);color:var(--pu)}
+.b-boardtype{background:var(--orl);color:var(--ord)}
+.b-comptype{background:var(--sand2);color:var(--mu)}
+/* Card left border by status */
+.st-paid{border-left:4px solid #22c55e !important}
+.st-unpaid{border-left:4px solid #ef4444 !important}
+.st-pending{border-left:4px solid #f59e0b !important}
+.st-inactive{border-left:4px solid #9ca3af !important}
+.st-terminated{border-left:4px solid #dc2626 !important}
+.st-board{border-left:4px solid var(--or) !important}
+.st-comp{border-left:4px solid var(--mu) !important}
+
+
+/* Directory filter buttons */
+.filter-group{display:flex;flex-direction:column;gap:4px;width:100%}
+.filter-group-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);padding:0 2px}
+.filter-row{display:flex;gap:5px;flex-wrap:wrap}
+.fbtn{padding:6px 12px;border-radius:20px;border:1.5px solid var(--sand2);background:var(--wh);font-size:12px;font-weight:600;color:var(--mu);cursor:pointer;font-family:-apple-system,sans-serif;transition:all .12s;white-space:nowrap}
+.fbtn:active{transform:scale(.95)}
+.fbtn.on{border-color:var(--bl);background:var(--bl);color:var(--wh)}
+.fbtn.on-paid{border-color:#22c55e;background:#22c55e;color:#fff}
+.fbtn.on-unpaid{border-color:#ef4444;background:#ef4444;color:#fff}
+.fbtn.on-pending{border-color:#f59e0b;background:#f59e0b;color:#fff}
+
 </style>
 </head>
 <body>
@@ -281,7 +316,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.1.3</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.3.4</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -304,7 +339,8 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 
   <!-- CHECK-IN PANE -->
   <div id="pane-ci" class="pane on">
-    <div class="ci-section-title" id="ci-ln-label">Step 1 — Tap member's last name initial</div>
+    <div id="ci-breadcrumb" style="display:none;padding:6px 13px;background:var(--bld);display:flex;align-items:center;gap:8px;flex-shrink:0"></div>
+    <div class="ci-section-title" id="ci-ln-label">Tap last name initial</div>
     <div class="ci-alpha-row" id="ci-ln-strip"></div>
     <div id="ci-fn-section" style="display:none">
       <div class="ci-section-title" id="ci-fn-label">Step 2 — First name (last name: ?)</div>
@@ -317,7 +353,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
   <div id="pane-dir" class="pane">
     <div class="sbar" style="display:none"><input class="sinput" id="dir-search" type="text" placeholder="Search..." oninput="renderDir()" autocomplete="off"></div>
     <div style="padding:8px 13px 0;background:var(--sand)">
-      <div id="dir-filter-strip" style="display:flex;gap:6px;flex-wrap:wrap;padding-bottom:8px"></div>
+      <div id="dir-filter-btns" style="display:flex;gap:6px;flex-wrap:wrap;padding-bottom:8px"></div>
     </div>
     <div id="dir-alpha-strip" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 13px 10px;justify-content:center;align-content:center;background:var(--sand);border-bottom:1px solid var(--sand2);flex-shrink:0"></div>
     <div class="rlist" id="dir-list"></div>
@@ -445,6 +481,41 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
     </div>
   </div>
 
+
+  <!-- CSV IMPORT OVERLAY -->
+  <div class="overlay" id="csv-overlay" onclick="if(event.target===this)closeCSV()">
+    <div class="sheet" style="max-height:85vh;overflow-y:auto">
+      <div class="sheet-handle"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font-size:18px;font-weight:800;color:var(--bld)">Import Members</div>
+        <button class="mclose" onclick="closeCSV()">✕</button>
+      </div>
+      <div id="csv-body"></div>
+    </div>
+  </div>
+
+
+  <!-- DEDUP OVERLAY -->
+  <div class="overlay" id="dedup-overlay" onclick="if(event.target===this)closeDedupModal()">
+    <div class="sheet" style="max-height:90vh;overflow-y:auto">
+      <div class="sheet-handle"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font-size:18px;font-weight:800;color:var(--bld)">🔍 Find Duplicates</div>
+        <button class="mclose" onclick="closeDedupModal()">✕</button>
+      </div>
+      <div id="dedup-body"></div>
+    </div>
+  </div>
+
+
+  <!-- GUEST PASS OVERLAY -->
+  <div class="overlay" id="gp-overlay" onclick="if(event.target===this)closeGP()">
+    <div class="sheet" style="max-height:70vh">
+      <div class="sheet-handle"></div>
+      <div id="gp-body"></div>
+    </div>
+  </div>
+
 </div><!-- end #app -->
 
 <!-- Firebase SDK -->
@@ -455,7 +526,24 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 
 <script>
 
-var _APP_VERSION="v2.1.3";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var _APP_VERSION="v1.9.1";
 
 // ── SELF CHECK-IN MODE ────────────────────────────────────────────────────────
 var SELF_CI_MODE = window.location.search.indexOf('selfcheckin=true') >= 0;
@@ -546,10 +634,10 @@ var db=null,fbReady=false;
         }
       }
       rebuildFromConfig();
-      var _tl=document.getElementById('topbar-date');if(_tl)_tl.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}).toUpperCase();
+      var _tl=document.getElementById('topbar-date')||document.getElementById('today-lbl');if(_tl)_tl.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}).toUpperCase();
+      initPin();
       if(!SCI_MODE&&!APPLY_MODE){updateUIForRole();renderAll();}
       if(APPLY_MODE){initApplyMode();}
-  initLayout();
       if(!APPLY_MODE&&!SCI_MODE){loadApplications();}
       renderAnnouncement();
       checkRenewalExpiry();
@@ -566,10 +654,10 @@ var db=null,fbReady=false;
       });
     }).catch(function(){
       rebuildFromConfig();
-      var _tl=document.getElementById('topbar-date');if(_tl)_tl.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}).toUpperCase();
+      var _tl=document.getElementById('topbar-date')||document.getElementById('today-lbl');if(_tl)_tl.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}).toUpperCase();
+      initPin();
       if(!SCI_MODE&&!APPLY_MODE){updateUIForRole();renderAll();}
       if(APPLY_MODE){initApplyMode();}
-  initLayout();
       if(!APPLY_MODE&&!SCI_MODE){loadApplications();}
       renderAnnouncement();
       checkRenewalExpiry();
@@ -593,7 +681,7 @@ var db=null,fbReady=false;
 })();
 
 function bootLocal(){
-  document.getElementById('setup-banner').classList.add('show');
+  var _sb2=document.getElementById('setup-banner');if(_sb2)_sb2.classList.add('show');
   setSyncPill('offline');
   try{var saved=JSON.parse(localStorage.getItem('gsc_config'));if(saved){CONFIG=Object.assign({},DEFAULT_CONFIG,saved);if(!CONFIG.membershipTypes||!CONFIG.membershipTypes.length)CONFIG.membershipTypes=DEFAULT_CONFIG.membershipTypes;}}catch(e){}
   rebuildFromConfig();
@@ -618,7 +706,7 @@ function setSyncPill(state){
 (function boot(){
   // Firebase or local boot handles initialization
   // Just set up the date label if already in DOM
-  var lbl=document.getElementById('today-lbl');
+  var lbl=document.getElementById('topbar-date')||document.getElementById('today-lbl');
   if(lbl) lbl.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
 })();
 
@@ -725,7 +813,7 @@ function openMissModal(memberId){
   _missSteps=buildMissSteps(m);
   if(!_missSteps.length){openMember(memberId,true);return;}
   document.getElementById('miss-member-name').textContent=m.first+' '+m.last;
-  var _mso=document.getElementById('miss-overlay');if(_mso){_mso.style.display='flex';_mso.classList.add('open');}
+  document.getElementById('miss-overlay').style.display='flex';
   renderMissStep();
 }
 
@@ -895,12 +983,9 @@ function getVisitCount(memberId){
 }
 
 function canQuickCheckIn(m){
-  // Quick check-in only if: paid, roster confirmed, all names on file, no missing fields
   if(m.status!=='paid') return false;
-  if(m.rosterConfirmed!==true) return false;
-  if(!m.first||!m.last||!m.email||!m.phone||!m.street) return false;
-  var tc=getTypeConfig(m.type);
-  if(tc.requireSecond&&!(m.secFirst||m.secLast)) return false;
+  if(hasCriticalMissing(m)) return false;
+  if(!m.rosterConfirmed) return false;
   return true;
 }
 
@@ -921,8 +1006,8 @@ function quickCheckIn(memberId, event){
     guestPasses:0,passesPurchased:0,whileUnpaid:false};
   saveVisit(v);
   showSuccessFlash(m.first+' '+m.last, adults.concat(kidNames).join(', '));
-  // Play chime
   playChime();
+  setTimeout(function(){ciLastAlpha='';ciFirstAlpha='';ciGuests=0;closeMM();switchTab('ci');renderCI();},1800);
 }
 
 function showSuccessFlash(name, members){
@@ -958,38 +1043,53 @@ function playChime(){
 var miMemberId=null, miStep=0, miSteps=[], miData={};
 
 function getMissingSteps(m){
-  var steps=[];
-  var tc=getTypeConfig(m.type);
-  // 1. Contact info - any missing field
-  var needsContact=!m.email||!m.phone||!m.street||!m.city||!m.state||!m.zip;
-  // 2. Roster not yet confirmed this season (covers adults + children for eligible types)
-  var rosterDone=m.rosterConfirmed===true;
-  var needsAdults=!rosterDone&&tc.maxAdults>1;
-  var needsKids=!rosterDone&&tc.allowChildren;
-  // 3. Second adult - required by type with no name on file
-  var needsSec=tc.requireSecond&&!(m.secFirst&&m.secLast);
-  // 4. Second adult optional - chose 2 adults but no name
-  var needsSecOptional=!tc.requireSecond&&tc.maxAdults>1&&m.adults===2&&!(m.secFirst&&m.secLast);
-  if(needsContact) steps.push('contact');
-  if(needsAdults) steps.push('adults');
-  if(needsSec||needsSecOptional) steps.push('second-adult');
-  if(needsKids) steps.push('children');
-  return steps;
+  var tc=getTypeConfig(m.type||'Family');
+  var missing=[];
+  if(!m.email||!m.email.trim()) missing.push({key:'email',label:'Email address'});
+  if(!m.phone||!m.phone.trim()) missing.push({key:'phone',label:'Phone number'});
+  if(!m.street||!m.street.trim()) missing.push({key:'address',label:'Street address'});
+  if(!m.city||!m.city.trim()) missing.push({key:'city',label:'City'});
+  if(!m.zip||!m.zip.trim()) missing.push({key:'zip',label:'ZIP code'});
+  var needsSec=tc.maxAdults>1&&(m.type==='Couples'||m.adults>=2)&&(!(m.secFirst&&m.secFirst.trim())||!(m.secLast&&m.secLast.trim()));
+  if(needsSec) missing.push({key:'second-adult',label:'Second adult name'});
+  var kidsNamed=(Array.isArray(m.kids)&&m.kids.filter(function(k){return k&&k.trim();}).length>0)||(typeof m.kids==='string'&&m.kids.replace(/[|]/g,'').trim().length>0);
+  if(tc.allowChildren&&(m.children>0||m.type==='Family'||m.type==='Board')&&!kidsNamed) missing.push({key:'kids',label:'Children names'});
+  return missing;
+}
+
+function hasCriticalMissing(m){
+  return getMissingSteps(m).length>0;
 }
 
 function openMissingInfo(memberId){
   var m=members.find(function(x){return x.id===memberId;}); if(!m) return;
-  // Inject the missing info form directly into the ci-panel
   var panel=document.querySelector('.ci-panel');
-  if(!panel) return;
-  panel.innerHTML=buildInlineMissingForm(m);
+  if(panel){
+    panel.innerHTML=buildInlineMissingForm(m);
+  } else {
+    // Panel not yet open - open member first with form mode
+    openMemberPanel(memberId,true,true);
+  }
+}
+
+function openMemberPanel(id,ciMode,missingMode){
+  // Open mm-overlay then inject form
+  var ov=document.getElementById('mm-overlay');
+  if(ov){ov.style.display='flex';ov.classList.add('open');}
+  var m=members.find(function(x){return x.id===id;}); if(!m) return;
+  // Build a minimal panel container
+  var body=document.getElementById('mm-body');
+  if(!body) return;
+  if(missingMode){
+    body.innerHTML='<div class="ci-panel">'+buildInlineMissingForm(m)+'</div>';
+  }
 }
 
 function buildInlineMissingForm(m){
   var tc=getTypeConfig(m.type);
   var html='<div style="display:flex;flex-direction:column;gap:12px">';
-  html+='<div style="font-size:16px;font-weight:800;color:#fff">&#x26A0;&#xFE0F; Complete Member Info</div>';
-  html+='<div style="font-size:12px;color:rgba(255,255,255,.7)">This information is required before checking in. It will be saved permanently.</div>';
+  html+='<div style="font-size:16px;font-weight:800;color:var(--bld)">&#x26A0;&#xFE0F; Complete Member Info</div>';
+  html+='<div style="font-size:12px;color:var(--mu)">This information is required before checking in. It will be saved permanently.</div>';
 
   // Contact fields
   var needsContact=!m.email||!m.phone||!m.street||!m.city||!m.state||!m.zip;
@@ -1011,8 +1111,8 @@ function buildInlineMissingForm(m){
   if(tc.maxAdults>1){
     html+='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.5)">Household — Adults</div>';
     html+='<div style="display:flex;gap:8px">';
-    html+='<button id="ilf-a1" onclick="ilfSelectAdults(1)" style="flex:1;padding:14px;border-radius:10px;font-size:16px;font-weight:800;font-family:-apple-system,sans-serif;cursor:pointer;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff">1 Adult</button>';
-    html+='<button id="ilf-a2" onclick="ilfSelectAdults(2)" style="flex:1;padding:14px;border-radius:10px;font-size:16px;font-weight:800;font-family:-apple-system,sans-serif;cursor:pointer;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff">2 Adults</button>';
+    html+='<button id="ilf-a1" onclick="ilfSelectAdults(1)" style="flex:1;padding:14px;border-radius:10px;font-size:16px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff">1 Adult</button>';
+    html+='<button id="ilf-a2" onclick="ilfSelectAdults(2)" style="flex:1;padding:14px;border-radius:10px;font-size:16px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff">2 Adults</button>';
     html+='</div>';
     html+='<div id="ilf-sec-fields" style="display:none;flex-direction:column;gap:8px">';
     html+='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.5)">Second Adult Name</div>';
@@ -1033,11 +1133,11 @@ function buildInlineMissingForm(m){
       html+='<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><input class="fi ilf-kid" value="'+k+'" placeholder="Child name" style="flex:1"><button onclick="this.parentElement.remove()" style="background:var(--rel);border:none;color:var(--re);width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:16px;flex-shrink:0">&#x2715;</button></div>';
     });
     html+='</div>';
-    html+='<button onclick="ilfAddKid()" style="width:100%;padding:10px;background:rgba(255,255,255,.1);border:1.5px dashed rgba(255,255,255,.3);border-radius:9px;color:rgba(255,255,255,.7);font-size:13px;font-weight:600;font-family:-apple-system,sans-serif;cursor:pointer">&#xFF0B; Add Child</button>';
+    html+='<button onclick="ilfAddKid()" style="width:100%;padding:10px;background:rgba(255,255,255,.1);border:1.5px dashed rgba(255,255,255,.3);border-radius:9px;color:rgba(255,255,255,.7);font-size:13px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">&#xFF0B; Add Child</button>';
   }
 
   // Save button
-  html+='<button onclick="ilfSave(\''+m.id+'\')" style="width:100%;padding:15px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:17px;font-weight:800;font-family:-apple-system,sans-serif;cursor:pointer;margin-top:4px">&#x2713; Save &amp; Continue to Check-In</button>';
+  html+='<button onclick="ilfSave(\''+m.id+'\')" style="width:100%;padding:15px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:17px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;margin-top:4px">&#x2713; Save &amp; Continue to Check-In</button>';
   html+='</div>';
   return html;
 }
@@ -1048,8 +1148,8 @@ function ilfSelectAdults(n){
   var b1=document.getElementById('ilf-a1');
   var b2=document.getElementById('ilf-a2');
   var sec=document.getElementById('ilf-sec-fields');
-  if(b1) b1.style.cssText='flex:1;padding:14px;border-radius:10px;font-size:16px;font-weight:800;font-family:-apple-system,sans-serif;cursor:pointer;border:2px solid '+(n===1?'var(--or)':'rgba(255,255,255,.3)')+';background:'+(n===1?'var(--or)':'rgba(255,255,255,.1)')+';color:#fff';
-  if(b2) b2.style.cssText='flex:1;padding:14px;border-radius:10px;font-size:16px;font-weight:800;font-family:-apple-system,sans-serif;cursor:pointer;border:2px solid '+(n===2?'var(--or)':'rgba(255,255,255,.3)')+';background:'+(n===2?'var(--or)':'rgba(255,255,255,.1)')+';color:#fff';
+  if(b1) b1.style.cssText='flex:1;padding:14px;border-radius:10px;font-size:16px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;border:2px solid '+(n===1?'var(--or)':'rgba(255,255,255,.3)')+';background:'+(n===1?'var(--or)':'rgba(255,255,255,.1)')+';color:#fff';
+  if(b2) b2.style.cssText='flex:1;padding:14px;border-radius:10px;font-size:16px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;border:2px solid '+(n===2?'var(--or)':'rgba(255,255,255,.3)')+';background:'+(n===2?'var(--or)':'rgba(255,255,255,.1)')+';color:#fff';
   if(sec) sec.style.display=n===2?'flex':'none';
 }
 
@@ -1179,8 +1279,8 @@ function miSelectAdults(n){
   // Update button styles
   var b1=document.getElementById('mi-a1');
   var b2=document.getElementById('mi-a2');
-  if(b1) b1.style.cssText='flex:1;font-size:18px;font-weight:800;padding:18px;width:100%;border-radius:11px;cursor:pointer;font-family:-apple-system,sans-serif;'+(n===1?'background:var(--or);color:#fff;border:2px solid var(--or)':'background:var(--sand);color:var(--tx);border:2px solid var(--sand2)');
-  if(b2) b2.style.cssText='flex:1;font-size:18px;font-weight:800;padding:18px;width:100%;border-radius:11px;cursor:pointer;font-family:-apple-system,sans-serif;'+(n===2?'background:var(--or);color:#fff;border:2px solid var(--or)':'background:var(--sand);color:var(--tx);border:2px solid var(--sand2)');
+  if(b1) b1.style.cssText='flex:1;font-size:18px;font-weight:800;padding:18px;width:100%;border-radius:11px;cursor:pointer;font-family:Inter,sans-serif;'+(n===1?'background:var(--or);color:#fff;border:2px solid var(--or)':'background:var(--sand);color:var(--tx);border:2px solid var(--sand2)');
+  if(b2) b2.style.cssText='flex:1;font-size:18px;font-weight:800;padding:18px;width:100%;border-radius:11px;cursor:pointer;font-family:Inter,sans-serif;'+(n===2?'background:var(--or);color:#fff;border:2px solid var(--or)':'background:var(--sand);color:var(--tx);border:2px solid var(--sand2)');
   // If 2 adults selected, ensure second-adult step is in the list
   if(n===2&&miSteps.indexOf('second-adult')===-1){
     var ci=miSteps.indexOf('adults');
@@ -1270,7 +1370,7 @@ function miNext(){
     // Update local members array immediately so getMissingSteps won't loop
     var localIdx=members.findIndex(function(x){return x.id===miMemberId;});
     if(localIdx>=0) members[localIdx]=Object.assign({},members[localIdx],miData);
-    var _mc=document.getElementById('mi-overlay');_mc.style.display='none';_mc.classList.remove('open');
+    document.getElementById('mi-overlay').style.display='none';
     showToast('Member info saved ✓','ok');
     // Short delay to let Firebase sync, then proceed
     setTimeout(function(){
@@ -1341,7 +1441,7 @@ var DEFAULT_PERMISSIONS={
   },
   attendant:{
     canCheckin:true,canEditMembers:false,canChangePayment:false,
-    canAddDeleteMembers:false,canImportExport:false,canViewReports:true,
+    canAddDeleteMembers:false,canImportExport:false,canViewReports:false,
     canViewIncidents:false,canFileIncidents:true,canVoteApplications:false,
     canViewApplications:false,canManageAnnouncements:false,canAccessSettings:false,
     canManageUsers:false
@@ -1353,7 +1453,7 @@ var inactivityTimer=null;
 var INACTIVITY_MINUTES=5; // configurable
 
 function can(permission){
-  // Master admin can do everything
+  // Master admin bypasses ALL permission checks
   if(isMasterAdmin()) return true;
   if(!currentUser) return DEFAULT_PERMISSIONS.attendant[permission]||false;
   var perms=currentUser.permissions||DEFAULT_PERMISSIONS[currentUser.roleType]||DEFAULT_PERMISSIONS.attendant;
@@ -1455,10 +1555,10 @@ function updateUIForRole(){
   if(loginIcon) loginIcon.textContent=isLoggedIn()?'🔓':'🔒';
   if(loginDisp) loginDisp.textContent=isLoggedIn()?currentUser.displayName:'';
   // FAB for adding members - only if permitted
-  // FAB visibility managed by switchTab - just update class state
   var fab=document.getElementById('fab');
-  if(fab) fab.classList.toggle('show',
-    can('canAddDeleteMembers') && document.getElementById('pane-dir').classList.contains('on'));
+  if(fab){
+    if(!can('canAddDeleteMembers')) fab.style.display='none';
+  }
   // Incident FAB
   var incFab=document.getElementById('inc-fab');
   // Incidents tab - always visible (attendants can file, logged-in users can view)
@@ -1469,7 +1569,7 @@ function updateUIForRole(){
   if(tbApp) tbApp.style.display=(isLoggedIn()&&can('canViewApplications'))?'':'none';
   // Reports tab
   var tbRep=document.getElementById('tb-rep');
-  if(tbRep) tbRep.style.display=can('canViewReports')?'':'none'; // attendants see reports by default
+  if(tbRep) tbRep.style.display=can('canViewReports')?'':'none';
 }
 
 function resetInactivityTimer(){
@@ -1551,7 +1651,7 @@ function sciShowSetup() {
   body.innerHTML = '<div class="sci-title">First Time Setup</div>'
     + '<div class="sci-sub2">Enter the 6-digit setup code provided by the attendant at the gate.</div>'
     + '<div class="fg"><label class="fl">Setup Code</label><input class="fi" id="sci-setup-inp" type="tel" maxlength="6" placeholder="••••••" style="font-size:24px;text-align:center;letter-spacing:8px" oninput="this.value=this.value.replace(/\D/g,\'\')"></div>'
-    + '<button onclick="sciVerifySetupCode()" style="width:100%;padding:14px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:16px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Continue</button>';
+    + '<button onclick="sciVerifySetupCode()" style="width:100%;padding:14px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:16px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Continue</button>';
 }
 
 function sciVerifySetupCode() {
@@ -1582,7 +1682,7 @@ function sciShowCreatePin(isReset) {
     + '<div class="sci-sub2">Choose a 6-digit PIN you will use every visit.</div>'
     + '<div class="sci-pin-display" id="sci-dots">' + sciRenderDots(0) + '</div>'
     + sciNumpad('sciEnterCreatePin')
-    + '<button onclick="sciClearPin()" style="background:none;border:none;color:var(--mu);font-size:13px;font-family:-apple-system,sans-serif;cursor:pointer;padding:4px">Clear</button>';
+    + '<button onclick="sciClearPin()" style="background:none;border:none;color:var(--mu);font-size:13px;font-family:Inter,sans-serif;cursor:pointer;padding:4px">Clear</button>';
 }
 
 function sciEnterCreatePin(n) {
@@ -1602,7 +1702,7 @@ function sciShowConfirmPin(firstPin) {
     + '<div class="sci-sub2">Enter your PIN again to confirm.</div>'
     + '<div class="sci-pin-display" id="sci-dots">' + sciRenderDots(0) + '</div>'
     + sciNumpad('sciEnterConfirmPin')
-    + '<button onclick="sciShowCreatePin()" style="background:none;border:none;color:var(--mu);font-size:13px;font-family:-apple-system,sans-serif;cursor:pointer;padding:4px">Back</button>';
+    + '<button onclick="sciShowCreatePin()" style="background:none;border:none;color:var(--mu);font-size:13px;font-family:Inter,sans-serif;cursor:pointer;padding:4px">Back</button>';
   window._sciFirstPin = firstPin;
 }
 
@@ -1649,8 +1749,8 @@ function sciShowPinEntry() {
     + '<div class="sci-pin-display" id="sci-dots">' + sciRenderDots(0) + '</div>'
     + sciNumpad('sciEnterPin')
     + '<div style="display:flex;justify-content:center;gap:16px;margin-top:4px">'
-    + '<button onclick="sciClearPin()" style="background:none;border:none;color:var(--mu);font-size:13px;font-family:-apple-system,sans-serif;cursor:pointer;padding:4px">Clear</button>'
-    + '<button onclick="sciForgetDevice()" style="background:none;border:none;color:var(--mu);font-size:13px;font-family:-apple-system,sans-serif;cursor:pointer;padding:4px">Not you?</button>'
+    + '<button onclick="sciClearPin()" style="background:none;border:none;color:var(--mu);font-size:13px;font-family:Inter,sans-serif;cursor:pointer;padding:4px">Clear</button>'
+    + '<button onclick="sciForgetDevice()" style="background:none;border:none;color:var(--mu);font-size:13px;font-family:Inter,sans-serif;cursor:pointer;padding:4px">Not you?</button>'
     + '</div>';
 }
 
@@ -1721,11 +1821,11 @@ function sciShowCheckin() {
     + '<div><div style="font-size:13px;font-weight:700;color:var(--bld)">Guest Passes</div>'
     + '<div style="font-size:11px;color:var(--mu)">' + rem + ' remaining</div></div>'
     + '<div style="display:flex;align-items:center;gap:12px">'
-    + '<button onclick="sciAdjGuests(-1)" style="width:36px;height:36px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:20px;font-weight:700;cursor:pointer;font-family:-apple-system,sans-serif">-</button>'
+    + '<button onclick="sciAdjGuests(-1)" style="width:36px;height:36px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:20px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif">-</button>'
     + '<span id="sci-guests" style="font-size:20px;font-weight:800;min-width:24px;text-align:center">0</span>'
-    + '<button onclick="sciAdjGuests(1)" style="width:36px;height:36px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:20px;font-weight:700;cursor:pointer;font-family:-apple-system,sans-serif">+</button>'
+    + '<button onclick="sciAdjGuests(1)" style="width:36px;height:36px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:20px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif">+</button>'
     + '</div></div></div>';
-  html += '<button onclick="sciSubmitCheckin()" style="width:100%;padding:16px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:18px;font-weight:800;font-family:-apple-system,sans-serif;cursor:pointer">Check In</button>';
+  html += '<button onclick="sciSubmitCheckin()" style="width:100%;padding:16px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:18px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer">Check In</button>';
   body.innerHTML = html;
   window._sciGuestRem = rem;
 }
@@ -1737,7 +1837,7 @@ function sciAdjGuests(d) {
   if (_sciGuests > rem) {
     document.getElementById('sci-body').innerHTML = '<div class="sci-title" style="color:var(--am)">No Passes Remaining</div>'
       + '<div class="sci-sub2">You have no guest passes left. Please see the attendant for assistance.</div>'
-      + '<button onclick="sciShowCheckin()" style="width:100%;padding:14px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--tx)">Back</button>';
+      + '<button onclick="sciShowCheckin()" style="width:100%;padding:14px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--tx)">Back</button>';
     return;
   }
   var el = document.getElementById('sci-guests');
@@ -1915,7 +2015,7 @@ function renderApplyForm(){
     +'<div style="font-size:15px;font-weight:800;color:var(--bld);margin-bottom:8px">Access Code Required</div>'
     +'<div style="font-size:13px;color:var(--mu);margin-bottom:12px">Please enter the access code provided by a current member or the club.</div>'
     +'<div class="fg"><label class="fl">Access Code</label><input class="fi" id="apply-code" placeholder="Enter code" autocapitalize="none" autocorrect="off"></div>'
-    +'<button onclick="verifyApplyCode()" style="width:100%;padding:14px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:16px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;margin-top:8px">Continue</button>'
+    +'<button onclick="verifyApplyCode()" style="width:100%;padding:14px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:16px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;margin-top:8px">Continue</button>'
     +'</div></div>';
 }
 
@@ -1925,41 +2025,6 @@ function verifyApplyCode(){
     showApplyError('Invalid access code. Please check with your referring member.');
     return;
   }
-  renderApplyTypeSelect();
-}
-
-function renderApplyTypeSelect(){
-  var body=document.getElementById('apply-body'); if(!body) return;
-  var types=[
-    {key:'Individual',label:'Individual',icon:'🧑',desc:'Just you. One adult member.',adults:1,children:false},
-    {key:'Couples',label:'Couples',icon:'👫',desc:'Two adults. No children.',adults:2,children:false},
-    {key:'Family',label:'Family',icon:'👨‍👩‍👧‍👦',desc:'One or two adults plus children living in your household.',adults:2,children:true},
-  ];
-  body.innerHTML='<div style="display:flex;flex-direction:column;gap:12px">'
-    +'<div style="background:#fff;border-radius:12px;padding:16px">'
-    +'<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--or);margin-bottom:12px">Select Membership Type</div>'
-    +'<div style="font-size:13px;color:var(--mu);margin-bottom:14px">Choose the membership type that best fits your household.</div>'
-    +'<div style="display:flex;flex-direction:column;gap:10px">'
-    +types.map(function(t){
-      return'<button data-type="'+t.key+'" onclick="selectApplyType(this.dataset.type)" style="width:100%;padding:16px;background:'+(applyData.mtype===t.key?'var(--bld)':'var(--sand)')+';border:2px solid '+(applyData.mtype===t.key?'var(--bld)':'var(--sand2)')+';border-radius:12px;cursor:pointer;text-align:left;font-family:-apple-system,sans-serif;transition:all .15s">'
-        +'<div style="display:flex;align-items:center;gap:12px">'
-        +'<div style="font-size:28px">'+t.icon+'</div>'
-        +'<div><div style="font-size:16px;font-weight:800;color:'+(applyData.mtype===t.key?'#fff':'var(--bld)')+'">'+t.label+'</div>'
-        +'<div style="font-size:12px;color:'+(applyData.mtype===t.key?'rgba(255,255,255,.7)':'var(--mu)')+'">'+t.desc+'</div></div>'
-        +'</div></button>';
-    }).join('')
-    +'</div></div>'
-    +'<button id="apply-type-next" onclick="applyTypeNext()" style="width:100%;padding:14px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:16px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;'+(applyData.mtype?'':'opacity:.5')+'">Next →</button>'
-    +'</div>';
-}
-
-function selectApplyType(type){
-  applyData.mtype=type;
-  renderApplyTypeSelect();
-}
-
-function applyTypeNext(){
-  if(!applyData.mtype){showApplyError('Please select a membership type.');return;}
   renderApplyStep1();
 }
 
@@ -1977,18 +2042,11 @@ function showApplyError(msg){
 
 var applyData={};
 
-function typeStepLabel(step,total){
-  var typeBadge='<span style="background:var(--bll);color:var(--bl);border-radius:8px;padding:2px 8px;font-size:10px;font-weight:700;margin-left:8px">'+applyData.mtype+'</span>';
-  return'<div style="display:flex;align-items:center;margin-bottom:12px"><div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--or)">Step '+step+' of '+total+' — Primary Member</div>'+typeBadge+'</div>';
-}
-
 function renderApplyStep1(){
   var body=document.getElementById('apply-body'); if(!body) return;
-  var tc=getTypeConfig(applyData.mtype);
-  var totalSteps=applyData.mtype==='Individual'?3:(tc.allowChildren?4:4);
   body.innerHTML='<div style="display:flex;flex-direction:column;gap:12px">'
     +'<div style="background:#fff;border-radius:12px;padding:16px">'
-    +typeStepLabel(1,totalSteps)
+    +'<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--or);margin-bottom:12px">Step 1 of 4 — Primary Member</div>'
     +'<div class="frow"><div class="fg"><label class="fl">First Name *</label><input class="fi" id="af-first" value="'+(applyData.first||'')+'"></div>'
     +'<div class="fg"><label class="fl">Last Name *</label><input class="fi" id="af-last" value="'+(applyData.last||'')+'"></div></div>'
     +'<div class="fg"><label class="fl">Date of Birth *</label><input class="fi" id="af-dob" type="date" value="'+(applyData.dob||'')+'"></div>'
@@ -2002,10 +2060,7 @@ function renderApplyStep1(){
     +CONFIG.membershipTypes.map(function(t){return'<option'+(applyData.mtype===t.key?' selected':'')+' value="'+t.key+'">'+t.label+'</option>';}).join('')
     +'</select></div>'
     +'</div>'
-    +'<div style="display:flex;gap:8px">'
-    +'<button onclick="renderApplyTypeSelect()" style="flex:1;padding:13px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--tx)">&larr; Back</button>'
-    +'<button onclick="applyStep1Next()" style="flex:2;padding:14px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Next &rarr;</button>'
-    +'</div>'
+    +'<button onclick="applyStep1Next()" style="width:100%;padding:14px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:16px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Next &rarr;</button>'
     +'</div>';
 }
 
@@ -2021,23 +2076,17 @@ function applyStep1Next(){
   applyData.email=em.value.trim();applyData.phone=ph.value.trim();applyData.street=st.value.trim();
   applyData.city=ci.value.trim();applyData.state=document.getElementById('af-state').value.trim()||'NC';
   applyData.zip=zp.value.trim();applyData.mtype=document.getElementById('af-type').value;
-  // Individual has no household step - skip to step 3 (renumbered step 2)
-  if(applyData.mtype==='Individual'){
-    renderApplyStep3();
-  } else {
-    renderApplyStep2();
-  }
+  renderApplyStep2();
 }
 
 function renderApplyStep2(){
   var body=document.getElementById('apply-body'); if(!body) return;
   var tc=getTypeConfig(applyData.mtype);
   var needsSec=tc.maxAdults>1;
-  var requiresSec=applyData.mtype==='Couples';
   body.innerHTML='<div style="display:flex;flex-direction:column;gap:12px">'
     +'<div style="background:#fff;border-radius:12px;padding:16px">'
-    +(function(){var tc=getTypeConfig(applyData.mtype);var total=applyData.mtype==='Individual'?3:4;return'<div style="display:flex;align-items:center;margin-bottom:12px"><div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--or)">Step 2 of '+total+' — Household Members</div><span style="background:var(--bll);color:var(--bl);border-radius:8px;padding:2px 8px;font-size:10px;font-weight:700;margin-left:8px">'+applyData.mtype+'</span></div>';}())
-    +(needsSec?'<div style="font-size:13px;font-weight:700;color:var(--bld);margin-bottom:8px">Secondary Adult'+(applyData.mtype==="Couples"?' <span style="color:var(--re);font-size:11px">(required)</span>':' (if applicable)')+'</div>'
+    +'<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--or);margin-bottom:12px">Step 2 of 4 — Household Members</div>'
+    +(needsSec?'<div style="font-size:13px;font-weight:700;color:var(--bld);margin-bottom:8px">Secondary Adult (if applicable)</div>'
     +'<div class="frow"><div class="fg"><label class="fl">First Name</label><input class="fi" id="af-sec-first" value="'+(applyData.secFirst||'')+'"></div>'
     +'<div class="fg"><label class="fl">Last Name</label><input class="fi" id="af-sec-last" value="'+(applyData.secLast||'')+'"></div></div>'
     +'<div class="fg"><label class="fl">Date of Birth</label><input class="fi" id="af-sec-dob" type="date" value="'+(applyData.secDob||'')+'"></div>'
@@ -2051,11 +2100,11 @@ function renderApplyStep2(){
         +'<button onclick="this.parentElement.remove()" style="background:var(--rel);border:none;color:var(--re);width:36px;height:36px;border-radius:8px;cursor:pointer;flex-shrink:0;font-size:16px">&#x2715;</button>'
         +'</div>';
     })).join('')+'</div>'
-    +'<button onclick="afAddKid()" style="width:100%;padding:10px;background:var(--sand);border:1.5px dashed var(--sand2);border-radius:9px;font-size:13px;font-weight:600;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--mu)">&#xFF0B; Add Child</button>':'')
+    +'<button onclick="afAddKid()" style="width:100%;padding:10px;background:var(--sand);border:1.5px dashed var(--sand2);border-radius:9px;font-size:13px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer;color:var(--mu)">&#xFF0B; Add Child</button>':'')
     +'</div>'
     +'<div style="display:flex;gap:8px">'
-    +'<button onclick="renderApplyStep1()" style="flex:1;padding:13px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--tx)">&larr; Back</button>'
-    +'<button onclick="applyStep2Next()" style="flex:2;padding:13px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Next &rarr;</button>'
+    +'<button onclick="renderApplyStep1()" style="flex:1;padding:13px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--tx)">&larr; Back</button>'
+    +'<button onclick="applyStep2Next()" style="flex:2;padding:13px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Next &rarr;</button>'
     +'</div></div>';
 }
 
@@ -2072,12 +2121,6 @@ function afAddKid(){
 
 function applyStep2Next(){
   var tc=getTypeConfig(applyData.mtype);
-  // Couples requires second adult name
-  if(applyData.mtype==='Couples'){
-    var sf=document.getElementById('af-sec-first');
-    var sl=document.getElementById('af-sec-last');
-    if(!sf||!sf.value.trim()||!sl||!sl.value.trim()){showApplyError('Couples membership requires both adults\' names.');return;}
-  }
   if(tc.maxAdults>1){
     var sf=document.getElementById('af-sec-first');
     var sl=document.getElementById('af-sec-last');
@@ -2103,7 +2146,7 @@ function renderApplyStep3(){
   var body=document.getElementById('apply-body'); if(!body) return;
   body.innerHTML='<div style="display:flex;flex-direction:column;gap:12px">'
     +'<div style="background:#fff;border-radius:12px;padding:16px">'
-    +'<div style="display:flex;align-items:center;margin-bottom:12px"><div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--or)">Step 3 of 4 — About Your Application</div><span style="background:var(--bll);color:var(--bl);border-radius:8px;padding:2px 8px;font-size:10px;font-weight:700;margin-left:8px">' +applyData.mtype+ '</span></div>'
+    +'<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--or);margin-bottom:12px">Step 3 of 4 — About Your Application</div>'
     +'<div class="fg"><label class="fl">Current GSC Member Reference * <span style="font-size:11px;color:var(--mu)">(type "None" if you have none)</span></label>'
     +'<input class="fi" id="af-ref" value="'+(applyData.reference||'')+'" placeholder="Member first and last name or None"></div>'
     +'<div class="fg"><label class="fl">How did you hear about the club? *</label>'
@@ -2115,8 +2158,8 @@ function renderApplyStep3(){
     +'<textarea class="fi" id="af-why" rows="3" style="resize:vertical" placeholder="Tell us a bit about your family and why you want to join...">'+(applyData.why||'')+'</textarea></div>'
     +'</div>'
     +'<div style="display:flex;gap:8px">'
-    +'<button onclick="renderApplyStep2()" style="flex:1;padding:13px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--tx)">&larr; Back</button>'
-    +'<button onclick="applyStep3Next()" style="flex:2;padding:13px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Next &rarr;</button>'
+    +'<button onclick="renderApplyStep2()" style="flex:1;padding:13px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--tx)">&larr; Back</button>'
+    +'<button onclick="applyStep3Next()" style="flex:2;padding:13px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Next &rarr;</button>'
     +'</div></div>';
 }
 
@@ -2150,8 +2193,8 @@ function renderApplyStep4(){
     +'<div class="fg"><label class="fl">Date</label><input class="fi" id="af-sigdate" type="date" value="'+(applyData.sigDate||new Date().toISOString().slice(0,10))+'"></div>'
     +'</div>'
     +'<div style="display:flex;gap:8px">'
-    +'<button onclick="renderApplyStep3()" style="flex:1;padding:13px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--tx)">&larr; Back</button>'
-    +'<button onclick="submitApplication()" style="flex:2;padding:13px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Submit Application</button>'
+    +'<button onclick="renderApplyStep3()" style="flex:1;padding:13px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--tx)">&larr; Back</button>'
+    +'<button onclick="submitApplication()" style="flex:2;padding:13px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Submit Application</button>'
     +'</div></div>';
 }
 
@@ -2229,7 +2272,7 @@ function appCard(a,majority){
     +'<div style="font-size:16px;font-weight:800;color:var(--bld)">'+a.first+' '+a.last+'</div>'
     +'<span style="font-size:10px;font-weight:700;text-transform:uppercase;color:'+statusColor+';background:var(--sand);padding:3px 8px;border-radius:10px">'+a.status+'</span>'
     +'</div>'
-    +(function(){var bg=a.mtype==='Family'?'var(--bll)':a.mtype==='Couples'?'var(--pul)':'var(--aml)';var fg=a.mtype==='Family'?'var(--bl)':a.mtype==='Couples'?'var(--pu)':'var(--am)';return'<div style="font-size:12px;margin-bottom:4px"><span style="background:'+bg+';color:'+fg+';border-radius:8px;padding:2px 8px;font-size:10px;font-weight:700">'+a.mtype+'</span> <span style="color:var(--mu)">Submitted '+new Date(a.submittedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+'</span></div>';}())
+    +'<div style="font-size:12px;color:var(--mu);margin-bottom:4px">'+a.mtype+' &middot; Submitted '+new Date(a.submittedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+'</div>'
     +'<div style="font-size:12px;color:var(--mu);margin-bottom:8px">Ref: '+(a.reference||'None')+'</div>'
     +(a.status==='pending'?'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">'
     +'<div style="flex:1;background:var(--grl);border-radius:8px;padding:6px;text-align:center;font-size:12px;font-weight:700;color:var(--gr)">'+approveCount+' Approve</div>'
@@ -2237,10 +2280,10 @@ function appCard(a,majority){
     +'<div style="font-size:11px;color:var(--mu)">Need '+majority+'</div>'
     +'</div>':'')
     +'<div style="display:flex;gap:8px">'
-    +'<button data-appid="'+a.id+'" onclick="openAppReview(this.dataset.appid)" style="flex:2;padding:9px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:9px;font-size:13px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--tx)">View Details</button>'
+    +'<button data-appid="'+a.id+'" onclick="openAppReview(this.dataset.appid)" style="flex:2;padding:9px;background:var(--sand);border:1.5px solid var(--sand2);border-radius:9px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--tx)">View Details</button>'
     +(a.status==='pending'&&can('canVoteApplications')&&!myVote?
-      '<button data-appid="'+a.id+'" onclick="voteApplication(this.dataset.appid,&quot;approve&quot;)" style="flex:1;padding:9px;background:var(--grl);border:1.5px solid var(--gr);border-radius:9px;font-size:12px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--gr)">✔ Approve</button>'
-      +'<button data-appid="'+a.id+'" onclick="voteApplication(this.dataset.appid,&quot;reject&quot;)" style="flex:1;padding:9px;background:var(--rel);border:1.5px solid var(--re);border-radius:9px;font-size:12px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--re)">✖ Reject</button>'
+      '<button data-appid="'+a.id+'" onclick="voteApplication(this.dataset.appid,&quot;approve&quot;)" style="flex:1;padding:9px;background:var(--grl);border:1.5px solid var(--gr);border-radius:9px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--gr)">✔ Approve</button>'
+      +'<button data-appid="'+a.id+'" onclick="voteApplication(this.dataset.appid,&quot;reject&quot;)" style="flex:1;padding:9px;background:var(--rel);border:1.5px solid var(--re);border-radius:9px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--re)">✖ Reject</button>'
     :myVote?'<div style="flex:2;padding:9px;text-align:center;font-size:12px;font-weight:700;color:var(--mu)">Voted: '+myVote+'</div>':'')
     +'</div></div>';
 }
@@ -2290,8 +2333,8 @@ function openAppReview(appId){
     }
     if(!myVote){
       html+='<div style="display:flex;gap:8px">'
-        +'<button data-appid="'+a.id+'" onclick="voteApplication(this.dataset.appid,&quot;approve&quot;);closeAppReview();" style="flex:1;padding:13px;background:var(--grl);border:2px solid var(--gr);border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--gr)">✔ Approve</button>'
-        +'<button data-appid="'+a.id+'" onclick="voteApplication(this.dataset.appid,&quot;reject&quot;);closeAppReview();" style="flex:1;padding:13px;background:var(--rel);border:2px solid var(--re);border-radius:11px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:var(--re)">✖ Reject</button>'
+        +'<button data-appid="'+a.id+'" onclick="voteApplication(this.dataset.appid,&quot;approve&quot;);closeAppReview();" style="flex:1;padding:13px;background:var(--grl);border:2px solid var(--gr);border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--gr)">✔ Approve</button>'
+        +'<button data-appid="'+a.id+'" onclick="voteApplication(this.dataset.appid,&quot;reject&quot;);closeAppReview();" style="flex:1;padding:13px;background:var(--rel);border:2px solid var(--re);border-radius:11px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:var(--re)">✖ Reject</button>'
         +'</div>';
     } else {
       html+='<div style="text-align:center;font-size:13px;font-weight:700;color:var(--mu);padding:8px">You voted: '+myVote+'</div>';
@@ -2302,21 +2345,21 @@ function openAppReview(appId){
     html+='<div style="border-top:1px solid var(--sand2);padding-top:10px;display:flex;flex-direction:column;gap:8px">'
       +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--mu)">Admin Override</div>'
       +'<div style="display:flex;gap:8px">'
-      +'<button data-appid="'+a.id+'" onclick="adminApproveApp(this.dataset.appid)" style="flex:1;padding:11px;background:var(--gr);border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:#fff">Force Approve</button>'
-      +'<button data-appid="'+a.id+'" onclick="adminRejectApp(this.dataset.appid)" style="flex:1;padding:11px;background:var(--re);border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;color:#fff">Force Reject</button>'
+      +'<button data-appid="'+a.id+'" onclick="adminApproveApp(this.dataset.appid)" style="flex:1;padding:11px;background:var(--gr);border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:#fff">Force Approve</button>'
+      +'<button data-appid="'+a.id+'" onclick="adminRejectApp(this.dataset.appid)" style="flex:1;padding:11px;background:var(--re);border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;color:#fff">Force Reject</button>'
       +'</div></div>';
   }
   // Admin notes
   html+='<div class="fg"><label class="fl">Admin Notes</label>'
     +'<textarea class="fi" id="app-admin-note" rows="2" style="resize:vertical" placeholder="Internal notes about this application...">'+(a.adminNotes||'')+'</textarea></div>'
-    +'<button data-appid="'+a.id+'" onclick="saveAppNote(this.dataset.appid)" style="width:100%;padding:11px;background:var(--bl);border:none;color:#fff;border-radius:10px;font-size:13px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Save Notes</button>';
+    +'<button data-appid="'+a.id+'" onclick="saveAppNote(this.dataset.appid)" style="width:100%;padding:11px;background:var(--bl);border:none;color:#fff;border-radius:10px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Save Notes</button>';
   html+='</div>';
   body.innerHTML=html;
-  var _ao=document.getElementById('appreview-overlay');_ao.style.display='flex';_ao.classList.add('open');
+  document.getElementById('appreview-overlay').style.display='flex';
 }
 
 function closeAppReview(){
-  var _ac=document.getElementById('appreview-overlay');_ac.style.display='none';_ac.classList.remove('open');
+  document.getElementById('appreview-overlay').style.display='none';
 }
 
 function voteApplication(appId, vote){
@@ -2400,29 +2443,469 @@ function saveAppNote(appId){
 // ── APPLY MODE DETECTION ──────────────────────────────────────────────────────
 var APPLY_MODE = window.location.search.indexOf('apply=true') >= 0;
 
-function cycleLayout(){
-  var modes=['','layout-ipad','layout-iphone','layout-laptop'];
-  var labels=['Default','iPad Mini','iPhone','Laptop'];
-  var body=document.body;
-  var current=modes.findIndex(function(m){return m&&body.classList.contains(m);});
-  if(current<0) current=0; else modes.forEach(function(m){if(m)body.classList.remove(m);});
-  var next=(current+1)%modes.length;
-  if(modes[next]) body.classList.add(modes[next]);
-  var btn=document.getElementById('layout-btn');
-  if(btn){btn.title='Layout: '+labels[next];btn.textContent=labels[next].toUpperCase();}
-  try{localStorage.setItem('gsc_layout',modes[next]);}catch(e){}
-  showToast('Layout: '+labels[next]);
+
+// ── FIND DUPLICATES ───────────────────────────────────────────────────────────
+function openDedupModal(){
+  var o=document.getElementById('dedup-overlay');
+  if(o){o.style.display='flex';o.classList.add('open');}
+  renderDedupResults();
 }
-function initLayout(){
-  try{
-    var saved=localStorage.getItem('gsc_layout');
-    if(saved){
-      document.body.classList.add(saved);
-      var labels={'':'VIEW','layout-ipad':'IPAD','layout-iphone':'IPHONE','layout-laptop':'LAPTOP'};
-      var btn=document.getElementById('layout-btn');
-      if(btn) btn.textContent=labels[saved]||'VIEW';
+function closeDedupModal(){
+  var o=document.getElementById('dedup-overlay');
+  if(o){o.style.display='none';o.classList.remove('open');}
+}
+function findDuplicates(){
+  var seen={},groups=[],addedIds={};
+  members.forEach(function(m){
+    var nk=(m.last||'').toLowerCase().trim()+'|'+(m.first||'').toLowerCase().trim();
+    var ek=(m.email||'').toLowerCase().trim();
+    if(nk!=='|'){if(!seen[nk])seen[nk]=[];seen[nk].push(m);}
+    if(ek){if(!seen[ek])seen[ek]=[];seen[ek].push(m);}
+  });
+  Object.keys(seen).forEach(function(k){
+    if(seen[k].length>1){
+      var ids=seen[k].map(function(m){return m.id;}).sort().join('|');
+      if(!addedIds[ids]){addedIds[ids]=true;groups.push(seen[k]);}
     }
-  }catch(e){}
+  });
+  return groups;
+}
+function renderDedupResults(){
+  var body=document.getElementById('dedup-body'); if(!body) return;
+  var groups=findDuplicates();
+  if(!groups.length){
+    body.innerHTML='<div style="text-align:center;padding:30px"><div style="font-size:40px;margin-bottom:10px">✅</div><div style="font-size:16px;font-weight:700;color:var(--gr)">No duplicates found!</div><div style="font-size:13px;color:var(--mu);margin-top:6px">All '+members.length+' records look unique.</div></div>';
+    return;
+  }
+  var html='<div style="font-size:13px;color:var(--mu);margin-bottom:12px">Found <b>'+groups.length+'</b> potential duplicate groups.</div>';
+  groups.forEach(function(grp,gi){
+    html+='<div style="background:var(--sand);border-radius:var(--r);padding:14px;margin-bottom:12px;border:1.5px solid var(--sand2)">';
+    html+='<div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--mu);margin-bottom:8px">Group '+(gi+1)+' of '+groups.length+'</div>';
+    grp.forEach(function(m){
+      var kids=Array.isArray(m.kids)&&m.kids.length?m.kids.join(', '):(m.kids&&m.kids!='nan'?m.kids:'');
+      html+='<div style="background:#fff;border-radius:var(--r-sm);padding:12px;margin-bottom:6px;border-left:4px solid '+(m.status==='paid'?'#22c55e':'#ef4444')+'">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">'
+        +'<div><div style="font-size:14px;font-weight:700;color:var(--bld)">'+m.last+', '+m.first+'</div>'
+        +'<div style="font-size:11px;color:var(--mu)">'+m.type+' · '+m.status+(m.email?' · '+m.email:'')+'</div>'
+        +(kids?'<div style="font-size:11px;color:var(--mu)">Kids: '+kids+'</div>':'')+'</div>'
+        +'<button data-mid="'+m.id+'" onclick="dedupDelete(this.dataset.mid)" style="padding:6px 10px;background:var(--rel);border:1.5px solid var(--re);border-radius:8px;font-size:11px;font-weight:700;color:var(--re);cursor:pointer;font-family:-apple-system,sans-serif;flex-shrink:0">🗑 Delete</button>'
+        +'</div></div>';
+    });
+    html+='<button onclick="dedupMergeGroup('+JSON.stringify(grp.map(function(m){return m.id;}))+','+gi+')" style="width:100%;padding:10px;background:var(--bl);border:none;border-radius:var(--r-sm);font-size:13px;font-weight:700;color:#fff;cursor:pointer;font-family:-apple-system,sans-serif;margin-top:4px">⊕ Merge into one record</button>';
+    html+='</div>';
+  });
+  body.innerHTML=html;
+}
+function dedupDelete(id){
+  if(!confirm('Delete this member record permanently?')) return;
+  if(fbReady&&db) db.collection('members').doc(id).delete().catch(function(e){console.error(e);});
+  members=members.filter(function(x){return x.id!==id;});
+  showToast('Record deleted','ok');
+  renderDedupResults(); renderDir();
+}
+function dedupMergeGroup(ids,gi){
+  var grp=ids.map(function(id){return members.find(function(m){return m.id===id;});}).filter(Boolean);
+  if(grp.length<2) return;
+  function score(m){var s=0;if(m.email)s+=3;if(m.phone)s+=2;if(m.street)s+=2;if(Array.isArray(m.kids)&&m.kids.length)s+=m.kids.length;if(m.secFirst)s+=2;if(m.status==='paid')s+=3;return s;}
+  grp.sort(function(a,b){return score(b)-score(a);});
+  var base=Object.assign({},grp[0]);
+  grp.slice(1).forEach(function(m){
+    if(!base.email&&m.email)base.email=m.email;
+    if(!base.phone&&m.phone)base.phone=m.phone;
+    if(!base.street&&m.street){base.street=m.street;base.city=m.city;base.state=m.state;base.zip=m.zip;}
+    if(!base.secFirst&&m.secFirst){base.secFirst=m.secFirst;base.secLast=m.secLast;}
+    if((!Array.isArray(base.kids)||!base.kids.length)&&Array.isArray(m.kids)&&m.kids.length)base.kids=m.kids;
+    if(base.status!=='paid'&&m.status==='paid'){base.status='paid';base.guestsTotal=m.guestsTotal||base.guestsTotal;}
+  });
+  saveMember(base);
+  var i=members.findIndex(function(x){return x.id===base.id;});
+  if(i>=0)members[i]=base; else members.push(base);
+  grp.slice(1).forEach(function(m){
+    if(fbReady&&db)db.collection('members').doc(m.id).delete().catch(function(e){console.error(e);});
+    members=members.filter(function(x){return x.id!==m.id;});
+  });
+  showToast('Merged '+grp.length+' records into one','ok');
+  renderDedupResults(); renderDir();
+}
+
+
+function toggleTasksDashboard(){
+  var wrap=document.getElementById('tasks-dashboard-wrap');
+  if(!wrap) return;
+  var open=wrap.style.display!=='none';
+  wrap.style.display=open?'none':'block';
+  if(!open) renderTasksDashboard();
+}
+
+
+// ── CRM HELPERS ───────────────────────────────────────────────────────────────
+function getCurrentUser(){
+  return currentUser ? (currentUser.displayName||currentUser.username||'Staff') : 'Attendant';
+}
+
+function addActivity(memberId, type, text){
+  var m=members.find(function(x){return x.id===memberId;}); if(!m) return;
+  if(!m.activity) m.activity=[];
+  m.activity.unshift({
+    id:uid(), type:type, text:text,
+    by:getCurrentUser(), at:new Date().toISOString()
+  });
+  saveMember(m);
+  return m;
+}
+
+function addTask(memberId, title, dueDate){
+  var m=members.find(function(x){return x.id===memberId;}); if(!m) return;
+  if(!m.tasks) m.tasks=[];
+  m.tasks.push({
+    id:uid(), title:title, dueDate:dueDate||'',
+    done:false, createdBy:getCurrentUser(), createdAt:new Date().toISOString()
+  });
+  saveMember(m);
+  return m;
+}
+
+function toggleTask(memberId, taskId){
+  var m=members.find(function(x){return x.id===memberId;}); if(!m) return;
+  if(!m.tasks) return;
+  var t=m.tasks.find(function(t){return t.id===taskId;}); if(!t) return;
+  t.done=!t.done;
+  if(t.done){t.doneAt=new Date().toISOString();t.doneBy=getCurrentUser();}
+  else{delete t.doneAt;delete t.doneBy;}
+  saveMember(m);
+}
+
+function deleteTask(memberId, taskId){
+  var m=members.find(function(x){return x.id===memberId;}); if(!m) return;
+  m.tasks=(m.tasks||[]).filter(function(t){return t.id!==taskId;});
+  saveMember(m);
+}
+
+function fmtActivityDate(iso){
+  if(!iso) return '';
+  var d=new Date(iso);
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+    +' at '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+}
+
+function fmtDueDate(ds){
+  if(!ds) return '';
+  var d=new Date(ds+'T00:00:00');
+  var now=new Date(); now.setHours(0,0,0,0);
+  var diff=Math.round((d-now)/(1000*60*60*24));
+  if(diff<0) return '<span style="color:var(--re);font-weight:700">Overdue '+Math.abs(diff)+'d</span>';
+  if(diff===0) return '<span style="color:var(--or);font-weight:700">Due today</span>';
+  if(diff<=3) return '<span style="color:var(--am);font-weight:700">Due in '+diff+'d</span>';
+  return '<span style="color:var(--mu)">Due '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</span>';
+}
+
+function getAllOpenTasks(){
+  var result=[];
+  members.forEach(function(m){
+    (m.tasks||[]).forEach(function(t){
+      if(!t.done) result.push({task:t,member:m});
+    });
+  });
+  result.sort(function(a,b){
+    if(!a.task.dueDate&&!b.task.dueDate) return 0;
+    if(!a.task.dueDate) return 1;
+    if(!b.task.dueDate) return -1;
+    return new Date(a.task.dueDate)-new Date(b.task.dueDate);
+  });
+  return result;
+}
+
+function buildCrmSection(m){
+  var mid=m.id;
+  var tasks=(m.tasks||[]);
+  var activity=(m.activity||[]);
+  var openTasks=tasks.filter(function(t){return !t.done;});
+  var doneTasks=tasks.filter(function(t){return t.done;});
+  var now=new Date(); now.setHours(0,0,0,0);
+
+  var html='<div id="crm-section">';
+
+  // Tasks
+  html+='<div class="sec-lbl" style="display:flex;align-items:center;justify-content:space-between">'
+    +'<span>Tasks'+(openTasks.length?' <span style="background:var(--or);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700">'+openTasks.length+'</span>':'')+'</span>'
+    +'<button onclick="showAddTaskForm(\''+mid+'\')" style="padding:4px 10px;background:var(--bl);border:none;color:#fff;border-radius:8px;font-size:11px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">+ Add Task</button>'
+    +'</div>';
+
+  html+='<div id="task-form-'+mid+'" style="display:none;flex-direction:column;gap:8px;background:var(--sand);border-radius:var(--r-sm);padding:12px;margin-bottom:8px;border:1.5px solid var(--sand2)">'
+    +'<input id="task-title-'+mid+'" class="fi" placeholder="Task title...">'
+    +'<div style="display:flex;gap:8px;align-items:center">'
+    +'<label class="fl" style="margin:0;white-space:nowrap;flex-shrink:0">Due:</label>'
+    +'<input type="date" id="task-due-'+mid+'" class="fi" style="flex:1">'
+    +'<button onclick="submitAddTask(\''+mid+'\')" style="padding:9px 14px;background:var(--bl);border:none;color:#fff;border-radius:9px;font-size:13px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Save</button>'
+    +'<button onclick="document.getElementById(\'task-form-'+mid+'\').style.display=\'none\'" style="padding:9px 10px;background:var(--sand2);border:none;color:var(--mu);border-radius:9px;font-size:13px;cursor:pointer">✕</button>'
+    +'</div></div>';
+
+  if(openTasks.length){
+    html+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px">';
+    openTasks.forEach(function(t){
+      var overdue=t.dueDate&&new Date(t.dueDate+'T00:00:00')<now;
+      html+='<div style="background:'+(overdue?'var(--rel)':'#fff')+';border:1.5px solid '+(overdue?'var(--re)':'var(--sand2)')+';border-radius:var(--r-sm);padding:10px 12px;display:flex;align-items:flex-start;gap:10px">'
+        +'<input type="checkbox" style="width:18px;height:18px;accent-color:var(--bl);flex-shrink:0;margin-top:2px;cursor:pointer" onchange="crmToggleTask(\''+mid+'\',\''+t.id+'\')">'
+        +'<div style="flex:1;min-width:0">'
+        +'<div style="font-size:13px;font-weight:600;color:var(--bld)">'+t.title+'</div>'
+        +(t.dueDate?'<div style="font-size:11px;margin-top:2px">'+fmtDueDate(t.dueDate)+'</div>':'')
+        +'<div style="font-size:10px;color:var(--mu);margin-top:2px">Added by '+t.createdBy+'</div>'
+        +'</div>'
+        +'<button onclick="crmDeleteTask(\''+mid+'\',\''+t.id+'\')" style="background:none;border:none;color:var(--mu);font-size:18px;cursor:pointer;padding:0 4px;flex-shrink:0;line-height:1">×</button>'
+        +'</div>';
+    });
+    html+='</div>';
+  } else {
+    html+='<div style="font-size:12px;color:var(--mu);padding:4px 0 10px;font-style:italic">No open tasks</div>';
+  }
+
+  if(doneTasks.length){
+    html+='<details style="margin-bottom:8px"><summary style="font-size:11px;color:var(--mu);cursor:pointer;font-weight:600">'+doneTasks.length+' completed task'+(doneTasks.length>1?'s':'')+'</summary>'
+      +'<div style="display:flex;flex-direction:column;gap:4px;margin-top:6px">';
+    doneTasks.forEach(function(t){
+      html+='<div style="background:var(--sand);border-radius:var(--r-sm);padding:8px 12px;display:flex;align-items:center;gap:8px;opacity:.7">'
+        +'<input type="checkbox" checked disabled style="width:16px;height:16px">'
+        +'<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--mu);text-decoration:line-through">'+t.title+'</div>'
+        +(t.doneAt?'<div style="font-size:10px;color:var(--mu)">Done '+fmtActivityDate(t.doneAt)+' by '+t.doneBy+'</div>':'')
+        +'</div></div>';
+    });
+    html+='</div></details>';
+  }
+
+  // Activity Log
+  html+='<div class="sec-lbl" style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">'
+    +'<span>Activity Log</span>'
+    +'<button onclick="showAddCommentForm(\''+mid+'\')" style="padding:4px 10px;background:var(--bl);border:none;color:#fff;border-radius:8px;font-size:11px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">+ Comment</button>'
+    +'</div>';
+
+  html+='<div id="comment-form-'+mid+'" style="display:none;flex-direction:column;gap:8px;background:var(--sand);border-radius:var(--r-sm);padding:12px;margin-bottom:8px;border:1.5px solid var(--sand2)">'
+    +'<textarea id="comment-text-'+mid+'" class="fi" rows="3" placeholder="Add a note or comment..." style="resize:vertical"></textarea>'
+    +'<div style="display:flex;gap:8px;justify-content:flex-end">'
+    +'<button onclick="document.getElementById(\'comment-form-'+mid+'\').style.display=\'none\'" style="padding:8px 12px;background:var(--sand2);border:none;color:var(--mu);border-radius:9px;font-size:13px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Cancel</button>'
+    +'<button onclick="submitAddComment(\''+mid+'\')" style="padding:8px 14px;background:var(--bl);border:none;color:#fff;border-radius:9px;font-size:13px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Save</button>'
+    +'</div></div>';
+
+  if(activity.length){
+    html+='<div style="display:flex;flex-direction:column;gap:6px">';
+    var show=activity.slice(0,15);
+    show.forEach(function(a){
+      var color=a.type==='comment'?'var(--bl)':a.type==='status'?'var(--or)':'var(--mu)';
+      var icon=a.type==='comment'?'💬':a.type==='status'?'🔄':a.type==='task'?'✅':'📝';
+      html+='<div style="background:#fff;border-radius:var(--r-sm);padding:10px 12px;border-left:3px solid '+color+'">'
+        +'<div style="font-size:13px;color:var(--bld);line-height:1.4">'+icon+' '+a.text+'</div>'
+        +'<div style="font-size:10px;color:var(--mu);margin-top:4px">'+a.by+' · '+fmtActivityDate(a.at)+'</div>'
+        +'</div>';
+    });
+    if(activity.length>15){
+      html+='<div style="font-size:11px;color:var(--mu);text-align:center;padding:4px;font-style:italic">+'+( activity.length-15)+' older entries</div>';
+    }
+    html+='</div>';
+  } else {
+    html+='<div style="font-size:12px;color:var(--mu);padding:6px 0;font-style:italic">No activity yet</div>';
+  }
+
+  html+='</div>';
+  return html;
+}
+
+function showAddTaskForm(mid){
+  var f=document.getElementById('task-form-'+mid);
+  if(f){f.style.display=f.style.display==='none'||f.style.display===''?'flex':'none';}
+}
+function showAddCommentForm(mid){
+  var f=document.getElementById('comment-form-'+mid);
+  if(f){f.style.display=f.style.display==='none'||f.style.display===''?'flex':'none';}
+}
+
+function submitAddTask(mid){
+  var titleEl=document.getElementById('task-title-'+mid);
+  var dueEl=document.getElementById('task-due-'+mid);
+  if(!titleEl||!titleEl.value.trim()){showToast('Enter a task title','warn');return;}
+  var m=addTask(mid,titleEl.value.trim(),dueEl?dueEl.value:'');
+  var idx2=members.findIndex(function(x){return x.id===mid;});
+  if(idx2>=0)members[idx2]=m;
+  var crm=document.getElementById('crm-section');
+  if(crm&&m){crm.outerHTML=buildCrmSection(m);}
+  showToast('Task added','ok');
+  renderTasksDashboard();
+}
+
+function submitAddComment(mid){
+  var textEl=document.getElementById('comment-text-'+mid);
+  if(!textEl||!textEl.value.trim()){showToast('Enter a comment','warn');return;}
+  var m=addActivity(mid,'comment',textEl.value.trim());
+  var idx2=members.findIndex(function(x){return x.id===mid;});
+  if(idx2>=0)members[idx2]=m;
+  var crm=document.getElementById('crm-section');
+  if(crm&&m){crm.outerHTML=buildCrmSection(m);}
+  showToast('Comment saved','ok');
+}
+
+function crmToggleTask(mid,tid){
+  toggleTask(mid,tid);
+  var m=members.find(function(x){return x.id===mid;});
+  var crm=document.getElementById('crm-section');
+  if(crm&&m){crm.outerHTML=buildCrmSection(m);}
+  renderTasksDashboard();
+}
+
+function crmDeleteTask(mid,tid){
+  if(!confirm('Delete this task?')) return;
+  deleteTask(mid,tid);
+  var m=members.find(function(x){return x.id===mid;});
+  var crm=document.getElementById('crm-section');
+  if(crm&&m){crm.outerHTML=buildCrmSection(m);}
+  renderTasksDashboard();
+}
+
+function logStatusChange(memberId, oldStatus, newStatus){
+  if(oldStatus===newStatus) return;
+  addActivity(memberId,'status','Status changed: '+oldStatus+' \u2192 '+newStatus);
+}
+
+function renderTasksDashboard(){
+  var el=document.getElementById('tasks-dashboard'); if(!el) return;
+  var all=getAllOpenTasks();
+  var now=new Date(); now.setHours(0,0,0,0);
+  if(!all.length){
+    el.innerHTML='<div style="text-align:center;padding:30px">'
+      +'<div style="font-size:36px">✅</div>'
+      +'<div style="font-size:16px;font-weight:700;color:var(--gr);margin-top:8px">All caught up!</div>'
+      +'<div style="font-size:13px;color:var(--mu);margin-top:4px">No open tasks across any members.</div>'
+      +'</div>';
+    return;
+  }
+  var overdue=[],today=[],upcoming=[];
+  all.forEach(function(item){
+    if(!item.task.dueDate){upcoming.push(item);return;}
+    var d=new Date(item.task.dueDate+'T00:00:00');
+    if(d<now) overdue.push(item);
+    else if(d.getTime()===now.getTime()) today.push(item);
+    else upcoming.push(item);
+  });
+  function taskRow(item){
+    var m=item.member, t=item.task;
+    return '<div style="background:#fff;border-radius:var(--r-sm);padding:12px 14px;display:flex;align-items:flex-start;gap:10px;box-shadow:var(--sh);cursor:pointer" onclick="openEditFromTask(\''+m.id+'\')">'
+      +'<input type="checkbox" style="width:18px;height:18px;accent-color:var(--bl);flex-shrink:0;margin-top:2px;cursor:pointer" onclick="event.stopPropagation()" onchange="crmToggleTask(\''+m.id+'\',\''+t.id+'\')">'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-size:13px;font-weight:700;color:var(--bld)">'+t.title+'</div>'
+      +'<div style="font-size:12px;color:var(--mu);margin-top:2px">'+m.last+', '+m.first+' · '+m.type+' · '+m.status+'</div>'
+      +(t.dueDate?'<div style="font-size:11px;margin-top:3px">'+fmtDueDate(t.dueDate)+'</div>':'')
+      +'</div>'
+      +'<div style="font-size:11px;color:var(--bl);font-weight:600;flex-shrink:0">Edit →</div>'
+      +'</div>';
+  }
+  function grpSection(title,items,color){
+    if(!items.length) return '';
+    var h='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:'+color+';padding:8px 0 6px">'+title+' ('+items.length+')</div>';
+    h+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">';
+    items.forEach(function(i){h+=taskRow(i);});
+    h+='</div>';
+    return h;
+  }
+  el.innerHTML=grpSection('🔴 Overdue',overdue,'var(--re)')
+    +grpSection('🟡 Due Today',today,'var(--am)')
+    +grpSection('📋 Upcoming',upcoming,'var(--bl)');
+}
+
+function openEditFromTask(memberId){
+  switchTab('dir');
+  setTimeout(function(){openEdit(memberId);},120);
+}
+
+
+function processCheckin(){
+  var m=members.find(function(x){return x.id===ciMemberId;}); if(!m) return;
+  // Save inline missing info fields
+  var changed=false;
+  var map={email:'inline-email',phone:'inline-phone',street:'inline-street',city:'inline-city',zip:'inline-zip'};
+  Object.keys(map).forEach(function(field){
+    var el=document.getElementById(map[field]);
+    if(el&&el.value.trim()){m[field]=field==='phone'?formatPhone(el.value):el.value.trim();changed=true;}
+  });
+  var sf=document.getElementById('inline-sec-first');
+  var sl=document.getElementById('inline-sec-last');
+  if(sf&&sf.value.trim()){m.secFirst=sf.value.trim();m.secLast=(sl&&sl.value.trim())||m.secLast||'';m.adults=2;changed=true;}
+  document.querySelectorAll('.inline-kid-input').forEach(function(inp){
+    var v=inp.value.trim();
+    if(v){if(!m.kids)m.kids=[];if(m.kids.indexOf(v)<0){m.kids.push(v);m.children=m.kids.length;changed=true;}}
+  });
+  if(changed){var mi=members.findIndex(function(x){return x.id===m.id;});if(mi>=0)members[mi]=m;saveMember(m);}
+  var stillMissing=getMissingSteps(m);
+  if(stillMissing.length){showToast('Fill in: '+stillMissing.map(function(s){return s.label;}).join(', '),'warn');return;}
+
+  // Read checked adults from ci-adult-list
+  var checkedAdults=[];
+  var aList=document.getElementById('ci-adult-list');
+  if(aList){
+    aList.querySelectorAll('input[type=checkbox]').forEach(function(chk,i){
+      if(!chk.checked) return;
+      var lbl=document.querySelector('label[for="'+chk.id+'"]');
+      var raw=lbl ? lbl.textContent.replace(/\(primary\)|\(secondary\)/gi,'').trim() : '';
+      if(!raw){
+        if(i===0) raw=m.first+' '+m.last;
+        else if(m.secFirst) raw=((m.secFirst||'')+' '+(m.secLast||'')).trim();
+      }
+      if(raw) checkedAdults.push(raw);
+    });
+  }
+  if(checkedAdults.length===0) checkedAdults.push(m.first+' '+m.last);
+
+  // Read checked kids from ci-kid-list
+  var checkedKids=[];
+  var kList=document.getElementById('ci-kids-list');
+  if(kList){
+    kList.querySelectorAll('input[type=checkbox]').forEach(function(chk){
+      if(!chk.checked) return;
+      var lbl=document.querySelector('label[for="'+chk.id+'"]');
+      var name=lbl ? lbl.textContent.trim() : '';
+      if(name) checkedKids.push(name);
+    });
+  }
+
+  // Collect new kids added at gate
+  var newKids=[];
+  document.querySelectorAll('.ci-new-kid-input').forEach(function(inp){
+    var v=inp.value.trim(); if(v) newKids.push(v);
+  });
+
+  // Guest passes
+  var passesUsed=ciGuests||0;
+  var rem=(m.guestsTotal||0)-(m.guestsUsed||0);
+  if(passesUsed>rem){showToast('Not enough guest passes remaining','warn');return;}
+
+  commitCheckin(m,checkedAdults,checkedKids,newKids,passesUsed,false);
+}
+
+
+function selectAllAdults(){
+  var list=document.getElementById('ci-adult-list');
+  if(!list) return;
+  list.querySelectorAll('.ci-check-item').forEach(function(item){
+    var chk=item.querySelector('input[type=checkbox]');
+    if(chk&&!chk.checked){chk.checked=true;item.classList.add('checked');}
+  });
+}
+
+function selectAllKids(){
+  var list=document.getElementById('ci-kids-list');
+  if(!list) return;
+  list.querySelectorAll('.ci-check-item').forEach(function(item){
+    var chk=item.querySelector('input[type=checkbox]');
+    if(chk&&!chk.checked){chk.checked=true;item.classList.add('checked');}
+  });
+}
+
+function addInlineKidField(btn){
+  var container=btn.parentElement;
+  var wrap=document.createElement('div');
+  wrap.style.cssText='display:flex;align-items:center;gap:8px;margin-top:4px';
+  var inp=document.createElement('input');
+  inp.className='fi inline-kid-input';
+  inp.placeholder='Child name';
+  inp.style.cssText='flex:1;padding:8px 10px;font-size:13px';
+  wrap.appendChild(inp);
+  container.parentElement.insertBefore(wrap, container.nextSibling);
 }
 
 function renderAll(){renderCI();renderDir();renderRep();renderAnnouncement();}
@@ -2526,21 +3009,33 @@ function seedDemo(){
 
 var pinEntry='';
 function initPin(){}
-function updDots(){}
-function pinKeyPress(){}function checkPin(){}
+function updDots(){for(var i=0;i<4;i++)document.getElementById('d'+i).classList.toggle('on',i<pinEntry.length);}
+function pinKeyPress(k){
+  if(k==='clear'){pinEntry='';updDots();document.getElementById('pin-err').textContent='';return;}
+  if(k==='back'){pinEntry=pinEntry.slice(0,-1);updDots();return;}
+  if(pinEntry.length>=4)return;
+  pinEntry+=k;updDots();
+  if(pinEntry.length===4)setTimeout(checkPin,150);
+}function checkPin(){
+  if(pinEntry===getPin()){
+    var ps=document.getElementById('pin-screen');ps.classList.add('hidden');ps.style.display='none';
+    pinEntry='';updDots();renderAll();
+  }else{document.getElementById('pin-err').textContent='Incorrect PIN';pinEntry='';updDots();}
+}
 function lockApp(){var ps=document.getElementById('pin-screen');ps.style.display='flex';ps.classList.remove('hidden');}
 
 function requireAdminPin(cb){
-  // PIN removed - use permission system
-  if(can('canAccessSettings')||can('canImportExport')||can('canAddDeleteMembers')||can('canChangePayment')){
-    cb(); return;
+  // PIN system removed - check permission then run callback directly
+  if(isMasterAdmin()||can('canChangePayment')||can('canAccessSettings')||can('canImportExport')||can('canAddDeleteMembers')){
+    cb();
+  } else {
+    showToast('Admin login required','warn');
+    openLogin();
   }
-  showToast('Admin login required for this action','warn');
-  openLogin();
 }
-function adminKeyPress(){}
-function checkAdminPin(){if(adminPinEntry===getPin()){document.getElementById('admin-overlay').classList.remove('open');adminPinEntry='';if(adminPinCallback){adminPinCallback();adminPinCallback=null;}}else{document.getElementById('admin-err').textContent='Incorrect PIN.';adminPinEntry='';for(var i=0;i<4;i++)document.getElementById('ad'+i).classList.remove('on');}}
-function closeAdmin(){document.getElementById('admin-overlay').classList.remove('open');adminPinCallback=null;}
+function adminKeyPress(k){if(k==='back')adminPinEntry=adminPinEntry.slice(0,-1);else if(k==='clear')adminPinEntry='';else if(adminPinEntry.length<4)adminPinEntry+=k;for(var i=0;i<4;i++)document.getElementById('ad'+i).classList.toggle('on',i<adminPinEntry.length);if(adminPinEntry.length===4)setTimeout(checkAdminPin,150);}
+function checkAdminPin(){if(adminPinEntry===getPin()){var _ao2=document.getElementById('admin-overlay');if(_ao2)_ao2.classList.remove('open');adminPinEntry='';if(adminPinCallback){adminPinCallback();adminPinCallback=null;}}else{var _ae=document.getElementById('admin-err');if(_ae)_ae.textContent='Incorrect PIN.';adminPinEntry='';for(var i=0;i<4;i++)document.getElementById('ad'+i).classList.remove('on');}}
+function closeAdmin(){var _ao2=document.getElementById('admin-overlay');if(_ao2)_ao2.classList.remove('open');adminPinCallback=null;}
 
 function switchTab(name){
   ['ci','dir','rep','inc','app'].forEach(function(t){
@@ -2583,12 +3078,12 @@ function doQuickCI(mid,evt){
 function cardHTML(m,ciMode){
   var chip=chipInfo(m);
   var chipHtml='<div class="gchip '+chip.cls+'">'+chip.lbl+'</div>';
-  return'<button class="mcard '+cardCls(m)+'" onclick="openMember(&quot;'+m.id+'&quot;,'+ciMode+')" style="width:100%;text-align:left;font-family:-apple-system,sans-serif">'
+  return'<button class="mcard '+cardCls(m)+'" onclick="openMember(&quot;'+m.id+'&quot;,'+ciMode+')" style="width:100%;text-align:left;font-family:Inter,sans-serif">'
     +'<div class="mavatar">'+(m.last||'?')[0]+'</div>'
     +'<div class="minfo">'
     +'<div class="mname">'+m.last+', '+m.first+'</div>'
     +'<div class="mmeta">'+typeBadge(m.type)+' '+statusBadge(m.status)+'</div>'
-    +'<div class="mroster">'+rosterStr(m)+'</div>'
+    +(hasCriticalMissing(m)?'<div class="mroster"><span style="color:var(--re);font-weight:700">&#x26A0; Info required</span></div>':'<div class="mroster">'+rosterStr(m)+'</div>')
     +'</div>'+chipHtml+'</button>';
 }
 
@@ -2624,7 +3119,7 @@ function buildCiAlphaStrips(){
   var checkedToday={};
   visits.forEach(function(v){if(new Date(v.ts).toDateString()===todayStr) checkedToday[v.memberId]=true;});
   var lnLetters={};
-  members.forEach(function(m){if(m.last&&m.status!=='inactive'&&m.status!=='terminated') lnLetters[m.last[0].toUpperCase()]=true;});
+  members.forEach(function(m){if(m.last) lnLetters[m.last[0].toUpperCase()]=true;});
   var lnStrip=document.getElementById('ci-ln-strip'); if(!lnStrip) return;
   lnStrip.innerHTML=Object.keys(lnLetters).sort().map(function(l){
     return '<button class="ci-alpha-btn'+(ciLastAlpha===l?' on':'')+'" onclick="setCiLastAlpha(&quot;'+l+'&quot;)">'+l+'</button>';
@@ -2715,7 +3210,7 @@ function renderCI(){
       var timeLabel=nowH<12?'this morning':nowH<17?'this afternoon':'this evening';
       el.innerHTML='<div class="ci-section-title" style="background:var(--sand)">&#x1F52E; Likely here '+timeLabel+' (based on history)</div>'
         +predicted.map(function(m){
-          return '<button class="predict-card" onclick="openMember(&quot;'+m.id+'&quot;,true)" style="width:100%;text-align:left;font-family:-apple-system,sans-serif;border:none;cursor:pointer">'
+          return '<button class="predict-card" onclick="openMember(&quot;'+m.id+'&quot;,true)" style="width:100%;text-align:left;font-family:Inter,sans-serif;border:none;cursor:pointer">'
             +'<div class="mavatar">'+(m.last||'?')[0]+'</div>'
             +'<div class="minfo"><div class="mname">'+m.last+', '+m.first+'</div>'
             +'<div class="predict-meta">'+m.type+' &middot; '+(m.status==='paid'?'<span style="color:var(--gr);font-weight:700">Paid</span>':'<span style="color:var(--re);font-weight:700">'+m.status+'</span>')+'</div>'
@@ -2757,15 +3252,35 @@ function renderCI(){
 }
 
 function rebuildFilterBtns(){
-  // Add inactive filter if any inactive/terminated members exist
-  var hasInactive=members.some(function(m){return m.status==='inactive'||m.status==='terminated';});
   var el=document.getElementById('dir-filter-btns'); if(!el) return;
-  var current=dirFilter;
-  el.innerHTML='<button class="fbtn'+(current==='all'?' on':'')+'" onclick="setFilter(this,&quot;all&quot;)">All</button>'
-    +CONFIG.membershipTypes.map(function(t){
-      return '<button class="fbtn'+(current===t.key?' on':'')+'" onclick="setFilter(this,&quot;'+t.key+'&quot;)">'+t.label+'</button>';
-    }).join('')
-    +'<button class="fbtn'+(current==='unpaid'?' on':'')+'" onclick="setFilter(this,&quot;unpaid&quot;)">Unpaid</button>';
+  var cur=dirFilter||'all';
+  var hasFormer=members.some(function(m){return m.status==='inactive'||m.status==='terminated';});
+
+  // Status row
+  var statusBtns='<div class="filter-group-label">Status</div><div class="filter-row">';
+  var statusFilters2=[
+    {k:'all',     lbl:'All',      cls:''},
+    {k:'paid',    lbl:'✓ Paid',   cls:'on-paid'},
+    {k:'unpaid',  lbl:'⚠ Unpaid', cls:'on-unpaid'},
+    {k:'pending', lbl:'Pending',  cls:'on-pending'},
+  ];
+  if(hasFormer) statusFilters2.push({k:'former',lbl:'Former',cls:''});
+  statusFilters2.forEach(function(f){
+    var isOn=cur===f.k;
+    var cls=isOn?(f.cls||'on'):'';
+    statusBtns+='<button class="fbtn '+cls+'" onclick="setFilter(this,&quot;'+f.k+'&quot;)">'+f.lbl+'</button>';
+  });
+  statusBtns+='</div>';
+
+  // Type row
+  var typeBtns='<div class="filter-group-label" style="margin-top:6px">Type</div><div class="filter-row">';
+  CONFIG.membershipTypes.forEach(function(t){
+    var isOn=cur===t.key;
+    typeBtns+='<button class="fbtn '+(isOn?'on':'')+'" onclick="setFilter(this,&quot;'+t.key+'&quot;)">'+t.label+'</button>';
+  });
+  typeBtns+='</div>';
+
+  el.innerHTML='<div class="filter-group">'+statusBtns+typeBtns+'</div>';
 }
 
 function setAlpha(letter){
@@ -2775,17 +3290,26 @@ function setAlpha(letter){
 
 function renderDir(){
   if(!dirFilter) dirFilter='all';
-  // Hide inactive/terminated unless explicitly filtered
-  var list=members.filter(function(m){return dirFilter==='inactive'||(m.status!=='inactive'&&m.status!=='terminated');});
-  if(dirFilter==='unpaid') list=list.filter(function(m){return m.status!=='paid';});
-  else if(dirFilter!=='all') list=list.filter(function(m){return m.type===dirFilter;});
+  var statusKeys=['paid','unpaid','pending','inactive','former'];
+  var list;
+  if(dirFilter==='former'){
+    list=members.filter(function(m){return m.status==='inactive'||m.status==='terminated';});
+  } else if(dirFilter==='unpaid'){
+    list=members.filter(function(m){return m.status==='unpaid'||m.status==='pending';});
+  } else if(statusKeys.indexOf(dirFilter)>=0&&dirFilter!=='all'){
+    list=members.filter(function(m){return m.status===dirFilter;});
+  } else if(dirFilter!=='all'){
+    // type filter - hide former members
+    list=members.filter(function(m){return m.status!=='inactive'&&m.status!=='terminated'&&m.type===dirFilter;});
+  } else {
+    // all - hide inactive/terminated by default
+    list=members.filter(function(m){return m.status!=='inactive'&&m.status!=='terminated';});
+  }
   if(dirAlpha) list=list.filter(function(m){return (m.last||'').toUpperCase().startsWith(dirAlpha);});
   list.sort(function(a,b){return a.last.localeCompare(b.last)||a.first.localeCompare(b.first);});
 
   // Build alpha strip from available letters in current filtered list (pre-alpha filter)
-  var baseList=members.slice();
-  if(dirFilter==='unpaid') baseList=baseList.filter(function(m){return m.status!=='paid';});
-  else if(dirFilter!=='all') baseList=baseList.filter(function(m){return m.type===dirFilter;});
+  var baseList=list.slice();
   var availLetters={};
   baseList.forEach(function(m){if(m.last) availLetters[m.last[0].toUpperCase()]=true;});
   var activeLetters=Object.keys(availLetters).sort();
@@ -2848,7 +3372,7 @@ function openMember(id,ciMode){
       var unpaidWarn='';
       if(m.status==='unpaid'){
         var mid=m.id;
-        unpaidWarn='<div class="unpaid-warning"><div class="unpaid-warning-title">&#x26A0;&#xFE0F; Payment Outstanding</div><p>This membership has not paid for the current season.</p><div class="unpaid-days">'+unpaidDays+' / '+GRACE_DAYS+' grace days used</div><p style="font-size:12px;color:var(--re);font-weight:600">Check-in blocked after day 3 without payment.</p><div id="pay-alert-container"><button id="pay-alert-btn" data-mid="'+mid+'" onclick="sendPaymentAlert(this.dataset.mid)" style="width:100%;margin-top:4px;padding:10px;background:var(--or);border:none;color:#fff;border-radius:9px;font-size:13px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">&#x1F4E7; Member has paid — Submit for Review</button></div></div>';
+        unpaidWarn='<div class="unpaid-warning"><div class="unpaid-warning-title">&#x26A0;&#xFE0F; Payment Outstanding</div><p>This membership has not paid for the current season.</p><div class="unpaid-days">'+unpaidDays+' / '+GRACE_DAYS+' grace days used</div><p style="font-size:12px;color:var(--re);font-weight:600">Check-in blocked after day 3 without payment.</p></div>';
       }
       else if(m.status==='pending'){unpaidWarn='<div style="background:var(--aml);border:2px solid var(--am);border-radius:10px;padding:10px 13px;font-size:13px;color:var(--am);font-weight:600;text-align:center">&#x23F3; Payment pending &mdash; please follow up</div>';}
       var adultNames=[];
@@ -2865,14 +3389,14 @@ function openMember(id,ciMode){
       // ── Build checklist ──────────────────────────────────────
       var needsSecondName=getTypeConfig(m.type).requireSecond&&!(m.secFirst||m.secLast);
       var canAddSec=getTypeConfig(m.type).maxAdults>1&&!getTypeConfig(m.type).requireSecond&&!(m.secFirst||m.secLast);
-      var adultsSection='<div class="ci-section-lbl">Adults</div><div class="ci-checklist" id="ci-adult-list">';
+      var adultsSection='<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0 6px">'+'<span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu)">Adults</span>'+'<button onclick="selectAllAdults()" style="padding:4px 10px;background:var(--bll);border:1.5px solid var(--bl);border-radius:8px;font-size:11px;font-weight:700;color:var(--bl);font-family:-apple-system,sans-serif;cursor:pointer">Select All</button></div><div class="ci-checklist" id="ci-adult-list">';
       // Primary adult
-      adultsSection+='<button class="ci-check-item" id="ci-a0" onclick="ciToggle(\'ci-a0\')"><input type="checkbox" id="chk-a0" checked><label for="chk-a0">'+m.first+' '+m.last+'<span style="opacity:.5;font-size:11px;font-weight:400;margin-left:6px">(primary)</span></label></button>';
+      adultsSection+='<div class="ci-check-item" id="ci-a0" onclick="ciToggle(\'ci-a0\')"><input type="checkbox" id="chk-a0" onchange="ciToggle(\'ci-a0\')"><label for="chk-a0">'+m.first+' '+m.last+' <span style="opacity:.5;font-size:11px">(primary)</span></label></div>';
       // Secondary adult
       if(m.secFirst||m.secLast){
         adultsSection+='<div class="ci-check-item" id="ci-a1" onclick="ciToggle(\'ci-a1\')"><input type="checkbox" id="chk-a1" onchange="ciToggle(\'ci-a1\')"><label for="chk-a1">'+(m.secFirst||'')+' '+(m.secLast||'')+'</label></div>';
       } else if(needsSecondName){
-        adultsSection+='<div class="ci-check-item missing-name"><span style="font-size:13px;color:#ffd4c8">&#x26A0; Second adult name required for Couples membership</span><button onclick="ciPromptSecondAdult(\''+m.id+'\')" style="margin-left:auto;padding:5px 10px;background:var(--or);border:none;color:#fff;border-radius:7px;font-size:12px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;white-space:nowrap">Add Name</button></div>';
+        adultsSection+='<div class="ci-check-item missing-name"><span style="font-size:13px;color:#ffd4c8">&#x26A0; Second adult name required for Couples membership</span><button onclick="ciPromptSecondAdult(\''+m.id+'\')" style="margin-left:auto;padding:5px 10px;background:var(--or);border:none;color:#fff;border-radius:7px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;white-space:nowrap">Add Name</button></div>';
       } else if(canAddSec){
         adultsSection+='<button class="ci-add-btn" onclick="ciPromptSecondAdult(\''+m.id+'\')" id="ci-add-sec-btn">&#xFF0B; Add second adult</button>';
       }
@@ -2880,7 +3404,7 @@ function openMember(id,ciMode){
       // Children checklist
       var kidsSection='';
       if(kidNames.length||m.type==='Family'||m.type==='Board'||m.type==='Comp'){
-        kidsSection='<div class="ci-section-lbl" style="margin-top:4px">Children</div><div class="ci-checklist" id="ci-kids-list">';
+        kidsSection='<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0 6px;margin-top:4px">'+'<span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu)">Children</span>'+'<button onclick="selectAllKids()" style="padding:4px 10px;background:var(--bll);border:1.5px solid var(--bl);border-radius:8px;font-size:11px;font-weight:700;color:var(--bl);font-family:-apple-system,sans-serif;cursor:pointer">Select All</button></div><div class="ci-checklist" id="ci-kids-list">';
         kidNames.forEach(function(k,i){
           kidsSection+='<div class="ci-check-item" id="ci-k'+i+'" onclick="ciToggle(\'ci-k'+i+'\')">'
             +'<input type="checkbox" id="chk-k'+i+'" onchange="ciToggle(\'ci-k'+i+'\')">'
@@ -2891,24 +3415,43 @@ function openMember(id,ciMode){
       }
       // Guest passes counter
       var gpSection=m.guestsTotal>0
-        ?'<div class="gp-section"><div class="gp-counter-row"><div><div class="ci-lbl">🎟 Guest Passes</div><div class="ci-sub">'+m.guestsTotal+' allotted · '+(m.guestsUsed||0)+' used · '+rem+' remaining</div></div><div class="ctr"><button class="cbtn" onclick="adjGuests(-1)">−</button><div class="cval" id="ci-guests">0</div><button class="cbtn" onclick="adjGuests(1)">+</button></div></div><div id="gp-live-status" style="margin-top:6px"></div></div>'
+        ?'<div style="border-top:1px solid rgba(255,255,255,.15);padding-top:10px"><div class="gp-counter-row"><div><div class="ci-lbl">&#x1F3AB; Guest Passes</div><div class="ci-sub">'+m.guestsTotal+' allotted &middot; '+(m.guestsUsed||0)+' used &middot; '+rem+' remaining</div></div><div class="ctr"><button class="cbtn" onclick="adjGuests(-1)">&minus;</button><div class="cval" id="ci-guests">0</div><button class="cbtn" onclick="adjGuests(1)">+</button></div></div><div id="gp-live-status" style="margin-top:6px"></div></div>'
         :'';
       // Build missing info prompt if needed
       var missing=getMissingSteps(m);
       var missingBanner='';
       if(missing.length){
-        missingBanner='<div style="background:#fef3c7;border:2px solid #f59e0b;border-radius:10px;padding:12px;margin-bottom:4px">'
-        +'<div style="font-weight:800;font-size:13px;color:#92400e;margin-bottom:6px">&#x26A0;&#xFE0F; Missing Member Info Required</div>'
-        +'<div style="font-size:12px;color:#92400e;margin-bottom:8px">Please complete all required info before checking in.</div>'
-        +'<button onclick="openMissingInfo(\''+m.id+'\')" style="width:100%;padding:13px;background:#f59e0b;border:none;color:#fff;border-radius:9px;font-size:15px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;margin-top:2px">&#x270F;&#xFE0F; Complete Member Info</button>'
-        +'</div>';
+        (function(){
+    var ms=getMissingSteps(m);
+    if(!ms.length){missingBanner='';return;}
+    var fields='';
+    ms.forEach(function(step){
+      var k=step.key;
+      var row='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
+      if(k==='email')       row+='<span style="font-size:11px;font-weight:700;color:var(--re);width:80px;flex-shrink:0">EMAIL</span><input id="inline-email" class="fi" type="email" placeholder="email@example.com" style="flex:1;padding:8px 10px;font-size:13px"></div>';
+      else if(k==='phone')  row+='<span style="font-size:11px;font-weight:700;color:var(--re);width:80px;flex-shrink:0">PHONE</span><input id="inline-phone" class="fi" type="tel" placeholder="(336) 555-0000" style="flex:1;padding:8px 10px;font-size:13px"></div>';
+      else if(k==='address')row+='<span style="font-size:11px;font-weight:700;color:var(--re);width:80px;flex-shrink:0">STREET</span><input id="inline-street" class="fi" placeholder="123 Main St" style="flex:1;padding:8px 10px;font-size:13px"></div>';
+      else if(k==='city')   row+='<span style="font-size:11px;font-weight:700;color:var(--re);width:80px;flex-shrink:0">CITY</span><input id="inline-city" class="fi" placeholder="Gibsonville" style="flex:1;padding:8px 10px;font-size:13px"></div>';
+      else if(k==='zip')    row+='<span style="font-size:11px;font-weight:700;color:var(--re);width:80px;flex-shrink:0">ZIP</span><input id="inline-zip" class="fi" placeholder="27249" style="flex:1;padding:8px 10px;font-size:13px;max-width:120px"></div>';
+      else if(k==='second-adult') row+='<span style="font-size:11px;font-weight:700;color:var(--re);width:80px;flex-shrink:0">2ND ADULT</span><input id="inline-sec-first" class="fi" placeholder="First" style="flex:1;padding:8px;font-size:13px"><input id="inline-sec-last" class="fi" placeholder="Last" style="flex:1;padding:8px;font-size:13px"></div>';
+      else if(k==='kids')   row+='<span style="font-size:11px;font-weight:700;color:var(--re);width:80px;flex-shrink:0">CHILD</span><input class="fi inline-kid-input" placeholder="Child name" style="flex:1;padding:8px 10px;font-size:13px"><button onclick="addInlineKidField(this)" style="padding:8px 10px;background:var(--sand2);border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:-apple-system,sans-serif">+</button></div>';
+      else row='';
+      fields+=row;
+    });
+    missingBanner='<div style="background:var(--aml);border:1.5px solid var(--am);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:8px">'
+      +'<div style="font-size:12px;font-weight:700;color:var(--am);margin-bottom:8px">&#x26A0; Required info — fill in before checking in:</div>'
+      +fields
+      +'</div>';
+  })()
       }
-      var panelBg=m.status==='paid'?'var(--wh)':'var(--wh)';
+      var panelBg=m.status==='paid'
+        ?'linear-gradient(135deg,#064e3b,#065f46)'
+        :(m.status==='unpaid'?'linear-gradient(135deg,#7f1d1d,#991b1b)':'linear-gradient(135deg,#78350f,#92400e)');
       var statusBar=m.status==='paid'
-        ?'<div style="background:var(--grl);border:2px solid var(--gr);color:var(--gr);font-weight:800;font-size:14px;padding:10px 12px;border-radius:9px;text-align:center">✅ PAID — Good to go!</div>'
+        ?'<div style="background:rgba(134,239,172,.2);border:1.5px solid rgba(134,239,172,.4);color:#bbf7d0;font-weight:800;font-size:14px;padding:8px 12px;border-radius:9px;text-align:center">&#x2705; PAID &mdash; Good to go!</div>'
         :(m.status==='unpaid'
-          ?'<div style="background:var(--rel);border:2px solid var(--re);color:var(--re);font-weight:800;font-size:14px;padding:10px 12px;border-radius:9px;text-align:center">&#x1F6AB; UNPAID — Payment required</div>'
-          :'<div style="background:var(--aml);border:2px solid var(--am);color:var(--am);font-weight:800;font-size:14px;padding:10px 12px;border-radius:9px;text-align:center">⏳ PENDING — Follow up on payment</div>');
+          ?'<div style="background:rgba(254,202,202,.2);border:1.5px solid rgba(254,202,202,.4);color:#fecaca;font-weight:800;font-size:14px;padding:8px 12px;border-radius:9px;text-align:center">&#x1F6AB; UNPAID &mdash; Payment required</div>'
+          :'<div style="background:rgba(253,230,138,.2);border:1.5px solid rgba(253,230,138,.4);color:#fde68a;font-weight:800;font-size:14px;padding:8px 12px;border-radius:9px;text-align:center">&#x23F3; PENDING &mdash; Follow up on payment</div>');
       html+='<div class="ci-panel" style="background:'+panelBg+'">'
         +'<div class="ci-title">&#x1F40A; Today\'s Visit</div>'
         +missingBanner
@@ -2919,8 +3462,8 @@ function openMember(id,ciMode){
         +kidsSection
         +gpSection
         +'<div id="ci-over-note"></div>'
-        +(canQuickCheckIn(m)?'<button class="quick-ci-btn" onclick="quickCheckIn(\''+m.id+'\',event)">⚡ Quick Check In All — one tap</button>':'')
-        +'<button class="ci-checkin-btn" onclick="doCheckin(\''+m.id+'\')">&#x2705; Check In'+(checkedToday?' Again':'')+'</button></div>';
+        
+        +'<button class="ci-checkin-btn" onclick="processCheckin()">&#x2705; Check In'+(checkedToday?' Again':'')+'</button></div>';
     }
   }
   if(mv.length){html+='<div><div class="sec-lbl" style="margin-bottom:6px">Recent Visits</div><div class="vlog">'+mv.slice(0,15).map(function(v){var p=[];if(v.adults>0)p.push(v.adults+'A');if(v.children>0)p.push(v.children+'C');if(v.guestPasses>0)p.push('&#x1F3AB;&times;'+v.guestPasses);return'<div class="vitem"><span>'+fmtDate(v.ts)+' '+fmtTime(v.ts)+'</span><span style="color:var(--mu)">'+(p.join(' &middot; ')||'member only')+'</span></div>';}).join('')+'</button></div>';}
@@ -2928,17 +3471,7 @@ function openMember(id,ciMode){
     html+='<button class="btn-s" onclick="openEdit(\''+m.id+'\')">&#x270F;&#xFE0F; Edit Member</button>';
   document.getElementById('mm-body').innerHTML=html;
   document.getElementById('mm-overlay').classList.add('open');
-  // Swipe right to quick check-in (ciMode only)
-  if(ciMode){
-    var sheet=document.querySelector('#mm-overlay .sheet');
-    var swipeStartX=0,swipeStartY=0;
-    sheet.ontouchstart=function(e){swipeStartX=e.touches[0].clientX;swipeStartY=e.touches[0].clientY;};
-    sheet.ontouchend=function(e){
-      var dx=e.changedTouches[0].clientX-swipeStartX;
-      var dy=Math.abs(e.changedTouches[0].clientY-swipeStartY);
-      if(dx>80&&dy<40&&canQuickCheckIn(m)){quickCheckIn(m.id,null);}
-    };
-  }
+
 }
 function closeMM(){document.getElementById('mm-overlay').classList.remove('open');}
 
@@ -2962,7 +3495,7 @@ function ciPromptSecondAdult(memberId){
   row.className='ci-check-item';
   row.style.gap='6px';
   row.innerHTML='<input class="ci-inline-input" id="ci-sec-name-input" placeholder="Second adult first &amp; last name" autofocus>'
-    +'<button onclick="ciSaveSecondAdult(\''+memberId+'\')" style="padding:6px 10px;background:var(--or);border:none;color:#fff;border-radius:7px;font-size:12px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Save</button>';
+    +'<button onclick="ciSaveSecondAdult(\''+memberId+'\')" style="padding:6px 10px;background:var(--or);border:none;color:#fff;border-radius:7px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Save</button>';
   btn.parentNode.replaceChild(row,btn);
   setTimeout(function(){var inp=document.getElementById('ci-sec-name-input');if(inp)inp.focus();},50);
 }
@@ -2988,7 +3521,7 @@ function ciAddKidInline(){
   row.style.cssText='display:flex;gap:6px;align-items:center';
   var newId='ci-k-new-'+Date.now();
   row.innerHTML='<input class="ci-inline-input" id="'+newId+'" placeholder="Child first name">'
-    +'<button onclick="ciConfirmNewKid(\''+newId+'\')" style="padding:6px 10px;background:var(--or);border:none;color:#fff;border-radius:7px;font-size:12px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;white-space:nowrap">Add</button>';
+    +'<button onclick="ciConfirmNewKid(\''+newId+'\')" style="padding:6px 10px;background:var(--or);border:none;color:#fff;border-radius:7px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;white-space:nowrap">Add</button>';
   list.insertBefore(row,addBtn);
   setTimeout(function(){var inp=document.getElementById(newId);if(inp)inp.focus();},50);
 }
@@ -3029,42 +3562,10 @@ function updateOverNote(){}
 
 function doCheckin(id){
   var m=members.find(function(x){return x.id===id;}); if(!m) return;
-  if(m.status==='unpaid'&&getUnpaidDays(m.id)>=3){showToast('Check-in blocked &mdash; payment required','err');return;}
-  // Require second adult name for Couples if missing
-  if(getTypeConfig(m.type).requireSecond&&!(m.secFirst||m.secLast)){
-    showToast('Please add the second adult\'s name first','warn'); return;
-  }
-  // Collect checked adults
-  var checkedAdults=[];
-  var a0=document.getElementById('chk-a0');
-  if(a0&&a0.checked) checkedAdults.push(m.first+' '+m.last);
-  var a1=document.getElementById('chk-a1');
-  if(a1&&a1.checked) checkedAdults.push((m.secFirst||'')+' '+(m.secLast||''));
-  // Collect checked children (existing)
-  var checkedKids=[];
-  (m.kids||[]).forEach(function(k,i){
-    var chk=document.getElementById('chk-k'+i);
-    if(chk&&chk.checked) checkedKids.push(k);
-  });
-  // Collect newly added kids
-  var newKids=[];
-  var addedItems=document.querySelectorAll('[data-new-kid]');
-  addedItems.forEach(function(item){
-    var chk=item.querySelector('input[type=checkbox]');
-    if(chk&&chk.checked) newKids.push(item.dataset.newKid);
-    else if(item.dataset.newKid) newKids.push(item.dataset.newKid); // always save new kids to membership
-  });
-  if(checkedAdults.length===0&&checkedKids.length===0&&newKids.length===0&&ciGuests===0){
-    showToast('Select at least one person checking in','warn'); return;
-  }
-  if(ciGuests>0){
-    var rem=m.guestsTotal-(m.guestsUsed||0);
-    if(ciGuests<=rem) commitCheckin(m,checkedAdults,checkedKids,newKids,ciGuests,false);
-    else if(rem>0) showGPModal(m,ciGuests,rem,'partial');
-    else showGPModal(m,ciGuests,0,'purchase');
-  } else {
-    commitCheckin(m,checkedAdults,checkedKids,newKids,0,false);
-  }
+  if(m.status==='unpaid'&&getUnpaidDays(m.id)>=GRACE_DAYS){showToast('Check-in blocked - payment required','err');return;}
+  if(m.status==='inactive'||m.status==='terminated'){showToast('This membership is '+m.status,'warn');return;}
+  if(hasCriticalMissing(m)){showToast('Complete required info first','warn');openMissingInfo(m.id);return;}
+  openMember(m.id,true);
 }
 
 function commitCheckin(m,checkedAdults,checkedKids,newKids,passesUsed,purchased){
@@ -3085,10 +3586,11 @@ function commitCheckin(m,checkedAdults,checkedKids,newKids,passesUsed,purchased)
   playChime();
   // Reset check-in tab after flash
   setTimeout(function(){
-    ciLastAlpha=''; ciFirstAlpha=''; _ilfAdults=0;
+    ciLastAlpha=''; ciFirstAlpha=''; _ilfAdults=0; ciGuests=0;
+    closeMM();
     switchTab('ci');
     renderCI();
-  }, 2100);
+  }, 1800);
 }
 
 function showGPModal(m,requested,rem,mode){gpMember=m;gpOver=requested;var toPurchase=mode==='purchase'?requested:requested-rem;var fromBal=mode==='purchase'?0:rem;var bd='<div class="gp-breakdown">';if(fromBal>0)bd+='<div class="gp-line"><span>From pass balance</span><span>'+fromBal+' pass'+(fromBal>1?'es':'')+'</span></div>';if(toPurchase>0)bd+='<div class="gp-line"><span>Purchase @ $'+GUEST_PRICE+' each</span><span>'+toPurchase+' pass'+(toPurchase>1?'es':'')+'</span></div>';bd+='<div class="gp-total"><span>Total</span><span>'+requested+' guests &middot; '+(toPurchase>0?'$'+(toPurchase*GUEST_PRICE)+' due':'no charge')+'</span></div></div>';var inner='<div class="gp-body"><div class="gp-icon">&#x1F3AB;</div>';if(mode==='purchase'){inner+='<div class="gp-headline">No Passes Remaining</div><div class="gp-detail">Purchase '+requested+' pass'+(requested>1?'es':'')+' at $'+GUEST_PRICE+' each?</div>'+bd+'<div class="gp-btns"><button class="gp-buy" onclick="gpPurchase('+requested+')">&#x1F4B3; Purchase &middot; $'+(toPurchase*GUEST_PRICE)+'</button><button class="gp-skip" onclick="gpSkip()">Check In Without Passes</button></div>';}else{inner+='<div class="gp-headline">Not Enough Passes</div><div class="gp-detail">'+rem+' remaining &mdash; use all + purchase '+toPurchase+' more?</div>'+bd+'<div class="gp-btns"><button class="gp-buy" onclick="gpBuyPartial('+fromBal+','+toPurchase+')">Use '+fromBal+' + Buy '+toPurchase+' &middot; $'+(toPurchase*GUEST_PRICE)+'</button><button class="gp-skip" onclick="gpSkip()">Check In Without Passes</button></div>';}inner+='</div>';document.getElementById('gp-inner').innerHTML=inner;document.getElementById('gp-overlay').classList.add('open');}
@@ -3108,7 +3610,7 @@ document.getElementById('ed-body').innerHTML=
   +'<div class="frow"><div class="fg"><label class="fl">City</label><input class="fi" id="ef-city" value="'+(m.city||'')+'" placeholder="Gibsonville"></div><div class="fg"><label class="fl">State</label><input class="fi" id="ef-state" value="'+(m.state||'NC')+'" placeholder="NC"></div></div>'
   +'<div class="fg"><label class="fl">Zip Code</label><input class="fi" id="ef-zip" value="'+(m.zip||'')+'" placeholder="27249" style="max-width:140px"></div>'
   +'<div class="fg"><label class="fl">Membership Type</label><select class="fs" id="ef-type" onchange="typeChanged()">'+CONFIG.membershipTypes.map(function(t){return'<option value="'+t.key+'"'+(m.type===t.key?' selected':'')+'>'+t.label+(t.requireSecond?' (2 adults required)':t.maxAdults>1&&t.allowChildren?' (adults + children)':t.adults===1&&!t.allowChildren?' (1 adult)':t.maxAdults===2&&!t.allowChildren?' (2 adults)':'')+' &mdash; '+t.guestPasses+' passes'+'</option>';}).join('')+'</select></div>'
-  +'<div class="fg"><label class="fl">Payment Status</label><div style="display:flex;gap:8px;align-items:center"><div style="flex:1;padding:11px 13px;border:2px solid var(--sand2);border-radius:10px;background:var(--sand);font-size:16px;color:var(--tx)" id="status-display">'+({paid:'Paid',pending:'Pending',unpaid:'Unpaid'}[m.status||'paid']||'Paid')+'</div><input type="hidden" id="ef-status" value="'+(m.status||'paid')+'"><button onclick="changePaymentStatus()" style="padding:11px 13px;background:var(--bl);border:none;color:#fff;border-radius:10px;font-size:13px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;white-space:nowrap">&#x1F511; Change</button></div></div>'
+  +'<div class="fg"><label class="fl">Payment Status</label><div style="display:flex;gap:8px;align-items:center"><div style="flex:1;padding:11px 13px;border:2px solid var(--sand2);border-radius:10px;background:var(--sand);font-size:16px;color:var(--tx)" id="status-display">'+({paid:'Paid',pending:'Pending',unpaid:'Unpaid'}[m.status||'paid']||'Paid')+'</div><input type="hidden" id="ef-status" value="'+(m.status||'paid')+'"><button onclick="changePaymentStatus()" style="padding:11px 13px;background:var(--bl);border:none;color:#fff;border-radius:10px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;white-space:nowrap">&#x1F511; Change</button></div></div>'
   +'<div class="sec-lbl">Guest Passes</div>'
   +'<div class="frow"><div class="fg"><label class="fl">Used</label><input class="fi" id="ef-gused" type="number" min="0" value="'+(m.guestsUsed||0)+'"></div><div class="fg"><label class="fl">Total Allotted</label><input class="fi" id="ef-gtotal" type="number" min="0" value="'+(m.guestsTotal!==undefined?m.guestsTotal:GUEST_PASSES[m.type||'Individual'])+'"></div></div>'
   +'<div class="sec-lbl">Household Roster</div>'
@@ -3127,12 +3629,31 @@ document.getElementById('ed-body').innerHTML=
   +'<div class="fg"><label class="fl">Zip Code</label><input class="fi" id="ef-nanny-zip" value="'+(m.nannyZip||'')+'" placeholder="27249" style="max-width:140px"></div>'
   +'<div class="fg"><label class="fl">Date of Birth</label><input class="fi" id="ef-nanny-dob" type="date" value="'+(m.nannyDob||'')+'"></div>'
   +'</div>'
+  +'<div id="crm-section-placeholder"></div>'
   +'<button class="btn-p" onclick="commitEdit()">&#x1F4BE; Save Member</button>'
   +(id?'<button class="btn-d" onclick="confirmDelete(\''+id+'\')">&#x1F5D1; Delete Member</button>':'');
-document.getElementById('ed-overlay').classList.add('open');updateSecVisibility();}
+document.getElementById('ed-overlay').classList.add('open');
+  updateSecVisibility();
+  // Inject CRM section if editing existing member
+  if(id){
+    var m2=members.find(function(x){return x.id===id;});
+    if(m2){
+      var ph=document.getElementById('crm-section-placeholder');
+      if(ph) ph.outerHTML=buildCrmSection(m2);
+    }
+  }
+}
 
-function changePaymentStatus(){
-  if(!can('canChangePayment')){showToast('You do not have permission to change payment status','warn');return;}requireAdminPin(function(){var cur=document.getElementById('ef-status').value;var opts=['paid','pending','unpaid','inactive','terminated'];var labels={paid:'Paid',pending:'Pending',unpaid:'Unpaid',inactive:'Inactive',terminated:'Terminated'};var next=opts[(opts.indexOf(cur)+1)%opts.length];document.getElementById('ef-status').value=next;document.getElementById('status-display').textContent=labels[next];showToast('Status changed to '+labels[next],'ok');});}
+function changePaymentStatus(){requireAdminPin(function(){var cur=document.getElementById('ef-status').value;var opts=['paid','pending','unpaid','inactive','terminated'];var labels={paid:'Paid',pending:'Pending',unpaid:'Unpaid',inactive:'Inactive',terminated:'Terminated'};var next=opts[(opts.indexOf(cur)+1)%opts.length];document.getElementById('ef-status').value=next;var _sd=document.getElementById('status-display');if(_sd)_sd.textContent=labels[next];
+    // Log status change to activity
+    if(editingId){
+      var _oldStatus=cur;
+      logStatusChange(editingId,labels[_oldStatus]||_oldStatus,labels[next]);
+      // Refresh CRM section
+      var _m2=members.find(function(x){return x.id===editingId;});
+      var _crm=document.getElementById('crm-section');
+      if(_crm&&_m2){_crm.outerHTML=buildCrmSection(_m2);}
+    }showToast('Status changed to '+labels[next],'ok');});}
 function getTypeConfig(key){
   return CONFIG.membershipTypes.find(function(t){return t.key===key;})||{adults:1,maxAdults:1,guestPasses:0,requireSecond:false,allowChildren:false};
 }
@@ -3144,39 +3665,13 @@ function toggleSecondary(){}
 function addKid(){var list=document.getElementById('kids-list');if(!list)return;var row=document.createElement('div');row.style.cssText='display:flex;gap:6px;align-items:center';row.innerHTML='<input class="fi kid-input" placeholder="Child first name" style="flex:1"><button onclick="removeKid(this)" style="background:var(--rel);border:none;color:var(--re);width:32px;height:32px;border-radius:8px;font-size:16px;cursor:pointer;flex-shrink:0">&#x2715;</button>';list.appendChild(row);row.querySelector('input').focus();}
 function removeKid(btn){var row=btn.parentElement;row.parentElement.removeChild(row);}
 function closeEdit(){document.getElementById('ed-overlay').classList.remove('open');}
-function commitEdit(){var first=document.getElementById('ef-first').value.trim();var last=document.getElementById('ef-last').value.trim();if(!first||!last){showToast('Name required','warn');return;}var type=document.getElementById('ef-type').value;var gtotal=parseInt(document.getElementById('ef-gtotal').value);if(isNaN(gtotal))gtotal=GUEST_PASSES[type];var secRow=document.getElementById('sec-name-row');var secOk=secRow&&secRow.style.display!=='none';var kids=(function(){var inputs=document.querySelectorAll('.kid-input'),arr=[];inputs.forEach(function(i){var v=i.value.trim();if(v)arr.push(v);});return arr;})();var m={id:editingId||uid(),first:first,last:last,type:type,status:document.getElementById('ef-status').value,email:document.getElementById('ef-email').value.trim(),phone:formatPhone(document.getElementById('ef-phone').value),street:document.getElementById('ef-street').value.trim(),city:document.getElementById('ef-city').value.trim(),state:document.getElementById('ef-state').value.trim(),zip:document.getElementById('ef-zip').value.trim(),adults:parseInt(document.getElementById('ef-adults').value)||1,kids:kids,children:kids.length,guestsUsed:parseInt(document.getElementById('ef-gused').value)||0,guestsTotal:gtotal,secFirst:secOk&&document.getElementById('ef-sec-first')?document.getElementById('ef-sec-first').value.trim():'',secLast:secOk&&document.getElementById('ef-sec-last')?document.getElementById('ef-sec-last').value.trim():'',secPhone:secOk&&document.getElementById('ef-sec-phone')?formatPhone(document.getElementById('ef-sec-phone').value):'',secEmail:secOk&&document.getElementById('ef-sec-email')?document.getElementById('ef-sec-email').value.trim():'',notes:document.getElementById('ef-notes').value.trim(),nannyEnabled:document.getElementById('ef-nanny-enabled').checked,nannyName:document.getElementById('ef-nanny-name')?document.getElementById('ef-nanny-name').value.trim():'',nannyPhone:document.getElementById('ef-nanny-phone')?formatPhone(document.getElementById('ef-nanny-phone').value):'',nannyStreet:document.getElementById('ef-nanny-street')?document.getElementById('ef-nanny-street').value.trim():'',nannyCity:document.getElementById('ef-nanny-city')?document.getElementById('ef-nanny-city').value.trim():'',nannyState:document.getElementById('ef-nanny-state')?document.getElementById('ef-nanny-state').value.trim():'',nannyZip:document.getElementById('ef-nanny-zip')?document.getElementById('ef-nanny-zip').value.trim():'',nannyDob:document.getElementById('ef-nanny-dob')?document.getElementById('ef-nanny-dob').value:''};saveMember(m);closeEdit();showToast(m.first+' '+m.last+' '+(editingId?'updated':'added'),'ok');}
+function commitEdit(){var _existingMember=editingId?members.find(function(x){return x.id===editingId;}):null;var first=document.getElementById('ef-first').value.trim();var last=document.getElementById('ef-last').value.trim();if(!first||!last){showToast('Name required','warn');return;}var type=document.getElementById('ef-type').value;var gtotal=parseInt(document.getElementById('ef-gtotal').value);if(isNaN(gtotal))gtotal=GUEST_PASSES[type];var secRow=document.getElementById('sec-name-row');var secOk=secRow&&secRow.style.display!=='none';var kids=(function(){var inputs=document.querySelectorAll('.kid-input'),arr=[];inputs.forEach(function(i){var v=i.value.trim();if(v)arr.push(v);});return arr;})();var _existingM=editingId?members.find(function(x){return x.id===editingId;}):null;
+  var m={id:editingId||uid(),tasks:(_existingMember&&_existingMember.tasks)||[],activity:(_existingMember&&_existingMember.activity)||[],
+    tasks:(_existingM&&_existingM.tasks)||[],
+    activity:(_existingM&&_existingM.activity)||[],first:first,last:last,type:type,status:document.getElementById('ef-status').value,email:document.getElementById('ef-email').value.trim(),phone:formatPhone(document.getElementById('ef-phone').value),street:document.getElementById('ef-street').value.trim(),city:document.getElementById('ef-city').value.trim(),state:document.getElementById('ef-state').value.trim(),zip:document.getElementById('ef-zip').value.trim(),adults:parseInt(document.getElementById('ef-adults').value)||1,kids:kids,children:kids.length,guestsUsed:parseInt(document.getElementById('ef-gused').value)||0,guestsTotal:gtotal,secFirst:secOk&&document.getElementById('ef-sec-first')?document.getElementById('ef-sec-first').value.trim():'',secLast:secOk&&document.getElementById('ef-sec-last')?document.getElementById('ef-sec-last').value.trim():'',secPhone:secOk&&document.getElementById('ef-sec-phone')?formatPhone(document.getElementById('ef-sec-phone').value):'',secEmail:secOk&&document.getElementById('ef-sec-email')?document.getElementById('ef-sec-email').value.trim():'',notes:document.getElementById('ef-notes').value.trim(),nannyEnabled:document.getElementById('ef-nanny-enabled').checked,nannyName:document.getElementById('ef-nanny-name')?document.getElementById('ef-nanny-name').value.trim():'',nannyPhone:document.getElementById('ef-nanny-phone')?formatPhone(document.getElementById('ef-nanny-phone').value):'',nannyStreet:document.getElementById('ef-nanny-street')?document.getElementById('ef-nanny-street').value.trim():'',nannyCity:document.getElementById('ef-nanny-city')?document.getElementById('ef-nanny-city').value.trim():'',nannyState:document.getElementById('ef-nanny-state')?document.getElementById('ef-nanny-state').value.trim():'',nannyZip:document.getElementById('ef-nanny-zip')?document.getElementById('ef-nanny-zip').value.trim():'',nannyDob:document.getElementById('ef-nanny-dob')?document.getElementById('ef-nanny-dob').value:''};saveMember(m);closeEdit();showToast(m.first+' '+m.last+' '+(editingId?'updated':'added'),'ok');}
 function confirmDelete(id){requireAdminPin(function(){delMember(id);closeEdit();showToast('Member deleted','warn');});}
 
-function sendPaymentAlert(memberId){
-  var m=members.find(function(x){return x.id===memberId;}); if(!m)return;
-  var btn=document.getElementById('pay-alert-btn');
-  if(btn){btn.disabled=true;btn.textContent='Sending...';}
-  var params={
-    to_email:NOTIFY_EMAIL_ADDR,
-    name:'Gibsonville Swim Club Check-In',
-    member_name:m.first+' '+m.last,
-    member_type:m.type,
-    member_email:m.email||'(not on file)',
-    member_phone:m.phone||'(not on file)',
-    member_address:(m.street||'')+(m.city?', '+m.city:'')+(m.state?' '+m.state:'')+(m.zip?' '+m.zip:''),
-    unpaid_days:getUnpaidDays(m.id),
-    checkin_date:new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}),
-    checkin_time:new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})
-  };
-  if(EMAILJS_PUBLIC_KEY==='PASTE_PUBLIC_KEY'){showToast('EmailJS not configured yet','warn');return;}
-  emailjs.init({publicKey:EMAILJS_PUBLIC_KEY});
-  emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,params,{publicKey:EMAILJS_PUBLIC_KEY})
-    .then(function(){
-      var c=document.getElementById('pay-alert-container');
-      if(c){c.innerHTML='<div style="background:rgba(134,239,172,.2);border:1.5px solid rgba(134,239,172,.5);border-radius:9px;padding:10px 12px;text-align:center;display:flex;flex-direction:column;gap:3px"><div style="font-size:14px;font-weight:800;color:#bbf7d0">&#x2705; Sent for review</div><div style="font-size:11px;color:rgba(255,255,255,.6)">jeff@gsrconline.com has been notified</div></div>';}
-      showToast('Payment review request sent','ok');
-    })
-    .catch(function(e){
-      console.error('EmailJS:',e);
-      if(btn){btn.disabled=false;btn.innerHTML='&#x1F4E7; Member has paid — Submit for Review';}
-      showToast('Email failed — try again','err');
-    });
-}
+
 
 function renderRep(){
   var el=document.getElementById('rep-body');if(!el)return;
@@ -3219,7 +3714,7 @@ function renderRep(){
   // ── KPI card builder ─────────────────────────────────────────────────────
   function stat(val, lbl, color, chartId){
     var chartBtn=chartId
-      ?'<button onclick="showRepChart(\''+chartId+'\')" style="margin-top:8px;background:none;border:none;padding:0;cursor:pointer;font-size:11px;font-weight:700;color:'+color+';opacity:.7;font-family:-apple-system,sans-serif;letter-spacing:.3px">View Chart ›</button>'
+      ?'<button onclick="showRepChart(\''+chartId+'\')" style="margin-top:8px;background:none;border:none;padding:0;cursor:pointer;font-size:11px;font-weight:700;color:'+color+';opacity:.7;font-family:Inter,sans-serif;letter-spacing:.3px">View Chart ›</button>'
       :'';
     return '<div class="rstat" style="--rcolor:'+color+'">'
       +'<div class="rstat-val">'+val+'</div>'
@@ -3249,6 +3744,33 @@ function renderRep(){
     +stat(todayV.reduce(function(s,v){return s+(v.guestPasses||0);},0),'Guest Passes',AM),
     4
   );
+
+  // Today's check-in list
+  if(todayV.length){
+    var todayList='<div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">';
+    var sortedToday=todayV.slice().sort(function(a,b){return new Date(b.ts)-new Date(a.ts);});
+    sortedToday.forEach(function(v){
+      var m=members.find(function(x){return x.id===v.memberId;});
+      var mName=m?m.last+', '+m.first:'Unknown Member';
+      var statusColor=m?(m.status==='paid'?'#22c55e':'#ef4444'):'#6b7280';
+      var time=new Date(v.ts).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+      var who=[];
+      if(v.checkedAdults&&v.checkedAdults.length) who=who.concat(v.checkedAdults);
+      if(v.checkedKids&&v.checkedKids.length) who=who.concat(v.checkedKids);
+      var rStr=who.length?who.join(', '):(v.adults||0)+' adult'+(v.adults!==1?'s':'')+(v.children?' + '+v.children+' child'+(v.children!==1?'ren':''):'');
+      var tags='';
+      if(v.selfCheckin) tags+='<span style="font-size:9px;font-weight:700;background:var(--pul);color:var(--pu);border-radius:6px;padding:1px 5px;margin-left:4px">SELF</span>';
+      if(v.guestPasses) tags+='<span style="font-size:9px;font-weight:700;background:var(--aml);color:var(--am);border-radius:6px;padding:1px 5px;margin-left:4px">'+v.guestPasses+' guest'+(v.guestPasses>1?'s':'')+'</span>';
+      todayList+='<div style="background:#fff;border-radius:var(--r-sm);padding:10px 12px;display:flex;align-items:center;gap:10px;box-shadow:var(--sh)">'
+        +'<div style="width:4px;height:36px;border-radius:2px;background:'+statusColor+';flex-shrink:0"></div>'
+        +'<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:var(--bld)">'+mName+tags+'</div>'
+        +'<div style="font-size:11px;color:var(--mu);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+rStr+'</div></div>'
+        +'<div style="font-size:11px;color:var(--mu);flex-shrink:0">'+time+'</div>'
+        +'</div>';
+    });
+    todayList+='</div>';
+    html+='<div class="rsec"><div class="rsec-title" style="margin-bottom:8px">Today\u2019s Check-Ins ('+todayV.length+')</div>'+todayList+'</div>';
+  }
 
   // Last 7 days
   html+=section(
@@ -3481,7 +4003,21 @@ function openCSVImport(){csvParsed=[];document.getElementById('csv-body').innerH
 function closeCSV(){document.getElementById('csv-overlay').classList.remove('open');}
 function handleCSVFile(e){var file=e.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(ev){parseCSV(ev.target.result);};reader.readAsText(file);}
 function splitCSVRow(row){var result=[],cur='',inQ=false;for(var i=0;i<row.length;i++){var c=row[i];if(c==='"'){inQ=!inQ;continue;}if(c===','&&!inQ){result.push(cur.trim());cur='';continue;}cur+=c;}result.push(cur.trim());return result;}
-function parseCSV(text){var lines=text.trim().split('\n');if(lines.length<2){showToast('CSV appears empty','err');return;}var headers=lines[0].split(',').map(function(h){return h.replace(/"/g,'').trim().toLowerCase();});var idx=function(names){for(var i=0;i<names.length;i++){var j=headers.indexOf(names[i]);if(j>=0)return j;}return -1;};var col={last:idx(['last','last name']),first:idx(['first','first name']),type:idx(['type','membership type']),status:idx(['status']),adults:idx(['adults']),kids:idx(['kids names','kids']),gused:idx(['passes used','used']),gtotal:idx(['passes total','total']),email:idx(['email']),phone:idx(['phone']),street:idx(['street','street address']),city:idx(['city']),state:idx(['state']),zip:idx(['zip','zip code'])};if(col.last<0||col.first<0){showToast('CSV must have Last and First columns','err');return;}var parsed=[];for(var i=1;i<lines.length;i++){var row=splitCSVRow(lines[i]);if(!row.length||!row[col.last])continue;var type=col.type>=0?row[col.type]:'Family';if(!GUEST_PASSES.hasOwnProperty(type))type='Family';var status=col.status>=0?row[col.status].toLowerCase():'paid';if(['paid','pending','unpaid'].indexOf(status)<0)status='paid';var gtotal=col.gtotal>=0?parseInt(row[col.gtotal]):GUEST_PASSES[type];if(isNaN(gtotal))gtotal=GUEST_PASSES[type];var kidsRaw=col.kids>=0?row[col.kids]:'';var kids=kidsRaw?kidsRaw.split(';').map(function(k){return k.trim();}).filter(Boolean):[];parsed.push({id:uid(),last:(col.last>=0?row[col.last]:'').trim(),first:(col.first>=0?row[col.first]:'').trim(),type:type,status:status,adults:col.adults>=0?(parseInt(row[col.adults])||1):1,kids:kids,children:kids.length,guestsUsed:col.gused>=0?(parseInt(row[col.gused])||0):0,guestsTotal:gtotal,email:(col.email>=0?row[col.email]:'').trim(),phone:(col.phone>=0?row[col.phone]:'').trim(),street:(col.street>=0?row[col.street]:'').trim(),city:(col.city>=0?row[col.city]:'').trim(),state:(col.state>=0?row[col.state]:'NC').trim(),zip:(col.zip>=0?row[col.zip]:'').trim()});}csvParsed=parsed;var prev='<div class="csv-preview"><table><tr><th>Last</th><th>First</th><th>Type</th><th>Status</th><th>Adults</th><th>Kids</th></tr>'+parsed.slice(0,10).map(function(m){return'<tr><td>'+m.last+'</td><td>'+m.first+'</td><td>'+m.type+'</td><td>'+m.status+'</td><td>'+m.adults+'</td><td>'+m.kids.join(', ')+'</td></tr>';}).join('')+(parsed.length>10?'<tr><td colspan="6" style="color:var(--mu);text-align:center">...and '+(parsed.length-10)+' more</td></tr>':'')+'</table></div>';document.getElementById('csv-preview').innerHTML=prev;document.getElementById('csv-actions').innerHTML='<p style="font-size:13px;color:var(--mu);margin-top:8px">'+parsed.length+' members found.</p><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px"><button class="btn-p" onclick="importCSVMerge()">&#xFF0B; Merge with Existing</button><button class="btn-o" onclick="importCSVReplace()">&#x1F504; Replace All Members</button></div>';}
+function parseCSV(text){
+  text=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  function parseRow(line){
+    var cols=[],cur='',inQ=false;
+    for(var i=0;i<line.length;i++){
+      var ch=line[i];
+      if(ch==='"'&&!inQ){inQ=true;}
+      else if(ch==='"'&&inQ){if(line[i+1]==='"'){cur+='"';i++;}else{inQ=false;}}
+      else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+      else{cur+=ch;}
+    }
+    cols.push(cur.trim());
+    return cols;
+  }
+  var lines=text.trim().split('\n');if(lines.length<2){showToast('CSV appears empty','err');return;}var headers=parseRow(lines[0]).map(function(h){return h.replace(/"/g,'').trim().toLowerCase();});var idx=function(names){for(var i=0;i<names.length;i++){var j=headers.indexOf(names[i]);if(j>=0)return j;}return -1;};var col={last:idx(['last','last name']),first:idx(['first','first name']),type:idx(['type','membership type']),status:idx(['status']),adults:idx(['adults']),kids:idx(['kids','kids names','children names']),gused:idx(['passes used','used']),gtotal:idx(['passes total','total']),email:idx(['email']),phone:idx(['phone']),street:idx(['street','street address']),city:idx(['city']),state:idx(['state']),zip:idx(['zip','zip code'])};if(col.last<0||col.first<0){showToast('CSV must have Last and First columns','err');return;}var parsed=[];for(var i=1;i<lines.length;i++){var row=splitCSVRow(lines[i]);if(!row.length||!row[col.last])continue;var type=col.type>=0?row[col.type]:'Family';if(!GUEST_PASSES.hasOwnProperty(type))type='Family';var status=col.status>=0?row[col.status].toLowerCase():'paid';if(['paid','pending','unpaid'].indexOf(status)<0)status='paid';var gtotal=col.gtotal>=0?parseInt(row[col.gtotal]):GUEST_PASSES[type];if(isNaN(gtotal))gtotal=GUEST_PASSES[type];var kidsRaw=col.kids>=0?row[col.kids]:'';var kids=kidsRaw?kidsRaw.split(';').map(function(k){return k.trim();}).filter(Boolean):[];parsed.push({id:uid(),last:(col.last>=0?row[col.last]:'').trim(),first:(col.first>=0?row[col.first]:'').trim(),type:type,status:status,adults:col.adults>=0?(parseInt(row[col.adults])||1):1,kids:kids,children:kids.length,guestsUsed:col.gused>=0?(parseInt(row[col.gused])||0):0,guestsTotal:gtotal,email:(col.email>=0?row[col.email]:'').trim(),phone:(col.phone>=0?row[col.phone]:'').trim(),street:(col.street>=0?row[col.street]:'').trim(),city:(col.city>=0?row[col.city]:'').trim(),state:(col.state>=0?row[col.state]:'NC').trim(),zip:(col.zip>=0?row[col.zip]:'').trim()});}csvParsed=parsed;var prev='<div class="csv-preview"><table><tr><th>Last</th><th>First</th><th>Type</th><th>Status</th><th>Adults</th><th>Kids</th></tr>'+parsed.slice(0,10).map(function(m){return'<tr><td>'+m.last+'</td><td>'+m.first+'</td><td>'+m.type+'</td><td>'+m.status+'</td><td>'+m.adults+'</td><td>'+m.kids.join(', ')+'</td></tr>';}).join('')+(parsed.length>10?'<tr><td colspan="6" style="color:var(--mu);text-align:center">...and '+(parsed.length-10)+' more</td></tr>':'')+'</table></div>';document.getElementById('csv-preview').innerHTML=prev;document.getElementById('csv-actions').innerHTML='<p style="font-size:13px;color:var(--mu);margin-top:8px">'+parsed.length+' members found.</p><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px"><button class="btn-p" onclick="importCSVMerge()">&#xFF0B; Merge with Existing</button><button class="btn-o" onclick="importCSVReplace()">&#x1F504; Replace All Members</button></div>';}
 function importCSVMerge(){if(!csvParsed.length){showToast('No data','warn');return;}var added=0,updated=0;csvParsed.forEach(function(nm){var ex=members.find(function(m){return m.last.toLowerCase()===nm.last.toLowerCase()&&m.first.toLowerCase()===nm.first.toLowerCase();});if(ex){var merged=Object.assign({},ex,nm,{id:ex.id});saveMember(merged);updated++;}else{saveMember(nm);added++;}});if(!fbReady){lSet('gsc_members',members);renderAll();}closeCSV();showToast('Imported: '+added+' added, '+updated+' updated','ok');}
 function importCSVReplace(){if(!csvParsed.length){showToast('No data','warn');return;}if(!confirm('Replace all existing members? Visit history is kept.'))return;// Delete existing members from Firebase first
 if(fbReady&&window._delMemberFB){members.forEach(function(m){window._delMemberFB(m.id);});}// Save new ones
@@ -3580,6 +4116,16 @@ function openSettings(){
   } else {
     try{var msg=localStorage.getItem('gsc_announcement')||'';var inp=document.getElementById('st-announce');if(inp)inp.value=msg;}catch(e){}
   }
+  // Data Tools section for master admin
+  (function(){
+    var sb3=document.getElementById('st-body');
+    if(!sb3||!isMasterAdmin()) return;
+    var sec3=document.createElement('div');
+    sec3.className='st-section';
+    sec3.innerHTML='<div class="st-sec-hdr">&#x1F50D; Data Tools</div>'
+      +'<button onclick="closeSettings();openDedupModal()" style="width:100%;padding:13px;background:var(--bll);border:1.5px solid var(--bl);border-radius:var(--r);font-size:14px;font-weight:700;color:var(--bld);font-family:-apple-system,sans-serif;cursor:pointer">&#x1F50D; Find Duplicate Members</button>';
+    sb3.appendChild(sec3);
+  })();
   })();
 }
 
@@ -3794,14 +4340,15 @@ function renderIncidents(){
 function openNewIncident(){
   document.getElementById('inc-modal-title').textContent='New Incident';
   document.getElementById('inc-modal-body').innerHTML=buildIncidentForm(null);
-  var _io=document.getElementById('inc-overlay');_io.style.display='flex';_io.classList.add('open');
+  var _io=document.getElementById('inc-overlay');
+  if(_io){_io.style.display='flex';_io.classList.add('open');}
 }
 
 function viewIncident(id){
   var inc=incidents.find(function(x){return x.id===id;}); if(!inc) return;
   document.getElementById('inc-modal-title').textContent='Incident Report';
   document.getElementById('inc-modal-body').innerHTML=buildIncidentForm(inc);
-  var _io=document.getElementById('inc-overlay');_io.style.display='flex';_io.classList.add('open');
+  document.getElementById('inc-overlay').style.display='flex';
 }
 
 function buildIncidentForm(inc){
@@ -3882,7 +4429,7 @@ function saveFollowupNote(id){
 }
 
 function closeIncident(){
-  var _ic=document.getElementById('inc-overlay');_ic.style.display='none';_ic.classList.remove('open');
+  document.getElementById('inc-overlay').style.display='none';
 }
 
 function saveTimeoutSetting(){
@@ -3931,13 +4478,13 @@ function showUserManagementUI(users){
         +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
         +'<div><div style="font-weight:700;font-size:14px">'+u.displayName+'</div>'
         +'<div style="font-size:11px;color:var(--mu)">@'+u.username+' &middot; '+u.roleLabel+'</div></div>'
-        +'<button onclick="deleteStaffUser(&quot;'+u.id+'&quot;)" style="background:var(--rel);border:none;color:var(--re);padding:6px 10px;border-radius:8px;font-size:12px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Remove</button>'
+        +'<button onclick="deleteStaffUser(&quot;'+u.id+'&quot;)" style="background:var(--rel);border:none;color:var(--re);padding:6px 10px;border-radius:8px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Remove</button>'
         +'</div>'
         +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">'+PERMS.map(function(p){
           return'<label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--tx);cursor:pointer">'
             +'<input type="checkbox" data-uid="'+u.id+'" data-perm="'+p.key+'" onchange="updateUserPerm(this)"'+(perms[p.key]?' checked':'')+' style="accent-color:var(--or)"> '+p.label+'</label>';
         }).join('')+'</div>'
-        +'<button data-uid="'+u.id+'" data-name="'+u.displayName+'" onclick="resetUserPassword(this.dataset.uid,this.dataset.name)" style="margin-top:8px;background:var(--bll);border:none;color:var(--bl);padding:7px 12px;border-radius:8px;font-size:12px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer;width:100%">Reset Password</button>'
+        +'<button data-uid="'+u.id+'" data-name="'+u.displayName+'" onclick="resetUserPassword(this.dataset.uid,this.dataset.name)" style="margin-top:8px;background:var(--bll);border:none;color:var(--bl);padding:7px 12px;border-radius:8px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;width:100%">Reset Password</button>'
         +'</div>';
     });
   } else {
@@ -3955,7 +4502,7 @@ function showUserManagementUI(users){
       return'<label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">'
         +'<input type="checkbox" class="nu-perm" data-perm="'+p.key+'" style="accent-color:var(--or)"'+(DEFAULT_PERMISSIONS.board[p.key]?' checked':'')+'>'+p.label+'</label>';
     }).join('')+'</div>'
-    +'<button onclick="addStaffUser()" style="width:100%;padding:12px;background:var(--or);border:none;color:#fff;border-radius:10px;font-size:14px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Add User</button>'
+    +'<button onclick="addStaffUser()" style="width:100%;padding:12px;background:var(--or);border:none;color:#fff;border-radius:10px;font-size:14px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Add User</button>'
     +'</div>';
   html+='</div>';
   // Show in a modal
@@ -4056,7 +4603,7 @@ function sciShowSetup(){
     +'</div>'
     +'<div class="fg"><label class="fl">Setup Code (from attendant)</label>'
     +'<input class="fi" id="sci-setup-code" type="tel" maxlength="6" placeholder="______" style="font-size:24px;text-align:center;letter-spacing:8px"></div>'
-    +'<button onclick="verifySciSetupCode()" style="width:100%;padding:16px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:17px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Continue</button>'
+    +'<button onclick="verifySciSetupCode()" style="width:100%;padding:16px;background:var(--or);border:none;color:#fff;border-radius:11px;font-size:17px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Continue</button>'
     +'<div id="sci-setup-err" style="color:var(--re);font-size:13px;font-weight:600;text-align:center;min-height:18px"></div>';
   document.getElementById('sci-body').innerHTML=html;
 }
@@ -4154,7 +4701,7 @@ function renderSciPinEntry(){
     }).join('')
     +'</div>'
     +'<div id="sci-pin-err" style="color:var(--re);font-size:13px;font-weight:600;text-align:center;min-height:18px"></div>'
-    +'<button onclick="sciForgetDevice()" style="margin-top:12px;background:none;border:none;color:var(--mu);font-size:12px;cursor:pointer;font-family:-apple-system,sans-serif">Not '+m.first+'? Tap here</button>';
+    +'<button onclick="sciForgetDevice()" style="margin-top:12px;background:none;border:none;color:var(--mu);font-size:12px;cursor:pointer;font-family:Inter,sans-serif">Not '+m.first+'? Tap here</button>';
   document.getElementById('sci-body').innerHTML=html;
 }
 
@@ -4233,15 +4780,15 @@ function sciShowCheckin(){
       +'<div><div style="font-size:13px;font-weight:700;color:var(--bld)">🎟 Guest Passes</div>'
       +'<div style="font-size:11px;color:var(--mu)">'+rem+' of '+m.guestsTotal+' remaining</div></div>'
       +'<div style="display:flex;align-items:center;gap:12px">'
-      +'<button onclick="sciAdjGuests(-1)" style="width:44px;height:44px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:22px;font-weight:700;cursor:pointer;font-family:-apple-system,sans-serif">−</button>'
+      +'<button onclick="sciAdjGuests(-1)" style="width:44px;height:44px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:22px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif">−</button>'
       +'<div style="font-size:22px;font-weight:800;color:var(--bld);min-width:24px;text-align:center" id="sci-guests-count">0</div>'
-      +'<button onclick="sciAdjGuests(1)" style="width:44px;height:44px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:22px;font-weight:700;cursor:pointer;font-family:-apple-system,sans-serif">+</button>'
+      +'<button onclick="sciAdjGuests(1)" style="width:44px;height:44px;border-radius:50%;background:var(--or);border:none;color:#fff;font-size:22px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif">+</button>'
       +'</div></div>'
       +'<div id="sci-gp-status"></div>'
       +'</div>';
   }
 
-  html+='<button onclick="sciSubmitCheckin(&quot;'+m.id+'&quot;)" style="width:100%;padding:18px;background:var(--or);border:none;color:#fff;border-radius:12px;font-size:18px;font-weight:800;font-family:-apple-system,sans-serif;cursor:pointer;margin-top:4px">✅ Check In</button>';
+  html+='<button onclick="sciSubmitCheckin(&quot;'+m.id+'&quot;)" style="width:100%;padding:18px;background:var(--or);border:none;color:#fff;border-radius:12px;font-size:18px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;margin-top:4px">✅ Check In</button>';
 
   document.getElementById('sci-body').innerHTML=html;
   window._sciGuests=0;
@@ -4353,15 +4900,12 @@ function resetMigrationFlag(){
 
 function doSeasonReset(){if(!confirm('Reset all guest pass counts for the new season?'))return;members=members.map(function(m){return Object.assign({},m,{guestsUsed:0,guestsTotal:GUEST_PASSES[m.type]!==undefined?GUEST_PASSES[m.type]:m.guestsTotal});});lSet('gsc_members',members);renderAll();closeSettings();showToast('Season reset complete');}
 
-
 // ── BOOT ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function(){
-  // Set topbar date
   var d = new Date();
   var dateEl = document.getElementById('topbar-date');
   if(dateEl) dateEl.textContent = d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}).toUpperCase();
 
-  // Early hide for special modes
   if(window.location.search.indexOf('selfcheckin=true') >= 0){
     var app = document.getElementById('app');
     var shell = document.getElementById('sci-shell');
@@ -4374,8 +4918,27 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   initLayout();
+  // Show connecting state immediately
+  var _pill=document.getElementById('sync-pill');
+  if(_pill){_pill.style.display='flex';_pill.innerHTML='<div style="width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4)"></div>...';}
   tryInitFirebase();
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 </script>
 </body>
