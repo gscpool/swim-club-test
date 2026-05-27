@@ -317,7 +317,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.3.5</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.3.7</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -472,7 +472,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
   </div>
 
   <!-- APPLICATION REVIEW MODAL -->
-  <div class="overlay" id="appreview-overlay" style="display:none;z-index:9985">
+  <div class="overlay" id="appreview-overlay" style="display:none;z-index:9985" onclick="if(event.target===this)closeAppReview()">
     <div class="sheet" style="max-height:90vh;overflow-y:auto">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <div style="font-size:18px;font-weight:800;color:var(--bld)" id="appreview-title">Application</div>
@@ -526,6 +526,10 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script>
+
+
+
+
 
 
 
@@ -2361,11 +2365,13 @@ function openAppReview(appId){
     +'<button data-appid="'+a.id+'" onclick="saveAppNote(this.dataset.appid)" style="width:100%;padding:11px;background:var(--bl);border:none;color:#fff;border-radius:10px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Save Notes</button>';
   html+='</div>';
   body.innerHTML=html;
-  document.getElementById('appreview-overlay').style.display='flex';
+  var _aov=document.getElementById('appreview-overlay');
+  if(_aov){_aov.style.display='flex';_aov.classList.add('open');}
 }
 
 function closeAppReview(){
-  document.getElementById('appreview-overlay').style.display='none';
+  var _aoc=document.getElementById('appreview-overlay');
+  if(_aoc){_aoc.style.display='none';_aoc.classList.remove('open');}
 }
 
 function voteApplication(appId, vote){
@@ -2388,6 +2394,7 @@ function voteApplication(appId, vote){
   var i=applications.findIndex(function(x){return x.id===appId;});
   if(i>=0) applications[i]=updated;
   showToast('Vote recorded: '+vote+(newStatus!==a.status?' — Application '+newStatus:''),'ok');
+  closeAppReview();
   renderApplications();
 }
 
@@ -2497,7 +2504,7 @@ function renderDedupResults(){
         +'<button data-mid="'+m.id+'" onclick="dedupDelete(this.dataset.mid)" style="padding:6px 10px;background:var(--rel);border:1.5px solid var(--re);border-radius:8px;font-size:11px;font-weight:700;color:var(--re);cursor:pointer;font-family:-apple-system,sans-serif;flex-shrink:0">🗑 Delete</button>'
         +'</div></div>';
     });
-    html+='<button onclick="dedupMergeGroup('+JSON.stringify(grp.map(function(m){return m.id;}))+','+gi+')" style="width:100%;padding:10px;background:var(--bl);border:none;border-radius:var(--r-sm);font-size:13px;font-weight:700;color:#fff;cursor:pointer;font-family:-apple-system,sans-serif;margin-top:4px">⊕ Merge into one record</button>';
+    html+='<button data-ids=\''+grp.map(function(m){return m.id;}).join('|')+'\' onclick=\'dedupMergeByAttr(this)\' style=\'width:100%;padding:12px;background:var(--bl);border:none;border-radius:var(--r-sm);font-size:14px;font-weight:700;color:#fff;cursor:pointer;font-family:-apple-system,sans-serif;margin-top:4px\'>⊕ Merge into one record</button>';
     html+='</div>';
   });
   body.innerHTML=html;
@@ -2508,6 +2515,11 @@ function dedupDelete(id){
   members=members.filter(function(x){return x.id!==id;});
   showToast('Record deleted','ok');
   renderDedupResults(); renderDir();
+}
+function dedupMergeByAttr(btn){
+  var ids=(btn.getAttribute('data-ids')||'').split('|').filter(Boolean);
+  if(ids.length<2){showToast('Select at least 2 records','warn');return;}
+  dedupMergeGroup(ids,0);
 }
 function dedupMergeGroup(ids,gi){
   var grp=ids.map(function(id){return members.find(function(m){return m.id===id;});}).filter(Boolean);
@@ -3826,8 +3838,17 @@ function renderRep(){
     +'<button class="exp-btn" onclick="requireAdminPin(function(){downloadTemplate();})">Download CSV Template</button>'
     +'</div></div>';
 
+  // Tasks dashboard button
+  var _oc=getAllOpenTasks().length;
+  var _badge=_oc>0?(' <span style="background:var(--or);color:#fff;border-radius:10px;padding:1px 8px;font-size:11px;font-weight:700">'+_oc+' open</span>'):'';
+  var _tw='<div style="margin-bottom:14px">'
+    +'<button onclick="toggleTasksDashboard()" style="width:100%;padding:13px;background:var(--bld);border:none;color:#fff;border-radius:var(--r);font-size:14px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">\uD83D\uDCCB Member Tasks'+_badge+'</button>'
+    +'<div id="tasks-dashboard-wrap" style="display:none;margin-top:8px;padding:8px;background:var(--sand);border-radius:var(--r)">'
+    +'<div id="tasks-dashboard"></div></div></div>';
+  html=_tw+html;
   el.innerHTML=html;
 }
+
 
 function showRepChart(chartId){
   var now=new Date();
@@ -4929,6 +4950,10 @@ document.addEventListener('DOMContentLoaded', function(){
   if(_pill){_pill.style.display='flex';_pill.innerHTML='<div style="width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4)"></div>...';}
   tryInitFirebase();
 });
+
+
+
+
 
 
 
