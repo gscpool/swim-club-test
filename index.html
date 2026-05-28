@@ -29,7 +29,7 @@
 html,body{height:100%;overflow:hidden;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 body{background:var(--sand);color:var(--tx)}
 #app{display:flex;flex-direction:column;height:100%;overflow:hidden}
-.topbar{background:var(--bld);color:#fff;padding:max(9px,env(safe-area-inset-top)) 12px 8px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:3px solid var(--or)}
+.topbar{background:var(--bld);color:#fff;padding:max(7px,env(safe-area-inset-top)) 12px 6px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:3px solid var(--or)}
 .topbar-left{display:flex;align-items:center;gap:10px}
 .topbar-logo{width:38px;height:38px;border-radius:50%;object-fit:cover}
 .topbar-title{font-family:-apple-system,'SF Pro Display','Inter',sans-serif;font-size:18px;color:var(--or);line-height:1.2;font-weight:600;letter-spacing:-.2px}
@@ -41,7 +41,7 @@ body{background:var(--sand);color:var(--tx)}
 .ibtn{background:rgba(255,255,255,.1);border:none;color:#fff;width:44px;height:44px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
 .ibtn:active{background:var(--or)}
 .tabs{background:var(--bl);display:flex;flex-shrink:0}
-.tab{flex:1;padding:11px 2px;border:none;background:none;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.2px;text-transform:uppercase;color:rgba(255,255,255,.6);cursor:pointer;border-bottom:3px solid transparent;transition:color .15s,border-color .15s}
+.tab{flex:1;padding:9px 2px;border:none;background:none;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.2px;text-transform:uppercase;color:rgba(255,255,255,.6);cursor:pointer;border-bottom:3px solid transparent;transition:color .15s,border-color .15s}
 .tab.on{color:var(--or);border-bottom:3px solid var(--or);background:rgba(250,70,22,.08)}
 .pane{display:none;flex:1;overflow-y:auto;flex-direction:column;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .pane.on{display:flex}
@@ -183,13 +183,13 @@ body{background:var(--sand);color:var(--tx)}
 .sci-success-name{font-size:22px;font-weight:800;color:var(--gr)}
 .sci-success-sub{font-size:14px;color:var(--mu)}
 /* ANNOUNCEMENTS */
-#announce-bar{background:var(--or);padding:10px 14px;display:flex;align-items:center;gap:10px;flex:0 0 auto;width:100%;z-index:10;max-height:44px;overflow:hidden}
+#announce-bar{background:var(--or);padding:7px 14px;display:flex;align-items:center;gap:10px;flex:0 0 auto;width:100%;z-index:10;max-height:36px;overflow:hidden}
 .announce-text{font-size:14px;font-weight:600;color:#fff;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;line-height:1.3;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* CHECK-IN TAB */
-.ci-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mu);padding:6px 13px 4px;background:var(--sand);flex-shrink:0}
+.ci-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);padding:4px 13px 3px;background:var(--sand);flex-shrink:0}
 .ci-alpha-row::-webkit-scrollbar{display:none}
-.ci-alpha-row{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;padding:8px 13px;background:var(--sand);border-bottom:1px solid var(--sand2);flex-shrink:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
-.ci-alpha-btn{min-width:38px;width:38px;height:38px;min-height:38px;padding:0;border-radius:9px;border:1.5px solid var(--sand2);background:#fff;font-size:14px;font-weight:700;color:var(--bl);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;box-shadow:0 1px 3px rgba(0,0,0,.06);flex-shrink:0}
+.ci-alpha-row{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:4px;padding:6px 13px;background:var(--sand);border-bottom:1px solid var(--sand2);flex-shrink:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
+.ci-alpha-btn{min-width:34px;width:34px;height:34px;min-height:34px;padding:0;border-radius:8px;border:1.5px solid var(--sand2);background:#fff;font-size:13px;font-weight:700;color:var(--bl);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
 .ci-alpha-btn.on{background:var(--or);border-color:var(--or);color:#fff;box-shadow:0 2px 8px rgba(250,70,22,.3)}
 .ci-alpha-btn:active{transform:scale(.93)}
 .predict-card{background:#fff;border-radius:var(--r);padding:14px 13px;box-shadow:var(--sh);display:flex;align-items:center;gap:10px;cursor:pointer;border-left:4px solid var(--or);transition:transform .1s;min-height:60px}
@@ -266,15 +266,29 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 
 
 /* Directory filter buttons */
-.filter-group{display:flex;flex-direction:column;gap:4px;width:100%}
-.filter-group-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);padding:0 2px}
-.filter-row{display:flex;gap:5px;flex-wrap:wrap}
-.fbtn{padding:6px 12px;border-radius:20px;border:1.5px solid var(--sand2);background:var(--wh);font-size:12px;font-weight:600;color:var(--mu);cursor:pointer;font-family:-apple-system,sans-serif;transition:all .12s;white-space:nowrap}
+.filter-group{display:flex;flex-direction:column;gap:3px;width:100%}
+.filter-group-label{display:none}
+.filter-row::-webkit-scrollbar{display:none}
+.filter-row{display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:1px}
+.fbtn{padding:5px 10px;border-radius:16px;border:1.5px solid var(--sand2);background:var(--wh);font-size:11px;font-weight:600;color:var(--mu);cursor:pointer;font-family:-apple-system,sans-serif;transition:all .12s;white-space:nowrap;flex-shrink:0}
 .fbtn:active{transform:scale(.95)}
 .fbtn.on{border-color:var(--bl);background:var(--bl);color:var(--wh)}
 .fbtn.on-paid{border-color:#22c55e;background:#22c55e;color:#fff}
 .fbtn.on-unpaid{border-color:#ef4444;background:#ef4444;color:#fff}
 .fbtn.on-pending{border-color:#f59e0b;background:#f59e0b;color:#fff}
+
+
+/* Compact dir alpha strip */
+#dir-alpha-strip{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:4px;padding:6px 13px;background:var(--sand);border-bottom:1px solid var(--sand2);-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-shrink:0}
+#dir-alpha-strip::-webkit-scrollbar{display:none}
+#dir-alpha-strip .alpha-btn{min-width:34px;width:34px;height:34px;border-radius:8px;border:1.5px solid var(--sand2);background:#fff;font-size:12px;font-weight:700;color:var(--bl);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;font-family:-apple-system,sans-serif}
+#dir-alpha-strip .alpha-btn.on{background:var(--or);border-color:var(--or);color:#fff}
+
+
+#dir-alpha-strip{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:4px;padding:5px 13px;background:var(--sand);border-bottom:1px solid var(--sand2);-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-shrink:0}
+#dir-alpha-strip::-webkit-scrollbar{display:none}
+#dir-alpha-strip .alpha-btn{min-width:34px;width:34px;height:34px;border-radius:8px;border:1.5px solid var(--sand2);background:#fff;font-size:12px;font-weight:700;color:var(--bl);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;font-family:-apple-system,sans-serif;transition:all .12s}
+#dir-alpha-strip .alpha-btn.on{background:var(--or);border-color:var(--or);color:#fff}
 
 </style>
 </head>
@@ -317,7 +331,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.3.7</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.4.0</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -354,7 +368,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
   <div id="pane-dir" class="pane">
     <div class="sbar" style="display:none"><input class="sinput" id="dir-search" type="text" placeholder="Search..." oninput="renderDir()" autocomplete="off"></div>
     <div style="padding:8px 13px 0;background:var(--sand)">
-      <div id="dir-filter-btns" style="display:flex;gap:6px;flex-wrap:wrap;padding-bottom:8px"></div>
+      <div id="dir-filter-btns" style="padding:6px 13px 4px"></div>
     </div>
     <div id="dir-alpha-strip" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 13px 10px;justify-content:center;align-content:center;background:var(--sand);border-bottom:1px solid var(--sand2);flex-shrink:0"></div>
     <div class="rlist" id="dir-list"></div>
@@ -526,32 +540,6 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 var _APP_VERSION="v1.9.1";
 
@@ -1565,9 +1553,11 @@ function updateUIForRole(){
   if(loginIcon) loginIcon.textContent=isLoggedIn()?'🔓':'🔒';
   if(loginDisp) loginDisp.textContent=isLoggedIn()?currentUser.displayName:'';
   // FAB for adding members - only if permitted
+  // FAB visibility handled by switchTab via .fab.show class - don't override with inline style
   var fab=document.getElementById('fab');
   if(fab){
-    if(!can('canAddDeleteMembers')) fab.style.display='none';
+    fab.style.display='';  // clear any inline style so CSS class can control it
+    fab.classList.toggle('show', can('canAddDeleteMembers') && document.getElementById('pane-dir')&&document.getElementById('pane-dir').classList.contains('on'));
   }
   // Incident FAB
   var incFab=document.getElementById('inc-fab');
@@ -2926,6 +2916,45 @@ function addInlineKidField(btn){
   container.parentElement.insertBefore(wrap, container.nextSibling);
 }
 
+
+// ── LAYOUT / VIEW MODE ────────────────────────────────────────────────────────
+var LAYOUTS = ['default','iphone','ipad','laptop'];
+var LAYOUT_LABELS = {
+  'default': 'VIEW',
+  'iphone':  'iPhone',
+  'ipad':    'iPad',
+  'laptop':  'Laptop'
+};
+var currentLayout = 'default';
+
+function initLayout(){
+  try {
+    var saved = localStorage.getItem('gsc_layout');
+    if(saved && LAYOUTS.indexOf(saved) >= 0) currentLayout = saved;
+  } catch(e){}
+  applyLayout(currentLayout);
+}
+
+function applyLayout(layout){
+  // Remove all layout classes
+  LAYOUTS.forEach(function(l){
+    if(l !== 'default') document.body.classList.remove('layout-' + l);
+  });
+  // Apply new one
+  if(layout !== 'default') document.body.classList.add('layout-' + layout);
+  // Update button label
+  var btn = document.getElementById('layout-btn');
+  if(btn) btn.textContent = LAYOUT_LABELS[layout] || 'VIEW';
+  currentLayout = layout;
+  try { localStorage.setItem('gsc_layout', layout); } catch(e){}
+}
+
+function cycleLayout(){
+  var idx = LAYOUTS.indexOf(currentLayout);
+  var next = LAYOUTS[(idx + 1) % LAYOUTS.length];
+  applyLayout(next);
+}
+
 function renderAll(){renderCI();renderDir();renderRep();renderAnnouncement();}
 
 function renderAnnouncement(){
@@ -3273,32 +3302,20 @@ function rebuildFilterBtns(){
   var el=document.getElementById('dir-filter-btns'); if(!el) return;
   var cur=dirFilter||'all';
   var hasFormer=members.some(function(m){return m.status==='inactive'||m.status==='terminated';});
-
-  // Status row
-  var statusBtns='<div class="filter-group-label">Status</div><div class="filter-row">';
-  var statusFilters2=[
-    {k:'all',     lbl:'All',      cls:''},
-    {k:'paid',    lbl:'✓ Paid',   cls:'on-paid'},
-    {k:'unpaid',  lbl:'⚠ Unpaid', cls:'on-unpaid'},
-    {k:'pending', lbl:'Pending',  cls:'on-pending'},
-  ];
-  if(hasFormer) statusFilters2.push({k:'former',lbl:'Former',cls:''});
-  statusFilters2.forEach(function(f){
-    var isOn=cur===f.k;
-    var cls=isOn?(f.cls||'on'):'';
-    statusBtns+='<button class="fbtn '+cls+'" onclick="setFilter(this,&quot;'+f.k+'&quot;)">'+f.lbl+'</button>';
+  var btns='<div style="display:flex;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 0">';
+  var sf=[{k:'all',lbl:'All',cls:''},{k:'paid',lbl:'\u2713 Paid',cls:'on-paid'},{k:'unpaid',lbl:'\u26a0 Unpaid',cls:'on-unpaid'},{k:'pending',lbl:'Pending',cls:'on-pending'}];
+  if(hasFormer) sf.push({k:'former',lbl:'Former',cls:''});
+  sf.forEach(function(f){
+    btns+='<button class="fbtn '+(cur===f.k?(f.cls||'on'):'')+"\""
+      +' onclick="setFilter(this,&quot;'+f.k+'&quot;)" style="flex-shrink:0">'+f.lbl+'</button>';
   });
-  statusBtns+='</div>';
-
-  // Type row
-  var typeBtns='<div class="filter-group-label" style="margin-top:6px">Type</div><div class="filter-row">';
+  btns+='<div style="width:1px;background:var(--sand2);flex-shrink:0;margin:3px 4px"></div>';
   CONFIG.membershipTypes.forEach(function(t){
-    var isOn=cur===t.key;
-    typeBtns+='<button class="fbtn '+(isOn?'on':'')+'" onclick="setFilter(this,&quot;'+t.key+'&quot;)">'+t.label+'</button>';
+    btns+='<button class="fbtn '+(cur===t.key?'on':'')+"\""
+      +' onclick="setFilter(this,&quot;'+t.key+'&quot;)" style="flex-shrink:0">'+t.label+'</button>';
   });
-  typeBtns+='</div>';
-
-  el.innerHTML='<div class="filter-group">'+statusBtns+typeBtns+'</div>';
+  btns+='</div>';
+  el.innerHTML=btns;
 }
 
 function setAlpha(letter){
@@ -3687,7 +3704,34 @@ function commitEdit(){var _existingMember=editingId?members.find(function(x){ret
   var m={id:editingId||uid(),tasks:(_existingMember&&_existingMember.tasks)||[],activity:(_existingMember&&_existingMember.activity)||[],
     tasks:(_existingM&&_existingM.tasks)||[],
     activity:(_existingM&&_existingM.activity)||[],first:first,last:last,type:type,status:document.getElementById('ef-status').value,email:document.getElementById('ef-email').value.trim(),phone:formatPhone(document.getElementById('ef-phone').value),street:document.getElementById('ef-street').value.trim(),city:document.getElementById('ef-city').value.trim(),state:document.getElementById('ef-state').value.trim(),zip:document.getElementById('ef-zip').value.trim(),adults:parseInt(document.getElementById('ef-adults').value)||1,kids:kids,children:kids.length,guestsUsed:parseInt(document.getElementById('ef-gused').value)||0,guestsTotal:gtotal,secFirst:secOk&&document.getElementById('ef-sec-first')?document.getElementById('ef-sec-first').value.trim():'',secLast:secOk&&document.getElementById('ef-sec-last')?document.getElementById('ef-sec-last').value.trim():'',secPhone:secOk&&document.getElementById('ef-sec-phone')?formatPhone(document.getElementById('ef-sec-phone').value):'',secEmail:secOk&&document.getElementById('ef-sec-email')?document.getElementById('ef-sec-email').value.trim():'',notes:document.getElementById('ef-notes').value.trim(),nannyEnabled:document.getElementById('ef-nanny-enabled').checked,nannyName:document.getElementById('ef-nanny-name')?document.getElementById('ef-nanny-name').value.trim():'',nannyPhone:document.getElementById('ef-nanny-phone')?formatPhone(document.getElementById('ef-nanny-phone').value):'',nannyStreet:document.getElementById('ef-nanny-street')?document.getElementById('ef-nanny-street').value.trim():'',nannyCity:document.getElementById('ef-nanny-city')?document.getElementById('ef-nanny-city').value.trim():'',nannyState:document.getElementById('ef-nanny-state')?document.getElementById('ef-nanny-state').value.trim():'',nannyZip:document.getElementById('ef-nanny-zip')?document.getElementById('ef-nanny-zip').value.trim():'',nannyDob:document.getElementById('ef-nanny-dob')?document.getElementById('ef-nanny-dob').value:''};saveMember(m);closeEdit();showToast(m.first+' '+m.last+' '+(editingId?'updated':'added'),'ok');}
-function confirmDelete(id){requireAdminPin(function(){delMember(id);closeEdit();showToast('Member deleted','warn');});}
+function cancelDelete(){var e=document.getElementById('delete-confirm-bar');if(e)e.remove();}
+function confirmDelete(id){
+  if(!can('canAddDeleteMembers')){showToast('Permission denied','warn');return;}
+  var m=members.find(function(x){return x.id===id;}); if(!m) return;
+  var existing=document.getElementById('delete-confirm-bar');
+  if(existing){existing.remove();return;}
+  window._pendingDeleteId=id;
+  var bar=document.createElement('div');
+  bar.id='delete-confirm-bar';
+  bar.style.cssText='background:var(--rel);border:2px solid var(--re);border-radius:var(--r-sm);padding:12px 14px;margin-top:8px';
+  bar.innerHTML='<div style="font-size:13px;font-weight:700;color:var(--re);margin-bottom:10px">🗑 Delete '+m.first+' '+m.last+'? This cannot be undone.</div>'
+    +'<div style="display:flex;gap:8px">'
+    +'<button onclick="cancelDelete()" style="flex:1;padding:11px;background:#fff;border:1.5px solid var(--sand2);border-radius:9px;font-size:13px;font-weight:700;color:var(--mu);font-family:-apple-system,sans-serif;cursor:pointer">Cancel</button>'
+    +'<button onclick="executePendingDelete();" style="flex:1;padding:11px;background:var(--re);border:none;border-radius:9px;font-size:13px;font-weight:700;color:#fff;font-family:-apple-system,sans-serif;cursor:pointer">🗑 Yes, Delete Member</button>'
+    +'</div>';
+  var sheet=document.querySelector('#ed-overlay .sheet');
+  if(sheet){sheet.appendChild(bar);bar.scrollIntoView({behavior:'smooth',block:'end'});}
+}
+
+function executePendingDelete(){
+  var id=window._pendingDeleteId; if(!id) return;
+  requireAdminPin(function(){
+    delMember(id);
+    window._pendingDeleteId=null;
+    closeEdit();
+    showToast('Member deleted','warn');
+  });
+}
 
 
 
@@ -4950,6 +4994,36 @@ document.addEventListener('DOMContentLoaded', function(){
   if(_pill){_pill.style.display='flex';_pill.innerHTML='<div style="width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4)"></div>...';}
   tryInitFirebase();
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
