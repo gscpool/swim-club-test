@@ -346,7 +346,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.4.6</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.4.7</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -569,6 +569,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script>
+
 
 
 
@@ -3127,6 +3128,60 @@ function updateHeadcountBar(){
   if(fillEl){fillEl.style.width=pct+'%';fillEl.style.background=color;}
 }
 
+var selectedRepDate = null; // null = today
+
+
+function repDateStr(){
+  if(!selectedRepDate) return new Date().toDateString();
+  return selectedRepDate.toDateString();
+}
+function repDateLabel(){
+  if(!selectedRepDate){
+    return new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  }
+  var d=selectedRepDate;
+  var today=new Date();
+  today.setHours(0,0,0,0);
+  var diff=Math.round((today-d)/(1000*60*60*24));
+  var label=d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  if(diff===0) return label+' (Today)';
+  if(diff===1) return label+' (Yesterday)';
+  if(diff>1) return label+' ('+diff+' days ago)';
+  return label;
+}
+function setRepDate(dateStr){
+  if(!dateStr){
+    selectedRepDate=null;
+  } else {
+    // Parse YYYY-MM-DD safely
+    var parts=dateStr.split('-');
+    selectedRepDate=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+  }
+  renderRep();
+}
+function repDateToInput(){
+  var d=selectedRepDate||new Date();
+  var y=d.getFullYear();
+  var m=String(d.getMonth()+1).padStart(2,'0');
+  var day=String(d.getDate()).padStart(2,'0');
+  return y+'-'+m+'-'+day;
+}
+function prevRepDay(){
+  var d=selectedRepDate?new Date(selectedRepDate):new Date();
+  d.setDate(d.getDate()-1);
+  selectedRepDate=d;
+  renderRep();
+}
+function nextRepDay(){
+  var d=selectedRepDate?new Date(selectedRepDate):new Date();
+  d.setDate(d.getDate()+1);
+  var today=new Date(); today.setHours(0,0,0,0);
+  d.setHours(0,0,0,0);
+  if(d>today){selectedRepDate=null;}
+  else{selectedRepDate=d;}
+  renderRep();
+}
+
 function renderAll(){renderCI();renderDir();renderRep();renderAnnouncement();  updateHeadcountBar();
 }
 
@@ -3914,7 +3969,9 @@ function executePendingDelete(){
 function renderRep(){
   var el=document.getElementById('rep-body');if(!el)return;
   var now=new Date();
-  var todayStr=now.toDateString();
+  var _repD=selectedRepDate||now;
+  var todayStr=_repD.toDateString();
+  var isToday=!selectedRepDate;
   var seasonStart=new Date(now.getFullYear(),0,1);
   var d7=new Date(now);d7.setDate(d7.getDate()-6);d7.setHours(0,0,0,0);
 
@@ -3973,9 +4030,20 @@ function renderRep(){
 
   var html='';
 
-  // Today
+  // Date picker widget
+  var _maxDate=new Date().toISOString().slice(0,10);
+  html+='<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--sand);border-radius:var(--r);border:1.5px solid var(--sand2);margin-bottom:10px">';
+  html+='<button onclick="prevRepDay()" style="width:32px;height:32px;border:1.5px solid var(--sand2);background:#fff;border-radius:8px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:-apple-system,sans-serif">&#x2039;</button>';
+  html+='<div style="flex:1;min-width:0">';
+  html+='<div style="font-size:13px;font-weight:700;color:var(--bld);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="rep-date-label">'+repDateLabel()+'</div>';
+  html+='<input type="date" id="rep-date-input" value="'+repDateToInput()+'" max="'+_maxDate+'" onchange="setRepDate(this.value)" style="margin-top:3px;font-size:11px;color:var(--mu);border:none;background:transparent;font-family:-apple-system,sans-serif;cursor:pointer;width:100%;padding:0">';
+  html+='</div>';
+  html+='<button onclick="nextRepDay()" '+(isToday?'disabled style="width:32px;height:32px;border:1.5px solid var(--sand2);background:#fff;border-radius:8px;font-size:16px;cursor:not-allowed;display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:.35;font-family:-apple-system,sans-serif"':'style="width:32px;height:32px;border:1.5px solid var(--sand2);background:#fff;border-radius:8px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:-apple-system,sans-serif"')+'>&#x203a;</button>';
+  html+='</div>';
+
+  // Daily stats
   html+=section(
-    now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}),
+    repDateLabel(),
     stat(todayV.length,'Check-Ins',OR,'today-hourly')
     +stat(todayHH,'Households',BL,'today-hourly')
     +stat(todayHeads,'Headcount',TL,'today-hourly')
@@ -5182,6 +5250,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }, 8000);
 });
+
 
 
 
