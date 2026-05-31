@@ -346,7 +346,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.4.7</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.4.9</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -569,6 +569,8 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script>
+
+
 
 
 
@@ -3182,6 +3184,122 @@ function nextRepDay(){
   renderRep();
 }
 
+
+function notifyGroupMeIncident(inc){
+  var dt=new Date(inc.ts);
+  var dtStr=dt.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})
+    +' at '+dt.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  var sev=inc.severity||'Low';
+  var sevTag=sev==='High'?'🔴':sev==='Medium'?'🟡':'🟢';
+
+  var msg='🏊 GSC INCIDENT REPORT\n'
+    +'━━━━━━━━━━━━━━━━━━━━\n'
+    +sevTag+' Severity: '+sev+'\n'
+    +'📋 Type: '+(inc.type||'Other')+'\n'
+    +'📅 '+dtStr+'\n'
+    +'━━━━━━━━━━━━━━━━━━━━\n'
+    +'📝 '+inc.description+'\n';
+
+  if(inc.membersInvolved){
+    msg+='👤 People: '+inc.membersInvolved+'\n';
+  }
+  if(inc.actionTaken){
+    msg+='✅ Action: '+inc.actionTaken+'\n';
+  }
+  msg+='━━━━━━━━━━━━━━━━━━━━\n'
+    +'Reported by: '+(inc.reportedBy||'Staff');
+
+  if(inc.followupRequired){
+    msg+='\n⚠️ Follow-up required';
+  }
+
+  notifyGroupMe(msg);
+}
+
+
+// ── DAILY SUMMARY ─────────────────────────────────────────────────────────────
+var _lastDailySummarySent = null; // date string of last sent
+
+function getDailySummaryStats(dateStr){
+  // dateStr is toDateString() format, or today if omitted
+  var ds = dateStr || new Date().toDateString();
+  var dayV = visits.filter(function(v){
+    return new Date(v.ts).toDateString() === ds;
+  });
+  var households = new Set(dayV.map(function(v){return v.memberId;})).size;
+  var headcount = dayV.reduce(function(t,v){
+    return t + (v.adults||0) + (v.children||0) + (v.guestPasses||0);
+  }, 0);
+  var guestPasses = dayV.reduce(function(t,v){return t+(v.guestPasses||0);}, 0);
+  var paid   = members.filter(function(m){return m.status==='paid';}).length;
+  var unpaid = members.filter(function(m){return m.status==='unpaid'||m.status==='pending';}).length;
+  return {
+    checkIns: dayV.length,
+    households: households,
+    headcount: headcount,
+    guestPasses: guestPasses,
+    paid: paid,
+    unpaid: unpaid,
+    date: ds
+  };
+}
+
+function sendDailySummaryToGroupMe(force){
+  var today = new Date().toDateString();
+  if(!force && _lastDailySummarySent === today){
+    showToast('Summary already sent today','warn');
+    return;
+  }
+  var st = getDailySummaryStats(today);
+  var d  = new Date();
+  var dateLabel = d.toLocaleDateString('en-US',{
+    weekday:'long', month:'long', day:'numeric', year:'numeric'
+  });
+
+  var msg = '\uD83C\uDFCA Gibsonville Swim Club\n'
+    + 'Daily Summary \u2014 ' + dateLabel + '\n'
+    + '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n'
+    + '\uD83D\uDEAA Check-Ins:     ' + st.checkIns  + '\n'
+    + '\uD83D\uDC6A Households:    ' + st.households + '\n'
+    + '\uD83D\uDC65 Headcount:     ' + st.headcount  + ' / 150\n';
+
+  if(st.guestPasses > 0){
+    msg += '\uD83C\uDFAB Guest Passes:  ' + st.guestPasses + '\n';
+  }
+
+  msg += '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n'
+    + '\u2705 Paid members:  ' + st.paid   + '\n'
+    + '\u26A0\uFE0F  Needs attention: ' + st.unpaid + '\n'
+    + '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n'
+    + 'gibsonvilleswim.club';
+
+  notifyGroupMe(msg);
+  _lastDailySummarySent = today;
+
+  try { localStorage.setItem('gsc_last_summary', today); } catch(e){}
+  showToast('Daily summary sent to GroupMe \u2713','ok');
+}
+
+function initDailySummaryScheduler(){
+  // Restore last-sent date from localStorage
+  try {
+    var saved = localStorage.getItem('gsc_last_summary');
+    if(saved) _lastDailySummarySent = saved;
+  } catch(e){}
+
+  // Check every 60 seconds if it's 10pm and summary hasn't been sent today
+  setInterval(function(){
+    var now = new Date();
+    // Fire between 22:00:00 and 22:00:59
+    if(now.getHours() === 22 && now.getMinutes() === 0){
+      var today = now.toDateString();
+      if(_lastDailySummarySent !== today){
+        sendDailySummaryToGroupMe(true);
+      }
+    }
+  }, 60000);
+}
+
 function renderAll(){renderCI();renderDir();renderRep();renderAnnouncement();  updateHeadcountBar();
 }
 
@@ -4729,6 +4847,8 @@ function submitIncident(){
   closeIncident();
   renderIncidents();
   showToast('Incident logged','ok');
+  // Notify GroupMe
+  notifyGroupMeIncident(inc);
 }
 
 function saveFollowupNote(id){
@@ -5250,6 +5370,8 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }, 8000);
 });
+
+
 
 
 
