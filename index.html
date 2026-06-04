@@ -346,7 +346,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.4.9</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.5.2</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -583,6 +583,14 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
 
 
 
+
+
+
+
+
+
+
+
 var _APP_VERSION="v1.9.1";
 
 // ── SELF CHECK-IN MODE ────────────────────────────────────────────────────────
@@ -606,7 +614,7 @@ var DEFAULT_CONFIG={
   clubName:'Gibsonville Swim Club',
   seasonYear: new Date().getFullYear(),
   guestPrice:5,
-  graceDays:3,
+  
   notifyEmail:'jeff@gsrconline.com',
   membershipTypes:[
     {key:'Individual', label:'Individual',    adults:1, maxAdults:1, allowChildren:false, guestPasses:5,  requireSecond:false},
@@ -621,14 +629,12 @@ var CONFIG=JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 // Derived from CONFIG — rebuilt whenever config changes
 var GUEST_PASSES={};
 var GUEST_PRICE=CONFIG.guestPrice;
-var GRACE_DAYS=CONFIG.graceDays;
 var NOTIFY_EMAIL_ADDR=CONFIG.notifyEmail;
 
 function rebuildFromConfig(){
   GUEST_PASSES={};
   CONFIG.membershipTypes.forEach(function(t){GUEST_PASSES[t.key]=t.guestPasses;});
   GUEST_PRICE=CONFIG.guestPrice;
-  GRACE_DAYS=CONFIG.graceDays;
   NOTIFY_EMAIL_ADDR=CONFIG.notifyEmail;
   // Update topbar club name
   var tn=document.querySelector('.topbar-title');
@@ -691,7 +697,12 @@ var db=null,fbReady=false;
       initSelfCIMode();
       // Set up real-time listeners after boot
       _db.collection('members').orderBy('last').onSnapshot(function(snap){
-        members=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+        members=snap.docs.map(function(d){
+          var rec=Object.assign({id:d.id},d.data());
+          if(rec.status==='pending') rec.status='approved';
+          if(rec.status==='inactive') rec.status='resigned';
+          return rec;
+        });
         setSyncPill('online');
         renderAll();
       },function(e){console.error(e);setSyncPill('offline');});
@@ -711,7 +722,12 @@ var db=null,fbReady=false;
       loadIncidents();
       initSelfCIMode();
       _db.collection('members').orderBy('last').onSnapshot(function(snap){
-        members=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+        members=snap.docs.map(function(d){
+          var rec=Object.assign({id:d.id},d.data());
+          if(rec.status==='pending') rec.status='approved';
+          if(rec.status==='inactive') rec.status='resigned';
+          return rec;
+        });
         renderAll();
       },function(e){console.error(e);setSyncPill('offline');});
       _db.collection('visits').orderBy('ts','desc').onSnapshot(function(snap){
@@ -731,7 +747,12 @@ var db=null,fbReady=false;
         fbReady=true;
         setSyncPill('online');
         _db2.collection('members').orderBy('last').onSnapshot(function(snap){
-          members=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+          members=snap.docs.map(function(d){
+          var rec=Object.assign({id:d.id},d.data());
+          if(rec.status==='pending') rec.status='approved';
+          if(rec.status==='inactive') rec.status='resigned';
+          return rec;
+        });
           renderAll();
         },function(err){console.error(err);setSyncPill('offline');});
         _db2.collection('visits').orderBy('ts','desc').onSnapshot(function(snap){
@@ -750,7 +771,11 @@ function bootLocal(){
   setSyncPill('offline');
   try{var saved=JSON.parse(localStorage.getItem('gsc_config'));if(saved){CONFIG=Object.assign({},DEFAULT_CONFIG,saved);if(!CONFIG.membershipTypes||!CONFIG.membershipTypes.length)CONFIG.membershipTypes=DEFAULT_CONFIG.membershipTypes;}}catch(e){}
   rebuildFromConfig();
-  members=lGet('gsc_members')||[];visits=lGet('gsc_visits')||[];
+  members=(lGet('gsc_members')||[]).map(function(m){
+    if(m.status==='pending')m.status='approved';
+    if(m.status==='inactive')m.status='resigned';
+    return m;
+  });visits=lGet('gsc_visits')||[];
   if(!members.length)seedDemo();
   updateUIForRole();renderAll();initPin();
 }
@@ -1068,7 +1093,7 @@ function quickCheckIn(memberId, event){
   var m=members.find(function(x){return x.id===memberId;}); if(!m) return;
   // Only quick check-in if roster is confirmed
   if(!canQuickCheckIn(m)){openMember(memberId,true);return;}
-  if(m.status==='unpaid'&&getUnpaidDays(m.id)>=GRACE_DAYS){showToast('Check-in blocked — payment required','err');return;}
+  if(m.status!=='paid'){showToast('Payment required — mark as Paid in Directory to check in','err');return;}
   // Check in all household members
   var adults=[];
   if(m.first) adults.push(m.first+' '+m.last);
@@ -1864,7 +1889,7 @@ function sciShowCheckin() {
   }
   // Check grace period
   var unpaidDays = getUnpaidDays(m.id);
-  if (m.status === 'unpaid' && unpaidDays >= GRACE_DAYS) {
+  if (m.status !== 'paid') {
     document.getElementById('sci-body').innerHTML = '<div class="sci-title" style="color:var(--re)">Check-In Blocked</div>'
       + '<div class="sci-sub2">Your membership payment is overdue. Please see the attendant.</div>';
     return;
@@ -2495,7 +2520,7 @@ function convertApplicationToMember(a){
   var newMember={
     id:uid(),first:a.first,last:a.last,email:a.email,phone:a.phone||'',
     street:a.street||'',city:a.city||'',state:a.state||'NC',zip:a.zip||'',
-    type:a.mtype,status:'pending',
+    type:a.mtype,status:'approved',
     adults:a.secFirst?2:1,children:(a.kids&&a.kids.length)||0,
     kids:(a.kids||[]).map(function(k){return k.name;}),
     secFirst:a.secFirst||'',secLast:a.secLast||'',
@@ -2901,6 +2926,7 @@ function openEditFromTask(memberId){
 
 function processCheckin(){
   var m=members.find(function(x){return x.id===ciMemberId;}); if(!m) return;
+  if(m.status!=='paid'){showToast('Payment required — mark as Paid in Directory to check in','err');return;}
   // Save inline missing info fields
   var changed=false;
   var map={email:'inline-email',phone:'inline-phone',street:'inline-street',city:'inline-city',zip:'inline-zip'};
@@ -3217,88 +3243,10 @@ function notifyGroupMeIncident(inc){
 }
 
 
-// ── DAILY SUMMARY ─────────────────────────────────────────────────────────────
-var _lastDailySummarySent = null; // date string of last sent
 
-function getDailySummaryStats(dateStr){
-  // dateStr is toDateString() format, or today if omitted
-  var ds = dateStr || new Date().toDateString();
-  var dayV = visits.filter(function(v){
-    return new Date(v.ts).toDateString() === ds;
-  });
-  var households = new Set(dayV.map(function(v){return v.memberId;})).size;
-  var headcount = dayV.reduce(function(t,v){
-    return t + (v.adults||0) + (v.children||0) + (v.guestPasses||0);
-  }, 0);
-  var guestPasses = dayV.reduce(function(t,v){return t+(v.guestPasses||0);}, 0);
-  var paid   = members.filter(function(m){return m.status==='paid';}).length;
-  var unpaid = members.filter(function(m){return m.status==='unpaid'||m.status==='pending';}).length;
-  return {
-    checkIns: dayV.length,
-    households: households,
-    headcount: headcount,
-    guestPasses: guestPasses,
-    paid: paid,
-    unpaid: unpaid,
-    date: ds
-  };
-}
 
-function sendDailySummaryToGroupMe(force){
-  var today = new Date().toDateString();
-  if(!force && _lastDailySummarySent === today){
-    showToast('Summary already sent today','warn');
-    return;
-  }
-  var st = getDailySummaryStats(today);
-  var d  = new Date();
-  var dateLabel = d.toLocaleDateString('en-US',{
-    weekday:'long', month:'long', day:'numeric', year:'numeric'
-  });
 
-  var msg = '\uD83C\uDFCA Gibsonville Swim Club\n'
-    + 'Daily Summary \u2014 ' + dateLabel + '\n'
-    + '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n'
-    + '\uD83D\uDEAA Check-Ins:     ' + st.checkIns  + '\n'
-    + '\uD83D\uDC6A Households:    ' + st.households + '\n'
-    + '\uD83D\uDC65 Headcount:     ' + st.headcount  + ' / 150\n';
 
-  if(st.guestPasses > 0){
-    msg += '\uD83C\uDFAB Guest Passes:  ' + st.guestPasses + '\n';
-  }
-
-  msg += '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n'
-    + '\u2705 Paid members:  ' + st.paid   + '\n'
-    + '\u26A0\uFE0F  Needs attention: ' + st.unpaid + '\n'
-    + '\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n'
-    + 'gibsonvilleswim.club';
-
-  notifyGroupMe(msg);
-  _lastDailySummarySent = today;
-
-  try { localStorage.setItem('gsc_last_summary', today); } catch(e){}
-  showToast('Daily summary sent to GroupMe \u2713','ok');
-}
-
-function initDailySummaryScheduler(){
-  // Restore last-sent date from localStorage
-  try {
-    var saved = localStorage.getItem('gsc_last_summary');
-    if(saved) _lastDailySummarySent = saved;
-  } catch(e){}
-
-  // Check every 60 seconds if it's 10pm and summary hasn't been sent today
-  setInterval(function(){
-    var now = new Date();
-    // Fire between 22:00:00 and 22:00:59
-    if(now.getHours() === 22 && now.getMinutes() === 0){
-      var today = now.toDateString();
-      if(_lastDailySummarySent !== today){
-        sendDailySummaryToGroupMe(true);
-      }
-    }
-  }, 60000);
-}
 
 function renderAll(){renderCI();renderDir();renderRep();renderAnnouncement();  updateHeadcountBar();
 }
@@ -3352,10 +3300,10 @@ setInterval(function(){
 },150);
 function formatPhone(r){var d=(r||'').replace(/\D/g,'');if(d.length===10)return '('+d.slice(0,3)+') '+d.slice(3,6)+'-'+d.slice(6);if(d.length===11&&d[0]==='1')return '('+d.slice(1,4)+') '+d.slice(4,7)+'-'+d.slice(7);return r||'';}
 function calcAge(dob){var t=new Date(),b=new Date(dob),a=t.getFullYear()-b.getFullYear();var m=t.getMonth()-b.getMonth();if(m<0||(m===0&&t.getDate()<b.getDate()))a--;return a;}
-function statusBadge(s){var map={paid:['b-paid','Paid'],pending:['b-pending','Pending'],unpaid:['b-unpaid','Unpaid']};var r=map[s]||['b-ind',s];return '<span class="badge '+r[0]+'">'+r[1]+'</span>';}
+function statusBadge(s){var map={paid:['b-paid','Paid'],approved:['b-pending','Approved'],unpaid:['b-unpaid','Unpaid'],resigned:['b-inactive','Resigned'],terminated:['b-inactive','Terminated']};var r=map[s]||['b-ind',s];return '<span class="badge '+r[0]+'">'+r[1]+'</span>';}
 function typeBadge(t){var cls={Individual:'b-ind',Couples:'b-couples',Family:'b-family',Board:'b-boardtype',Comp:'b-comptype'}[t]||'b-ind';return '<span class="badge '+cls+'">'+t+'</span>';}
 function chipInfo(m){if(m.guestsTotal===0)return{cls:'none',lbl:'No passes'};var r=m.guestsTotal-(m.guestsUsed||0);return{cls:r<=0?'gone':r<=3?'low':'',lbl:'&#x1F3AB; '+r+' left'};}
-function cardCls(m){if(m.status==='unpaid')return'st-unpaid';if(m.status==='pending')return'st-pending';if(m.type==='Comp')return'st-comp';if(m.type==='Board')return'st-board';return'st-paid';}
+function cardCls(m){if(m.status==='unpaid')return'st-unpaid';if(m.status==='approved')return'st-pending';if(m.status==='resigned'||m.status==='inactive')return'st-inactive';if(m.type==='Comp')return'st-comp';if(m.type==='Board')return'st-board';return'st-paid';}
 function rosterStr(m){var a=m.adults||0,c=m.kids?m.kids.length:(m.children||0),p=[];if(a>0)p.push(a+' adult'+(a>1?'s':''));if(c>0)p.push(c+' child'+(c>1?'ren':''));return p.length?p.join(' &middot; '):'Roster not set';}
 function playChime(){
   try{
@@ -3382,7 +3330,7 @@ function showSuccessFlash(name){
 }
 
 function showToast(msg,type){type=type||'ok';var t=document.getElementById('toast');t.innerHTML=msg;t.className='toast '+type;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},2800);}
-function getUnpaidDays(mid){var uv=visits.filter(function(v){return v.memberId===mid&&v.whileUnpaid;});var d={};uv.forEach(function(v){d[new Date(v.ts).toDateString()]=true;});return Object.keys(d).length;}
+
 
 function seedDemo(){
   members=[
@@ -3461,7 +3409,7 @@ function canQuickCheckIn(m){
 function doQuickCI(mid,evt){
   evt.stopPropagation();
   var m=members.find(function(x){return x.id===mid;}); if(!m) return;
-  if(m.status==='unpaid'&&getUnpaidDays(m.id)>=GRACE_DAYS){showToast('Check-in blocked','err');return;}
+  if(m.status!=='paid'){showToast('Payment required — mark as Paid in Directory to check in','err');return;}
   var adultNames=[];
   if(m.first) adultNames.push(m.first+' '+m.last);
   if(m.secFirst||m.secLast) adultNames.push(((m.secFirst||'')+' '+(m.secLast||'')).trim());
@@ -3485,23 +3433,41 @@ function getPredictive(){
   var hour=now.getHours();
   var dow=now.getDay();
   var todayStr=now.toDateString();
+  var nowMs=now.getTime();
+  var NINETY_DAYS=90*24*60*60*1000;
+
   // Members already checked in today
   var checkedToday={};
   visits.forEach(function(v){
     if(new Date(v.ts).toDateString()===todayStr) checkedToday[v.memberId]=true;
   });
-  // Score each member by how many times they checked in during this hour±1 on this day of week
+
+  // Score each paid member by visit history
+  // - Same day-of-week AND within ±1.5 hours of current time
+  // - Recency bonus: visits in last 30 days worth 3x, last 90 days worth 2x, older worth 1x
   var scores={};
+  var visitCounts={};  // total qualifying visits per member (for min threshold)
   visits.forEach(function(v){
-    if(checkedToday[v.memberId]) return; // skip already checked in today
+    if(checkedToday[v.memberId]) return;
     var d=new Date(v.ts);
-    if(d.getDay()===dow && Math.abs(d.getHours()-hour)<=1){
-      scores[v.memberId]=(scores[v.memberId]||0)+1;
-    }
+    if(d.getDay()!==dow) return;
+    var hourDiff=Math.abs(d.getHours()-hour);
+    if(hourDiff>1) return;
+    // Recency weight
+    var age=nowMs-d.getTime();
+    var weight=age<30*24*60*60*1000?3:age<NINETY_DAYS?2:1;
+    scores[v.memberId]=(scores[v.memberId]||0)+weight;
+    visitCounts[v.memberId]=(visitCounts[v.memberId]||0)+1;
   });
-  // Sort members by score descending, take top 8
+
+  // Filter: paid, not checked in today, min 2 qualifying visits, no critical missing info
   return members
-    .filter(function(m){return scores[m.id]&&!checkedToday[m.id];})
+    .filter(function(m){
+      return m.status==='paid'
+        && !checkedToday[m.id]
+        && (visitCounts[m.id]||0)>=2
+        && !hasCriticalMissing(m);
+    })
     .sort(function(a,b){return (scores[b.id]||0)-(scores[a.id]||0);})
     .slice(0,8);
 }
@@ -3512,7 +3478,7 @@ function buildCiAlphaStrips(){
   var checkedToday={};
   visits.forEach(function(v){if(new Date(v.ts).toDateString()===todayStr) checkedToday[v.memberId]=true;});
   var lnLetters={};
-  members.forEach(function(m){if(m.last) lnLetters[m.last[0].toUpperCase()]=true;});
+  members.forEach(function(m){if(m.last&&m.status==='paid') lnLetters[m.last[0].toUpperCase()]=true;});
   var lnStrip=document.getElementById('ci-ln-strip'); if(!lnStrip) return;
   lnStrip.innerHTML=Object.keys(lnLetters).sort().map(function(l){
     return '<button class="ci-alpha-btn'+(ciLastAlpha===l?' on':'')+'" onclick="setCiLastAlpha(&quot;'+l+'&quot;)">'+l+'</button>';
@@ -3612,13 +3578,13 @@ function renderCI(){
         }).join('')
         +'<div class="ci-section-title" style="background:var(--sand);margin-top:6px">&#x1F4CB; Or use Step 1 above — tap the member\'s last name initial</div>';
     } else {
-      el.innerHTML='<div class="empty"><div class="ico">&#x1F40A;</div><p>Tap a letter above to find a member.</p></div>';
+      el.innerHTML='<div class="empty"><div class="ico">&#x1F40A;</div><p>Tap a letter above to find a member.</p><p style="font-size:12px;color:var(--mu);margin-top:4px">Suggestions appear after a few days of check-in history.</p></div>';
     }
     return;
   }
 
   // Filter by last name initial
-  var list=members.filter(function(m){return m.last&&m.last[0].toUpperCase()===ciLastAlpha;});
+  var list=members.filter(function(m){return m.status==='paid'&&m.last&&m.last[0].toUpperCase()===ciLastAlpha;});
   // Filter by first name initial if selected
   if(ciFirstAlpha){
     list=list.filter(function(m){
@@ -3648,9 +3614,9 @@ function renderCI(){
 function rebuildFilterBtns(){
   var el=document.getElementById('dir-filter-btns'); if(!el) return;
   var cur=dirFilter||'all';
-  var hasFormer=members.some(function(m){return m.status==='inactive'||m.status==='terminated';});
+  var hasFormer=members.some(function(m){return m.status==='resigned'||m.status==='terminated'||m.status==='inactive';});
   var btns='<div style="display:flex;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 0">';
-  var sf=[{k:'all',lbl:'All',cls:''},{k:'paid',lbl:'\u2713 Paid',cls:'on-paid'},{k:'unpaid',lbl:'\u26a0 Unpaid',cls:'on-unpaid'},{k:'pending',lbl:'Pending',cls:'on-pending'}];
+  var sf=[{k:'all',lbl:'All',cls:''},{k:'paid',lbl:'\u2713 Paid',cls:'on-paid'},{k:'unpaid',lbl:'\u26a0 Unpaid',cls:'on-unpaid'},{k:'approved',lbl:'Approved',cls:'on-pending'}];
   if(hasFormer) sf.push({k:'former',lbl:'Former',cls:''});
   sf.forEach(function(f){
     btns+='<button class="fbtn '+(cur===f.k?(f.cls||'on'):'')+"\""
@@ -3672,12 +3638,12 @@ function setAlpha(letter){
 
 function renderDir(){
   if(!dirFilter) dirFilter='all';
-  var statusKeys=['paid','unpaid','pending','inactive','former'];
+  var statusKeys=['paid','unpaid','approved','resigned','terminated','former'];
   var list;
   if(dirFilter==='former'){
-    list=members.filter(function(m){return m.status==='inactive'||m.status==='terminated';});
+    list=members.filter(function(m){return m.status==='resigned'||m.status==='terminated'||m.status==='inactive';});
   } else if(dirFilter==='unpaid'){
-    list=members.filter(function(m){return m.status==='unpaid'||m.status==='pending';});
+    list=members.filter(function(m){return m.status==='unpaid'||m.status==='approved';});
   } else if(statusKeys.indexOf(dirFilter)>=0&&dirFilter!=='all'){
     list=members.filter(function(m){return m.status===dirFilter;});
   } else if(dirFilter!=='all'){
@@ -3738,7 +3704,7 @@ function openMember(id,ciMode){
   if(m.nannyEnabled&&m.nannyName){html+='<div class="nanny-card"><div class="nanny-title">&#x1F476; Authorized Nanny</div><div class="nanny-row"><span class="nanny-lbl">Name</span><span class="nanny-val">'+m.nannyName+'</span></div><div class="nanny-row"><span class="nanny-lbl">Phone</span><span class="nanny-val">'+(m.nannyPhone||'&mdash;')+'</span></div><div class="nanny-row"><span class="nanny-lbl">Age</span><span class="nanny-val">'+(m.nannyDob?calcAge(m.nannyDob)+' years old':'&mdash;')+'</span></div></div>';}
   if(ciMode){
     var unpaidDays=getUnpaidDays(m.id);
-    var hardBlock=(m.status==='unpaid'&&unpaidDays>=GRACE_DAYS);
+    var hardBlock=(m.status!=='paid');
     if(hardBlock){
       html+='<div class="ci-blocked" style="display:flex;flex-direction:column;gap:8px;text-align:center"><div style="font-size:28px">&#x1F6AB;</div><div style="font-size:16px;font-weight:700">Check-In Blocked</div><div style="font-size:13px;font-weight:400;opacity:.85">This membership has checked in unpaid for '+unpaidDays+' days. Payment required before re-entry.</div></div>';
     } else {
@@ -3754,9 +3720,9 @@ function openMember(id,ciMode){
       var unpaidWarn='';
       if(m.status==='unpaid'){
         var mid=m.id;
-        unpaidWarn='<div class="unpaid-warning"><div class="unpaid-warning-title">&#x26A0;&#xFE0F; Payment Outstanding</div><p>This membership has not paid for the current season.</p><div class="unpaid-days">'+unpaidDays+' / '+GRACE_DAYS+' grace days used</div><p style="font-size:12px;color:var(--re);font-weight:600">Check-in blocked after day 3 without payment.</p></div>';
+        unpaidWarn='<div class="unpaid-warning"><div class="unpaid-warning-title">&#x26A0;&#xFE0F; Payment Outstanding</div><p>This membership has not paid for the current season.</p><div class="unpaid-days">'+'Payment required to check in.</div><p style="font-size:12px;color:var(--re);font-weight:600">Check-in blocked after day 3 without payment.</p></div>';
       }
-      else if(m.status==='pending'){unpaidWarn='<div style="background:var(--aml);border:2px solid var(--am);border-radius:10px;padding:10px 13px;font-size:13px;color:var(--am);font-weight:600;text-align:center">&#x23F3; Payment pending &mdash; please follow up</div>';}
+      else if(m.status==='approved'){unpaidWarn='<div style="background:var(--aml);border:2px solid var(--am);border-radius:10px;padding:10px 13px;font-size:13px;color:var(--am);font-weight:600;text-align:center">&#x23F3; Payment pending &mdash; please follow up</div>';}
       var adultNames=[];
       if(m.first)adultNames.push(m.first+(m.last?' '+m.last:''));
       if(m.secFirst||m.secLast)adultNames.push(((m.secFirst||'')+' '+(m.secLast||'')).trim());
@@ -3944,8 +3910,7 @@ function updateOverNote(){}
 
 function doCheckin(id){
   var m=members.find(function(x){return x.id===id;}); if(!m) return;
-  if(m.status==='unpaid'&&getUnpaidDays(m.id)>=GRACE_DAYS){showToast('Check-in blocked - payment required','err');return;}
-  if(m.status==='inactive'||m.status==='terminated'){showToast('This membership is '+m.status,'warn');return;}
+  if(m.status!=='paid'){showToast('Payment required — mark as Paid in Directory to check in','err');return;}
   if(hasCriticalMissing(m)){showToast('Complete required info first','warn');openMissingInfo(m.id);return;}
   openMember(m.id,true);
 }
@@ -3958,7 +3923,7 @@ function commitCheckin(m,checkedAdults,checkedKids,newKids,passesUsed,purchased)
     adults:checkedAdults.length,children:checkedKids.length+newKids.length,
     checkedAdults:checkedAdults,checkedKids:checkedKids.concat(newKids),
     guestPasses:passesUsed,passesPurchased:purchased?passesUsed:0,
-    whileUnpaid:(m.status==='unpaid')};
+    whileUnpaid:false};
   saveVisit(v); ciGuests=0; closeMM();
   var p=[];
   if(checkedAdults.length) p.push(checkedAdults.join(', '));
@@ -3979,8 +3944,8 @@ function commitCheckin(m,checkedAdults,checkedKids,newKids,passesUsed,purchased)
 
 function showGPModal(m,requested,rem,mode){gpMember=m;gpOver=requested;var toPurchase=mode==='purchase'?requested:requested-rem;var fromBal=mode==='purchase'?0:rem;var bd='<div class="gp-breakdown">';if(fromBal>0)bd+='<div class="gp-line"><span>From pass balance</span><span>'+fromBal+' pass'+(fromBal>1?'es':'')+'</span></div>';if(toPurchase>0)bd+='<div class="gp-line"><span>Purchase @ $'+GUEST_PRICE+' each</span><span>'+toPurchase+' pass'+(toPurchase>1?'es':'')+'</span></div>';bd+='<div class="gp-total"><span>Total</span><span>'+requested+' guests &middot; '+(toPurchase>0?'$'+(toPurchase*GUEST_PRICE)+' due':'no charge')+'</span></div></div>';var inner='<div class="gp-body"><div class="gp-icon">&#x1F3AB;</div>';if(mode==='purchase'){inner+='<div class="gp-headline">No Passes Remaining</div><div class="gp-detail">Purchase '+requested+' pass'+(requested>1?'es':'')+' at $'+GUEST_PRICE+' each?</div>'+bd+'<div class="gp-btns"><button class="gp-buy" onclick="gpPurchase('+requested+')">&#x1F4B3; Purchase &middot; $'+(toPurchase*GUEST_PRICE)+'</button><button class="gp-skip" onclick="gpSkip()">Check In Without Passes</button></div>';}else{inner+='<div class="gp-headline">Not Enough Passes</div><div class="gp-detail">'+rem+' remaining &mdash; use all + purchase '+toPurchase+' more?</div>'+bd+'<div class="gp-btns"><button class="gp-buy" onclick="gpBuyPartial('+fromBal+','+toPurchase+')">Use '+fromBal+' + Buy '+toPurchase+' &middot; $'+(toPurchase*GUEST_PRICE)+'</button><button class="gp-skip" onclick="gpSkip()">Check In Without Passes</button></div>';}inner+='</div>';document.getElementById('gp-inner').innerHTML=inner;document.getElementById('gp-overlay').classList.add('open');}
 function gpUseExisting(){closeGP();commitCheckin(gpMember,ciGuests,false);}
-function gpBuyPartial(fromBal,toPurchase){closeGP();var updated=Object.assign({},gpMember,{guestsUsed:(gpMember.guestsUsed||0)+fromBal});saveMember(updated);var v={id:uid(),memberId:gpMember.id,ts:new Date().toISOString(),adults:A.adults,children:A.children,guestPasses:fromBal+toPurchase,passesPurchased:toPurchase,whileUnpaid:(gpMember.status==='unpaid')};saveVisit(v);ciGuests=0;closeMM();showToast('Checked in &middot; used '+fromBal+' + purchased '+toPurchase+' &middot; $'+(toPurchase*GUEST_PRICE)+' due','ok');setTimeout(function(){ciLastAlpha='';ciFirstAlpha='';switchTab('ci');renderCI();},1500);}
-function gpPurchase(count){closeGP();var v={id:uid(),memberId:gpMember.id,ts:new Date().toISOString(),adults:A.adults,children:A.children,guestPasses:count,passesPurchased:count,whileUnpaid:(gpMember.status==='unpaid')};saveVisit(v);ciGuests=0;closeMM();showToast('Checked in &middot; '+count+' pass'+(count>1?'es':'')+' purchased &middot; $'+(count*GUEST_PRICE)+' due','ok');setTimeout(function(){ciLastAlpha='';ciFirstAlpha='';switchTab('ci');renderCI();},1500);}
+function gpBuyPartial(fromBal,toPurchase){closeGP();var updated=Object.assign({},gpMember,{guestsUsed:(gpMember.guestsUsed||0)+fromBal});saveMember(updated);var v={id:uid(),memberId:gpMember.id,ts:new Date().toISOString(),adults:A.adults,children:A.children,guestPasses:fromBal+toPurchase,passesPurchased:toPurchase,whileUnpaid:false};saveVisit(v);ciGuests=0;closeMM();showToast('Checked in &middot; used '+fromBal+' + purchased '+toPurchase+' &middot; $'+(toPurchase*GUEST_PRICE)+' due','ok');setTimeout(function(){ciLastAlpha='';ciFirstAlpha='';switchTab('ci');renderCI();},1500);}
+function gpPurchase(count){closeGP();var v={id:uid(),memberId:gpMember.id,ts:new Date().toISOString(),adults:A.adults,children:A.children,guestPasses:count,passesPurchased:count,whileUnpaid:false};saveVisit(v);ciGuests=0;closeMM();showToast('Checked in &middot; '+count+' pass'+(count>1?'es':'')+' purchased &middot; $'+(count*GUEST_PRICE)+' due','ok');setTimeout(function(){ciLastAlpha='';ciFirstAlpha='';switchTab('ci');renderCI();},1500);}
 function gpSkip(){closeGP();commitCheckin(gpMember,0,false);showToast('Checked in &mdash; no passes recorded','warn');}
 function closeGP(){document.getElementById('gp-overlay').classList.remove('open');}
 
@@ -4028,7 +3993,7 @@ document.getElementById('ed-overlay').classList.add('open');
   }
 }
 
-function changePaymentStatus(){requireAdminPin(function(){var cur=document.getElementById('ef-status').value;var opts=['paid','pending','unpaid','inactive','terminated'];var labels={paid:'Paid',pending:'Pending',unpaid:'Unpaid',inactive:'Inactive',terminated:'Terminated'};var next=opts[(opts.indexOf(cur)+1)%opts.length];document.getElementById('ef-status').value=next;var _sd=document.getElementById('status-display');if(_sd)_sd.textContent=labels[next];
+function changePaymentStatus(){requireAdminPin(function(){var cur=document.getElementById('ef-status').value;var opts=['paid','approved','unpaid','resigned','terminated'];var labels={paid:'Paid',approved:'Approved (unpaid)',unpaid:'Unpaid',resigned:'Resigned',terminated:'Terminated'};var next=opts[(opts.indexOf(cur)+1)%opts.length];document.getElementById('ef-status').value=next;var _sd=document.getElementById('status-display');if(_sd)_sd.textContent=labels[next];
     // Log status change to activity
     if(editingId){
       var _oldStatus=cur;
@@ -4099,14 +4064,14 @@ function renderRep(){
 
   var paid=members.filter(function(m){return m.status==='paid';}).length;
   var unpaidCount=members.filter(function(m){return m.status==='unpaid';}).length;
-  var pendingCount=members.filter(function(m){return m.status==='pending';}).length;
+  var pendingCount=members.filter(function(m){return m.status==='approved';}).length;
   var totalPurchased=seasonV.reduce(function(s,v){return s+(v.passesPurchased||0);},0);
   var totalGPUsed=seasonV.reduce(function(s,v){return s+(v.guestPasses||0);},0);
-  var todayHeads=todayV.reduce(function(s,v){return s+(v.adults||0)+(v.children||0);},0);
+  var todayHeads=todayV.reduce(function(s,v){return s+(v.adults||0)+(v.children||0)+(v.guestPasses||0);},0);
   var todayHH=new Set(todayV.map(function(v){return v.memberId;})).size;
-  var sevenHeads=last7V.reduce(function(s,v){return s+(v.adults||0)+(v.children||0);},0);
+  var sevenHeads=last7V.reduce(function(s,v){return s+(v.adults||0)+(v.children||0)+(v.guestPasses||0);},0);
   var avgPerDay=Math.round(last7V.length/7*10)/10;
-  var seasonHeads=seasonV.reduce(function(s,v){return s+(v.adults||0)+(v.children||0);},0);
+  var seasonHeads=seasonV.reduce(function(s,v){return s+(v.adults||0)+(v.children||0)+(v.guestPasses||0);},0);
   var paidPct=members.length?Math.round(paid/members.length*100):0;
 
   // Peak hour
@@ -4450,7 +4415,7 @@ function parseCSV(text){
     cols.push(cur.trim());
     return cols;
   }
-  var lines=text.trim().split('\n');if(lines.length<2){showToast('CSV appears empty','err');return;}var headers=parseRow(lines[0]).map(function(h){return h.replace(/"/g,'').trim().toLowerCase();});var idx=function(names){for(var i=0;i<names.length;i++){var j=headers.indexOf(names[i]);if(j>=0)return j;}return -1;};var col={last:idx(['last','last name']),first:idx(['first','first name']),type:idx(['type','membership type']),status:idx(['status']),adults:idx(['adults']),kids:idx(['kids','kids names','children names']),gused:idx(['passes used','used']),gtotal:idx(['passes total','total']),email:idx(['email']),phone:idx(['phone']),street:idx(['street','street address']),city:idx(['city']),state:idx(['state']),zip:idx(['zip','zip code'])};if(col.last<0||col.first<0){showToast('CSV must have Last and First columns','err');return;}var parsed=[];for(var i=1;i<lines.length;i++){var row=splitCSVRow(lines[i]);if(!row.length||!row[col.last])continue;var type=col.type>=0?row[col.type]:'Family';if(!GUEST_PASSES.hasOwnProperty(type))type='Family';var status=col.status>=0?row[col.status].toLowerCase():'paid';if(['paid','pending','unpaid'].indexOf(status)<0)status='paid';var gtotal=col.gtotal>=0?parseInt(row[col.gtotal]):GUEST_PASSES[type];if(isNaN(gtotal))gtotal=GUEST_PASSES[type];var kidsRaw=col.kids>=0?row[col.kids]:'';var kids=kidsRaw?kidsRaw.split(';').map(function(k){return k.trim();}).filter(Boolean):[];parsed.push({id:uid(),last:(col.last>=0?row[col.last]:'').trim(),first:(col.first>=0?row[col.first]:'').trim(),type:type,status:status,adults:col.adults>=0?(parseInt(row[col.adults])||1):1,kids:kids,children:kids.length,guestsUsed:col.gused>=0?(parseInt(row[col.gused])||0):0,guestsTotal:gtotal,email:(col.email>=0?row[col.email]:'').trim(),phone:(col.phone>=0?row[col.phone]:'').trim(),street:(col.street>=0?row[col.street]:'').trim(),city:(col.city>=0?row[col.city]:'').trim(),state:(col.state>=0?row[col.state]:'NC').trim(),zip:(col.zip>=0?row[col.zip]:'').trim()});}csvParsed=parsed;var prev='<div class="csv-preview"><table><tr><th>Last</th><th>First</th><th>Type</th><th>Status</th><th>Adults</th><th>Kids</th></tr>'+parsed.slice(0,10).map(function(m){return'<tr><td>'+m.last+'</td><td>'+m.first+'</td><td>'+m.type+'</td><td>'+m.status+'</td><td>'+m.adults+'</td><td>'+m.kids.join(', ')+'</td></tr>';}).join('')+(parsed.length>10?'<tr><td colspan="6" style="color:var(--mu);text-align:center">...and '+(parsed.length-10)+' more</td></tr>':'')+'</table></div>';document.getElementById('csv-preview').innerHTML=prev;document.getElementById('csv-actions').innerHTML='<p style="font-size:13px;color:var(--mu);margin-top:8px">'+parsed.length+' members found.</p><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px"><button class="btn-p" onclick="importCSVMerge()">&#xFF0B; Merge with Existing</button><button class="btn-o" onclick="importCSVReplace()">&#x1F504; Replace All Members</button></div>';}
+  var lines=text.trim().split('\n');if(lines.length<2){showToast('CSV appears empty','err');return;}var headers=parseRow(lines[0]).map(function(h){return h.replace(/"/g,'').trim().toLowerCase();});var idx=function(names){for(var i=0;i<names.length;i++){var j=headers.indexOf(names[i]);if(j>=0)return j;}return -1;};var col={last:idx(['last','last name']),first:idx(['first','first name']),type:idx(['type','membership type']),status:idx(['status']),adults:idx(['adults']),kids:idx(['kids','kids names','children names']),gused:idx(['passes used','used']),gtotal:idx(['passes total','total']),email:idx(['email']),phone:idx(['phone']),street:idx(['street','street address']),city:idx(['city']),state:idx(['state']),zip:idx(['zip','zip code'])};if(col.last<0||col.first<0){showToast('CSV must have Last and First columns','err');return;}var parsed=[];for(var i=1;i<lines.length;i++){var row=splitCSVRow(lines[i]);if(!row.length||!row[col.last])continue;var type=col.type>=0?row[col.type]:'Family';if(!GUEST_PASSES.hasOwnProperty(type))type='Family';var status=col.status>=0?row[col.status].toLowerCase():'paid';if(['paid','approved','unpaid','resigned','terminated'].indexOf(status)<0)status='paid';var gtotal=col.gtotal>=0?parseInt(row[col.gtotal]):GUEST_PASSES[type];if(isNaN(gtotal))gtotal=GUEST_PASSES[type];var kidsRaw=col.kids>=0?row[col.kids]:'';var kids=kidsRaw?kidsRaw.split(';').map(function(k){return k.trim();}).filter(Boolean):[];parsed.push({id:uid(),last:(col.last>=0?row[col.last]:'').trim(),first:(col.first>=0?row[col.first]:'').trim(),type:type,status:status,adults:col.adults>=0?(parseInt(row[col.adults])||1):1,kids:kids,children:kids.length,guestsUsed:col.gused>=0?(parseInt(row[col.gused])||0):0,guestsTotal:gtotal,email:(col.email>=0?row[col.email]:'').trim(),phone:(col.phone>=0?row[col.phone]:'').trim(),street:(col.street>=0?row[col.street]:'').trim(),city:(col.city>=0?row[col.city]:'').trim(),state:(col.state>=0?row[col.state]:'NC').trim(),zip:(col.zip>=0?row[col.zip]:'').trim()});}csvParsed=parsed;var prev='<div class="csv-preview"><table><tr><th>Last</th><th>First</th><th>Type</th><th>Status</th><th>Adults</th><th>Kids</th></tr>'+parsed.slice(0,10).map(function(m){return'<tr><td>'+m.last+'</td><td>'+m.first+'</td><td>'+m.type+'</td><td>'+m.status+'</td><td>'+m.adults+'</td><td>'+m.kids.join(', ')+'</td></tr>';}).join('')+(parsed.length>10?'<tr><td colspan="6" style="color:var(--mu);text-align:center">...and '+(parsed.length-10)+' more</td></tr>':'')+'</table></div>';document.getElementById('csv-preview').innerHTML=prev;document.getElementById('csv-actions').innerHTML='<p style="font-size:13px;color:var(--mu);margin-top:8px">'+parsed.length+' members found.</p><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px"><button class="btn-p" onclick="importCSVMerge()">&#xFF0B; Merge with Existing</button><button class="btn-o" onclick="importCSVReplace()">&#x1F504; Replace All Members</button></div>';}
 function importCSVMerge(){if(!csvParsed.length){showToast('No data','warn');return;}var added=0,updated=0;csvParsed.forEach(function(nm){var ex=members.find(function(m){return m.last.toLowerCase()===nm.last.toLowerCase()&&m.first.toLowerCase()===nm.first.toLowerCase();});if(ex){var merged=Object.assign({},ex,nm,{id:ex.id});saveMember(merged);updated++;}else{saveMember(nm);added++;}});if(!fbReady){lSet('gsc_members',members);renderAll();}closeCSV();showToast('Imported: '+added+' added, '+updated+' updated','ok');}
 function importCSVReplace(){if(!csvParsed.length){showToast('No data','warn');return;}if(!confirm('Replace all existing members? Visit history is kept.'))return;// Delete existing members from Firebase first
 if(fbReady&&window._delMemberFB){members.forEach(function(m){window._delMemberFB(m.id);});}// Save new ones
@@ -5172,7 +5137,7 @@ function sciShowCheckin(){
   // Check paid status
   if(m.status!=='paid'){
     var daysUnpaid=getUnpaidDays(m.id);
-    if(daysUnpaid>=GRACE_DAYS){
+    if(m.status!=='paid'){
       document.getElementById('sci-body').innerHTML='<div style="text-align:center;padding:20px">'
         +'<div style="font-size:48px;margin-bottom:12px">🚫</div>'
         +'<div style="font-size:18px;font-weight:800;color:var(--re);margin-bottom:8px">Check-In Unavailable</div>'
@@ -5283,7 +5248,7 @@ function sciSubmitCheckin(memberId){
     adults:checked.length,children:checkedKids.length,
     checkedAdults:checked,checkedKids:checkedKids,
     guestPasses:guests,passesPurchased:0,
-    whileUnpaid:m.status!=='paid',selfCheckin:true};
+    whileUnpaid:false,selfCheckin:true};
   // Update guest pass count
   var updM=Object.assign({},m,{guestsUsed:(m.guestsUsed||0)+guests});
   saveMember(updM);
@@ -5370,6 +5335,14 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }, 8000);
 });
+
+
+
+
+
+
+
+
 
 
 
