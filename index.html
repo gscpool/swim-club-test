@@ -346,7 +346,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.5.2</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.5.3</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -569,6 +569,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script>
+
 
 
 
@@ -4064,7 +4065,12 @@ function renderRep(){
 
   var paid=members.filter(function(m){return m.status==='paid';}).length;
   var unpaidCount=members.filter(function(m){return m.status==='unpaid';}).length;
-  var pendingCount=members.filter(function(m){return m.status==='approved';}).length;
+  var approvedCount=members.filter(function(m){return m.status==='approved';}).length;
+  var resignedCount=members.filter(function(m){return m.status==='resigned';}).length;
+  var terminatedCount=members.filter(function(m){return m.status==='terminated';}).length;
+  var needsAttention=unpaidCount+approvedCount; // not yet paid
+  var activeTotal=paid+unpaidCount+approvedCount; // all active/expected members
+  var paidPct=activeTotal?Math.round(paid/activeTotal*100):0;
   var totalPurchased=seasonV.reduce(function(s,v){return s+(v.passesPurchased||0);},0);
   var totalGPUsed=seasonV.reduce(function(s,v){return s+(v.guestPasses||0);},0);
   var todayHeads=todayV.reduce(function(s,v){return s+(v.adults||0)+(v.children||0)+(v.guestPasses||0);},0);
@@ -4072,7 +4078,6 @@ function renderRep(){
   var sevenHeads=last7V.reduce(function(s,v){return s+(v.adults||0)+(v.children||0)+(v.guestPasses||0);},0);
   var avgPerDay=Math.round(last7V.length/7*10)/10;
   var seasonHeads=seasonV.reduce(function(s,v){return s+(v.adults||0)+(v.children||0)+(v.guestPasses||0);},0);
-  var paidPct=members.length?Math.round(paid/members.length*100):0;
 
   // Peak hour
   var maxHV=0,peakH=12;
@@ -4184,14 +4189,42 @@ function renderRep(){
   );
 
   // Membership
-  html+=section(
-    'Membership',
-    stat(members.length,'Total Members',BL)
-    +stat(paid,'Paid ('+paidPct+'%)','#166534')
+  // Dues collection progress bar
+  var duesPct=activeTotal?Math.round(paid/activeTotal*100):0;
+  var duesBarColor=duesPct>=90?GR:duesPct>=70?AM:RE;
+  var duesBar='<div style="margin:8px 0 4px">'
+    +'<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--mu);margin-bottom:4px">'
+    +'<span>Dues collected</span><span style="font-weight:700;color:'+duesBarColor+'">'+duesPct+'%</span></div>'
+    +'<div style="height:8px;background:var(--sand2);border-radius:4px;overflow:hidden">'
+    +'<div style="height:100%;width:'+duesPct+'%;background:'+duesBarColor+';border-radius:4px;transition:width .4s"></div>'
+    +'</div></div>';
+
+  html+='<div class="rsec">'
+    +'<div class="rsec-title">Membership</div>'
+    +duesBar
+    +'<div class="rstat-grid" style="grid-template-columns:repeat(3,1fr);margin-top:10px">'
+    +stat(paid,'✓ Paid',GR)
     +stat(unpaidCount,'Unpaid',RE)
-    +stat(pendingCount,'Pending',AM),
-    4
-  );
+    +stat(approvedCount,'Approved','#0e7490')
+    +'</div>'
+    +(resignedCount||terminatedCount
+      ?'<div class="rstat-grid" style="grid-template-columns:repeat(3,1fr);margin-top:8px">'
+        +stat(activeTotal,'Active Total',BL)
+        +stat(resignedCount,'Resigned',AM)
+        +stat(terminatedCount,'Terminated',RE)
+        +'</div>'
+      :'<div style="text-align:center;margin-top:8px">'
+        +stat(activeTotal,'Active Total',BL)
+        +'</div>'
+    )
+    +(needsAttention>0
+      ?'<div style="margin-top:10px;background:var(--aml);border:1.5px solid var(--am);border-radius:var(--r-sm);padding:10px 12px;display:flex;align-items:center;gap:8px">'
+        +'<div style="font-size:18px">⚠️</div>'
+        +'<div><div style="font-size:13px;font-weight:700;color:var(--am)">'+needsAttention+' member'+(needsAttention>1?'s':'')+' not yet paid</div>'
+        +'<div style="font-size:11px;color:var(--mu);margin-top:2px">'+unpaidCount+' unpaid · '+approvedCount+' approved awaiting payment</div></div>'
+        +'</div>'
+      :'')
+    +'</div>';
 
   // Data Management
   html+='<div class="rsec"><div class="rsec-title">Check-In Exports</div>'
@@ -5335,6 +5368,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }, 8000);
 });
+
 
 
 
