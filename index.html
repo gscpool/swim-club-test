@@ -346,7 +346,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.5.9</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.6.0</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -569,6 +569,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script>
+
 
 
 
@@ -4445,6 +4446,71 @@ function renderRep(){
   });
   html+='</div></div>';
 
+  // ── Leaderboard ─────────────────────────────────────────────────────────────
+  // Most visits by membership type
+  var typeVisits={};
+  var memberVisits={};
+  seasonV.forEach(function(v){
+    var mem=members.find(function(x){return x.id===v.memberId;});
+    if(!mem) return;
+    var t=mem.type||'Unknown';
+    typeVisits[t]=(typeVisits[t]||0)+1;
+    memberVisits[v.memberId]=(memberVisits[v.memberId]||0)+1;
+  });
+
+  // Sort membership types by visits
+  var typeRanked=Object.keys(typeVisits).sort(function(a,b){return typeVisits[b]-typeVisits[a];});
+  var typeMax=typeRanked.length?typeVisits[typeRanked[0]]:1;
+
+  // Sort members by visits, top 5
+  var memberRanked=Object.keys(memberVisits).sort(function(a,b){return memberVisits[b]-memberVisits[a];}).slice(0,5);
+
+  html+='<div class="rsec">'
+    +'<div class="rsec-title">Most Active — This Season</div>'
+
+    // Membership type breakdown
+    +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin-bottom:8px">By Membership Type</div>'
+    +'<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px">';
+
+  typeRanked.forEach(function(t){
+    var v=typeVisits[t];
+    var pct=Math.round((v/typeMax)*100);
+    html+='<div style="display:flex;align-items:center;gap:8px">'
+      +'<div style="width:80px;font-size:12px;font-weight:700;color:var(--bld);flex-shrink:0">'+t+'</div>'
+      +'<div style="flex:1;height:20px;background:var(--sand2);border-radius:4px;overflow:hidden">'
+      +'<div style="height:100%;width:'+pct+'%;background:#003087;border-radius:4px;transition:width .3s"></div></div>'
+      +'<div style="width:48px;font-size:11px;font-weight:700;color:var(--bld);text-align:right;flex-shrink:0">'+v+' visits</div>'
+      +'</div>';
+  });
+
+  html+='</div>'
+
+    // Top members
+    +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin-bottom:8px">Top Members</div>'
+    +'<div style="display:flex;flex-direction:column;gap:6px">';
+
+  var medals=['🥇','🥈','🥉','4.','5.'];
+  memberRanked.forEach(function(mid,i){
+    var mem=members.find(function(x){return x.id===mid;});
+    if(!mem) return;
+    var v=memberVisits[mid];
+    var pct=Math.round((v/memberVisits[memberRanked[0]])*100);
+    html+='<div style="display:flex;align-items:center;gap:8px;background:'+(i===0?'#fff8f0':'var(--sand)')+';border-radius:var(--r-sm);padding:8px 10px;'+(i===0?'border:1.5px solid #FA4616':'')+'">'
+      +'<div style="font-size:16px;flex-shrink:0">'+medals[i]+'</div>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-size:13px;font-weight:700;color:var(--bld);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+mem.last+', '+mem.first+'</div>'
+      +'<div style="font-size:10px;color:var(--mu);margin-top:1px">'+mem.type+'</div>'
+      +'</div>'
+      +'<div style="text-align:right;flex-shrink:0">'
+      +'<div style="font-size:14px;font-weight:800;color:'+(i===0?'#FA4616':'var(--bld)')+'">'+v+'</div>'
+      +'<div style="font-size:10px;color:var(--mu)">visits</div>'
+      +'</div>'
+      +'</div>';
+  });
+
+  html+='</div></div>';
+
+
   // Membership
   // Dues collection progress bar
   var duesPct=activeTotal?Math.round(paid/activeTotal*100):0;
@@ -5652,6 +5718,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }, 8000);
 });
+
 
 
 
