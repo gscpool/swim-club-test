@@ -346,7 +346,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.5.3</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.5.5</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -569,6 +569,9 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script>
+
+
+
 
 
 
@@ -4079,20 +4082,40 @@ function renderRep(){
   var avgPerDay=Math.round(last7V.length/7*10)/10;
   var seasonHeads=seasonV.reduce(function(s,v){return s+(v.adults||0)+(v.children||0)+(v.guestPasses||0);},0);
 
-  // Peak hour
+  // Peak hour — by total headcount (adults+children+guests)
+  var hourHeads=new Array(24).fill(0);
+  seasonV.forEach(function(v){
+    var h=new Date(v.ts).getHours();
+    hourHeads[h]+=(v.adults||0)+(v.children||0)+(v.guestPasses||0);
+  });
   var maxHV=0,peakH=12;
-  for(var h=10;h<=22;h++){
-    var hv=seasonV.filter(function(v){return new Date(v.ts).getHours()===h;})
-      .reduce(function(s,v){return s+(v.adults||0)+(v.children||0);},0);
-    if(hv>maxHV){maxHV=hv;peakH=h;}
-  }
+  for(var h=10;h<=22;h++){if(hourHeads[h]>maxHV){maxHV=hourHeads[h];peakH=h;}}
   var peakHLabel=peakH<12?peakH+'am':peakH===12?'12pm':(peakH-12)+'pm';
 
-  // Busiest day
-  var dowC=[0,0,0,0,0,0,0];
-  seasonV.forEach(function(v){dowC[new Date(v.ts).getDay()]++;});
+  // Top-2 peak hours for context
+  var hourRank=[];for(var h=10;h<=22;h++) hourRank.push({h:h,v:hourHeads[h]});
+  hourRank.sort(function(a,b){return b.v-a.v;});
+  var peak2Label=hourRank.length>1?(hourRank[1].h<12?hourRank[1].h+'am':hourRank[1].h===12?'12pm':(hourRank[1].h-12)+'pm'):'';
+
+  // Busiest day of week — by average daily headcount
   var DNAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  var busiestDow=DNAMES[dowC.indexOf(Math.max.apply(null,dowC))];
+  var dowHeads=[0,0,0,0,0,0,0];
+  var dowDays=[0,0,0,0,0,0,0]; // count of days we have data for each DOW
+  var dowDaySet=[{},{},{},{},{},{},{}];
+  seasonV.forEach(function(v){
+    var d=new Date(v.ts);
+    var dow=d.getDay();
+    var ds=d.toDateString();
+    dowHeads[dow]+=(v.adults||0)+(v.children||0)+(v.guestPasses||0);
+    dowDaySet[dow][ds]=true;
+  });
+  var dowAvg=dowHeads.map(function(h,i){
+    var days=Object.keys(dowDaySet[i]).length;
+    return days>0?Math.round(h/days):0;
+  });
+  var maxDowAvg=Math.max.apply(null,dowAvg);
+  var busiestDow=DNAMES[dowAvg.indexOf(maxDowAvg)];
+  var busiestDowAvgLabel=maxDowAvg>0?'~'+maxDowAvg+' avg':'';
 
   // ── KPI card builder ─────────────────────────────────────────────────────
   function stat(val, lbl, color, chartId){
@@ -4176,17 +4199,71 @@ function renderRep(){
     4
   );
 
-  // Season
-  html+=section(
-    'This Season',
-    stat(seasonV.length,'Total Visits',GR,'season-hourly')
+  // Season — scheduling-focused
+  // Avg headcount per open day
+  var openDays=Object.keys((function(){var m={};seasonV.forEach(function(v){m[new Date(v.ts).toDateString()]=true;});return m;})()).length||1;
+  var avgDailyHeads=Math.round(seasonHeads/openDays);
+  // Peak single-day headcount
+  var dayHeadMap={};
+  seasonV.forEach(function(v){
+    var ds=new Date(v.ts).toDateString();
+    dayHeadMap[ds]=(dayHeadMap[ds]||0)+(v.adults||0)+(v.children||0)+(v.guestPasses||0);
+  });
+  var peakDayHeads=Object.values(dayHeadMap).length?Math.max.apply(null,Object.values(dayHeadMap)):0;
+
+  html+='<div class="rsec"><div class="rsec-title">This Season</div>';
+
+  // Top row: key volume stats
+  html+='<div class="rstat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:8px">'
+    +stat(seasonV.length,'Total Visits',GR,'season-hourly')
     +stat(seasonHeads,'Total Headcount',OR,'season-hourly')
-    +stat(peakHLabel,'Peak Hour',OR,'season-hourly')
-    +stat(busiestDow,'Busiest Day',BL,'season-dow')
-    +stat(totalGPUsed,'Passes Used',AM,'season-gp')
-    +stat('$'+(totalPurchased*GUEST_PRICE),'Pass Revenue',GR,'season-gp'),
-    3
-  );
+    +stat(totalGPUsed,'Guest Passes',AM,'season-gp')
+    +'</div>';
+
+  // Scheduling insight section
+  html+='<div style="background:var(--bld);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px">'
+    +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.5);margin-bottom:10px">Scheduling Insights</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+    +'<div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px">'
+    +'<div style="font-size:20px;font-weight:800;color:#FA4616">'+busiestDow+'</div>'
+    +'<div style="font-size:10px;color:rgba(255,255,255,.6);margin-top:2px">BUSIEST DAY</div>'
+    +(busiestDowAvgLabel?'<div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">'+busiestDowAvgLabel+' people</div>':'')
+    +'<button onclick="showRepChart(\'season-dow\')" style="margin-top:6px;background:none;border:none;padding:0;cursor:pointer;font-size:10px;font-weight:700;color:#FA4616;opacity:.8;font-family:-apple-system,sans-serif">View by day ›</button>'
+    +'</div>'
+    +'<div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px">'
+    +'<div style="font-size:20px;font-weight:800;color:#FA4616">'+peakHLabel+'</div>'
+    +'<div style="font-size:10px;color:rgba(255,255,255,.6);margin-top:2px">PEAK HOUR</div>'
+    +(peak2Label?'<div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">2nd: '+peak2Label+'</div>':'')
+    +'<button onclick="showRepChart(\'season-hourly\')" style="margin-top:6px;background:none;border:none;padding:0;cursor:pointer;font-size:10px;font-weight:700;color:#FA4616;opacity:.8;font-family:-apple-system,sans-serif">View by hour ›</button>'
+    +'</div>'
+    +'<div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px">'
+    +'<div style="font-size:20px;font-weight:800;color:#86efac">'+avgDailyHeads+'</div>'
+    +'<div style="font-size:10px;color:rgba(255,255,255,.6);margin-top:2px">AVG DAILY HEADCOUNT</div>'
+    +'</div>'
+    +'<div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px">'
+    +'<div style="font-size:20px;font-weight:800;color:#fca5a5">'+peakDayHeads+'</div>'
+    +'<div style="font-size:10px;color:rgba(255,255,255,.6);margin-top:2px">PEAK DAY HEADCOUNT</div>'
+    +'</div>'
+    +'</div>'
+    +'</div>';
+
+  // Day-of-week avg headcount breakdown
+  html+='<div style="margin-bottom:4px">';
+  var dowMax=Math.max.apply(null,dowAvg)||1;
+  DNAMES.forEach(function(name,i){
+    var avg=dowAvg[i];
+    var days=Object.keys(dowDaySet[i]).length;
+    if(!days) return; // skip days with no data
+    var pct=Math.round((avg/dowMax)*100);
+    var barColor=avg===maxDowAvg?'#FA4616':avg>=maxDowAvg*.8?'#003087':'#6b7280';
+    html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">';
+    html+='<div style="width:30px;font-size:11px;font-weight:700;color:var(--mu);flex-shrink:0">'+name+'</div>';
+    html+='<div style="flex:1;height:18px;background:var(--sand2);border-radius:4px;overflow:hidden">';
+    html+='<div style="height:100%;width:'+pct+'%;background:'+barColor+';border-radius:4px;transition:width .3s"></div></div>';
+    html+='<div style="width:60px;font-size:11px;color:var(--bld);text-align:right;flex-shrink:0">~'+avg+' avg</div>';
+    html+='</div>';
+  });
+  html+='</div></div>';
 
   // Membership
   // Dues collection progress bar
@@ -4280,7 +4357,7 @@ function showRepChart(chartId){
       var d=new Date(now);d.setDate(d.getDate()-i);var ds=d.toDateString();
       var dv=visits.filter(function(v){return new Date(v.ts).toDateString()===ds;});
       labels.push(DNAMES[d.getDay()]+' '+(d.getMonth()+1)+'/'+d.getDate());
-      data.push(dv.reduce(function(s,v){return s+(v.adults||0)+(v.children||0);},0));
+      data.push(dv.reduce(function(s,v){return s+(v.adults||0)+(v.children||0)+(v.guestPasses||0);},0));
       colors.push('#003087');
     }
   } else if(chartId==='seven-daily-hh'){
@@ -4293,23 +4370,28 @@ function showRepChart(chartId){
       colors.push('#0e7490');
     }
   } else if(chartId==='season-hourly'){
-    title='This Season — Check-Ins by Hour of Day';
+    title='This Season — Headcount by Hour of Day';
     var maxV=0;
     for(var h=10;h<=22;h++){
       var hv=seasonV.filter(function(v){return new Date(v.ts).getHours()===h;});
-      var total=hv.reduce(function(s,v){return s+(v.adults||0)+(v.children||0);},0);
+      var total=hv.reduce(function(s,v){return s+(v.adults||0)+(v.children||0)+(v.guestPasses||0);},0);
       data.push(total);
       labels.push(h<12?h+'am':h===12?'12pm':(h-12)+'pm');
       if(total>maxV) maxV=total;
     }
     data.forEach(function(v){colors.push(v===maxV&&maxV>0?'#FA4616':'#003087');});
   } else if(chartId==='season-dow'){
-    title='This Season — Busiest Days of the Week';
-    var dowC=[0,0,0,0,0,0,0];
-    seasonV.forEach(function(v){dowC[new Date(v.ts).getDay()]++;});
-    labels=DNAMES.slice();data=dowC.slice();
-    var maxD=Math.max.apply(null,dowC);
-    data.forEach(function(v){colors.push(v===maxD&&maxD>0?'#FA4616':'#003087');});
+    title='This Season — Avg Headcount by Day of Week';
+    var dowH2=[0,0,0,0,0,0,0],dowDS2=[{},{},{},{},{},{},{}];
+    seasonV.forEach(function(v){
+      var d=new Date(v.ts);var dow=d.getDay();var ds=d.toDateString();
+      dowH2[dow]+=(v.adults||0)+(v.children||0)+(v.guestPasses||0);
+      dowDS2[dow][ds]=true;
+    });
+    var dowAvg2=dowH2.map(function(h,i){var days=Object.keys(dowDS2[i]).length;return days>0?Math.round(h/days):0;});
+    labels=DNAMES.slice();data=dowAvg2.slice();
+    var maxD2=Math.max.apply(null,dowAvg2);
+    data.forEach(function(v){colors.push(v===maxD2&&maxD2>0?'#FA4616':'#003087');});
   } else if(chartId==='season-hh-daily'){
     title='This Season — Households by Day (last 14 visit days)';
     var dayMap={};
@@ -4336,43 +4418,42 @@ function showRepChart(chartId){
 
   if(!data.length){showToast('No data yet for this chart','warn');return;}
 
-  // Build SVG bar chart
+  // Build SVG bar chart — sized to match current view mode
+  var appEl=document.getElementById('app');
+  var appW=appEl?Math.round(appEl.getBoundingClientRect().width):window.innerWidth;
+  var isDesktop=appW>600;
   var max=Math.max.apply(null,data)||1;
-  var W=window.screen.width>window.screen.height?window.screen.width-60:window.screen.height-60;
-  var H=260;var plotH=H-60;var barW=Math.max(24,Math.floor((W-70)/data.length)-5);
-  var svgW=Math.max(W,(barW+5)*data.length+70);
+  var PAD=isDesktop?80:60;
+  var W=appW-16;
+  var H=isDesktop?320:240;
+  var plotH=H-60;
+  var idealBarW=Math.floor((W-PAD)/data.length)-5;
+  var barW=Math.max(isDesktop?32:22,Math.min(isDesktop?80:60,idealBarW));
+  var svgW=Math.max(W,PAD+(barW+5)*data.length+10);
+  var labelFS=barW<30?8:barW<50?10:12;
+  var valFS=barW<30?9:11;
 
   var gridLines=[0,0.25,0.5,0.75,1].map(function(f){
-    var y=H-30-Math.round(f*plotH);
-    return'<line x1="55" y1="'+y+'" x2="'+(svgW-5)+'" y2="'+y+'" stroke="rgba(255,255,255,.15)" stroke-width="1"/>'
-      +'<text x="50" y="'+(y+4)+'" text-anchor="end" font-size="10" fill="rgba(255,255,255,.5)" font-family="Inter,sans-serif">'+Math.round(f*max)+'</text>';
+    var gy=H-30-Math.round(f*plotH);
+    return'<line x1="'+(PAD-5)+'" y1="'+gy+'" x2="'+(svgW-5)+'" y2="'+gy+'" stroke="rgba(255,255,255,.12)" stroke-width="1"/>'      +'<text x="'+(PAD-8)+'" y="'+(gy+4)+'" text-anchor="end" font-size="10" fill="rgba(255,255,255,.45)" font-family="-apple-system,sans-serif">'+Math.round(f*max)+'</text>';
   }).join('');
 
   var bars=data.map(function(v,i){
-    var h=Math.max(Math.round((v/max)*plotH),v>0?2:0);
-    var x=60+i*(barW+5);var y=H-30-h;
-    return'<rect x="'+x+'" y="'+y+'" width="'+barW+'" height="'+h+'" rx="4" fill="'+colors[i]+'"/>'
-      +(v>0?'<text x="'+(x+barW/2)+'" y="'+(y-5)+'" text-anchor="middle" font-size="10" fill="#fff" font-family="Inter,sans-serif" font-weight="700">'+v+'</text>':'')
-      +'<text x="'+(x+barW/2)+'" y="'+(H-12)+'" text-anchor="middle" font-size="'+(barW<30?8:10)+'" fill="rgba(255,255,255,.7)" font-family="Inter,sans-serif">'+labels[i]+'</text>';
+    var bh=Math.max(Math.round((v/max)*plotH),v>0?3:0);
+    var bx=PAD+i*(barW+5);var by=H-30-bh;
+    return'<rect x="'+bx+'" y="'+by+'" width="'+barW+'" height="'+bh+'" rx="4" fill="'+colors[i]+'"/>'      +(v>0?'<text x="'+(bx+barW/2)+'" y="'+(by-5)+'" text-anchor="middle" font-size="'+valFS+'" fill="#fff" font-family="-apple-system,sans-serif" font-weight="700">'+v+'</text>':'')      +'<text x="'+(bx+barW/2)+'" y="'+(H-12)+'" text-anchor="middle" font-size="'+labelFS+'" fill="rgba(255,255,255,.7)" font-family="-apple-system,sans-serif">'+labels[i]+'</text>';
   }).join('');
 
-  var svg='<svg width="'+svgW+'" height="'+H+'" style="display:block">'+gridLines+bars
-    +'<line x1="55" y1="'+(H-30)+'" x2="'+(svgW-5)+'" y2="'+(H-30)+'" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>'
-    +'</svg>';
+  var svg='<svg width="'+svgW+'" height="'+H+'" style="display:block;min-width:'+svgW+'px">'+gridLines+bars    +'<line x1="'+(PAD-5)+'" y1="'+(H-30)+'" x2="'+(svgW-5)+'" y2="'+(H-30)+'" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>'    +'</svg>';
 
+  // Overlay sits exactly over the app container
+  var appRect=appEl?appEl.getBoundingClientRect():{left:0,top:0,width:window.innerWidth,height:window.innerHeight};
   var overlay=document.getElementById('chart-overlay');
-  if(!overlay){
-    overlay=document.createElement('div');
-    overlay.id='chart-overlay';
-    overlay.style.cssText='position:fixed;inset:0;z-index:9990;background:#00205C;display:flex;flex-direction:column;padding:0';
-    document.body.appendChild(overlay);
-  }
-  overlay.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:2px solid #FA4616;flex-shrink:0">'
-    +'<div style="font-size:15px;font-weight:800;color:#fff;font-family:\'Inter\',sans-serif">'+title+'</div>'
-    +'<button onclick="document.getElementById(\'chart-overlay\').remove()" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:36px;height:36px;border-radius:8px;font-size:18px;cursor:pointer;font-family:\'Inter\',sans-serif;display:flex;align-items:center;justify-content:center">&#x2715;</button>'
-    +'</div>'
-    +'<div style="flex:1;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding:16px 0 16px 0;display:flex;align-items:center">'+svg+'</div>'
-    +'<div style="padding:8px 16px;font-size:11px;color:rgba(255,255,255,.4);text-align:center;font-family:\'Inter\',sans-serif">Tap ✕ to close &nbsp;&#x2022;&nbsp; Scroll horizontally for more</div>';
+  if(!overlay){overlay=document.createElement('div');overlay.id='chart-overlay';document.body.appendChild(overlay);}
+  overlay.style.cssText='position:fixed;z-index:9990;background:#001845;display:flex;flex-direction:column;'    +'left:'+Math.round(appRect.left)+'px;top:0;'    +'width:'+Math.round(appRect.width)+'px;height:100vh;'    +'box-shadow:-4px 0 24px rgba(0,0,0,.35);';
+
+  overlay.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:2px solid #FA4616;flex-shrink:0">'    +'<div style="font-size:'+(isDesktop?17:15)+'px;font-weight:800;color:#fff;font-family:-apple-system,sans-serif;line-height:1.2">'+title+'</div>'    +'<button onclick="document.getElementById(\'chart-overlay\').remove()" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:36px;height:36px;border-radius:8px;font-size:18px;cursor:pointer;flex-shrink:0">&#x2715;</button>'    +'</div>'    +'<div style="flex:1;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding:20px 8px;display:flex;align-items:center">'+svg+'</div>'    +(svgW>W?'<div style="padding:6px 16px 10px;font-size:11px;color:rgba(255,255,255,.3);text-align:center;font-family:-apple-system,sans-serif">← scroll for more →</div>':'')
+    +'</div>';
   overlay.style.display='flex';
 }
 
@@ -5368,6 +5449,9 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }, 8000);
 });
+
+
+
 
 
 
