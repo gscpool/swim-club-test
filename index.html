@@ -346,7 +346,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.5.8</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.5.9</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -569,6 +569,8 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script>
+
+
 
 
 
@@ -3324,8 +3326,8 @@ function renderChartBuilder(){
   var start=range.start, end=range.end;
 
   // Build array of dates in range
-  var dates=[]; var d=new Date(start);
-  while(d<=end){dates.push(new Date(d));d.setDate(d.getDate()+1);}
+  var dates=[]; var dtIter=new Date(start);
+  while(dtIter<=end){dates.push(new Date(dtIter));dtIter.setDate(dtIter.getDate()+1);}
 
   if(!dates.length){canvas.innerHTML='<div style="text-align:center;padding:20px;color:var(--mu);font-size:13px">No date range selected.</div>';return;}
 
@@ -4509,10 +4511,7 @@ function renderRep(){
   html+='<div class="rsec" id="chart-builder-section">'
     +'<div class="rsec-title">Charts</div>'
     +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">'
-    +'<button onclick="setCBPreset(\'7d\')" id="cbp-7d" style="padding:5px 10px;border-radius:14px;border:1.5px solid var(--bl);background:var(--bl);color:#fff;font-size:11px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Last 7 days</button>'
-    +'<button onclick="setCBPreset(\'30d\')" id="cbp-30d" style="padding:5px 10px;border-radius:14px;border:1.5px solid var(--sand2);background:#fff;color:var(--mu);font-size:11px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Last 30 days</button>'
-    +'<button onclick="setCBPreset(\'season\')" id="cbp-season" style="padding:5px 10px;border-radius:14px;border:1.5px solid var(--sand2);background:#fff;color:var(--mu);font-size:11px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">This season</button>'
-    +'<button onclick="setCBPreset(\'custom\')" id="cbp-custom" style="padding:5px 10px;border-radius:14px;border:1.5px solid var(--sand2);background:#fff;color:var(--mu);font-size:11px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Custom</button>'
+    +(function(){var _p=window._cbPreset||'7d';function pb(id,lbl,preset){var on=_p===preset;return '<button onclick="setCBPreset(\''+preset+'\')" id="cbp-'+preset+'" style="padding:5px 10px;border-radius:14px;border:1.5px solid '+(on?'var(--bl)':'var(--sand2)')+';background:'+(on?'var(--bl)':'#fff')+';color:'+(on?'#fff':'var(--mu)')+';font-size:11px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">'+lbl+'</button>';}return pb('7d','Last 7 days','7d')+pb('30d','Last 30 days','30d')+pb('season','This season','season')+pb('custom','Custom','custom');})()
     +'</div>'
     +'<div id="cb-custom-range" style="display:none;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">'
     +'<div style="display:flex;align-items:center;gap:6px"><label style="font-size:11px;font-weight:700;color:var(--mu)">From</label>'
@@ -4523,9 +4522,7 @@ function renderRep(){
     +'<div style="margin-bottom:12px">'
     +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin-bottom:6px">Show metrics</div>'
     +'<div style="display:flex;gap:6px;flex-wrap:wrap">'
-    +'<button onclick="toggleCBMetric(\'headcount\')" id="cbm-headcount" style="padding:5px 10px;border-radius:14px;border:1.5px solid #FA4616;background:#FA4616;color:#fff;font-size:11px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Headcount</button>'
-    +'<button onclick="toggleCBMetric(\'checkins\')" id="cbm-checkins" style="padding:5px 10px;border-radius:14px;border:1.5px solid var(--sand2);background:#fff;color:var(--mu);font-size:11px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Check-ins</button>'
-    +'<button onclick="toggleCBMetric(\'guests\')" id="cbm-guests" style="padding:5px 10px;border-radius:14px;border:1.5px solid var(--sand2);background:#fff;color:var(--mu);font-size:11px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">Guest passes</button>'
+    +(function(){var _m=window._cbMetrics||{headcount:true,checkins:false,guests:false};var mc={headcount:'#FA4616',checkins:'#003087',guests:'#0e7490'};var ml={headcount:'Headcount',checkins:'Check-ins',guests:'Guest passes'};return ['headcount','checkins','guests'].map(function(m){var on=_m[m];return '<button onclick="toggleCBMetric(\''+m+'\')" id="cbm-'+m+'" style="padding:5px 10px;border-radius:14px;border:1.5px solid '+(on?mc[m]:'var(--sand2)')+';background:'+(on?mc[m]:'#fff')+';color:'+(on?'#fff':'var(--mu)')+';font-size:11px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">'+ml[m]+'</button>';}).join('');})()
     +'</div></div>'
     +'<div id="chart-builder-canvas" style="overflow-x:auto;-webkit-overflow-scrolling:touch"></div>'
     +'</div>';
@@ -5655,6 +5652,8 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }, 8000);
 });
+
+
 
 
 
