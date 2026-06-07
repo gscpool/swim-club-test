@@ -183,8 +183,8 @@ body{background:var(--sand);color:var(--tx)}
 .sci-success-name{font-size:22px;font-weight:800;color:var(--gr)}
 .sci-success-sub{font-size:14px;color:var(--mu)}
 /* ANNOUNCEMENTS */
-#announce-bar{background:var(--or);padding:7px 14px;display:flex;align-items:center;gap:10px;flex:0 0 auto;width:100%;z-index:10;max-height:36px;overflow:hidden}
-.announce-text{font-size:14px;font-weight:600;color:#fff;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;line-height:1.3;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#announce-bar{background:var(--or);padding:8px 14px;display:flex;align-items:flex-start;gap:10px;flex:0 0 auto;width:100%;z-index:10}
+.announce-text{font-size:14px;font-weight:600;color:#fff;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;line-height:1.4;flex:1;white-space:normal;word-wrap:break-word}
 /* CHECK-IN TAB */
 .ci-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);padding:4px 13px 3px;background:var(--sand);flex-shrink:0}
 .ci-alpha-row::-webkit-scrollbar{display:none}
@@ -346,7 +346,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.6.3</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.6.4</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -569,6 +569,9 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script>
+
+
+
 
 
 
@@ -2476,12 +2479,12 @@ function openAppReview(appId){
   html+='</div>';
   body.innerHTML=html;
   var _aov=document.getElementById('appreview-overlay');
-  if(_aov){_aov.style.display='flex';_aov.classList.add('open');}
+  if(_aov){_aov.style.display='';_aov.classList.add('open');}
 }
 
 function closeAppReview(){
   var _aoc=document.getElementById('appreview-overlay');
-  if(_aoc){_aoc.style.display='none';_aoc.classList.remove('open');}
+  if(_aoc){_aoc.style.display='';_aoc.classList.remove('open');}
 }
 
 function voteApplication(appId, vote){
@@ -2570,12 +2573,12 @@ var APPLY_MODE = window.location.search.indexOf('apply=true') >= 0;
 // ── FIND DUPLICATES ───────────────────────────────────────────────────────────
 function openDedupModal(){
   var o=document.getElementById('dedup-overlay');
-  if(o){o.style.display='flex';o.classList.add('open');}
+  if(o){o.style.display='';o.classList.add('open');}
   renderDedupResults();
 }
 function closeDedupModal(){
   var o=document.getElementById('dedup-overlay');
-  if(o){o.style.display='none';o.classList.remove('open');}
+  if(o){o.style.display='';o.classList.remove('open');}
 }
 function findDuplicates(){
   var seen={},groups=[],addedIds={};
@@ -4014,10 +4017,10 @@ function openMember(id,ciMode){
     html+='<button class="btn-s" onclick="openEdit(\''+m.id+'\')">&#x270F;&#xFE0F; Edit Member</button>';
   document.getElementById('mm-body').innerHTML=html;
   var _mmo=document.getElementById('mm-overlay');
-  if(_mmo){_mmo.style.display='flex';_mmo.classList.add('open');}
+  if(_mmo){_mmo.style.display='';_mmo.classList.add('open');}
 
 }
-function closeMM(){var _mmc=document.getElementById('mm-overlay');if(_mmc){_mmc.classList.remove('open');_mmc.style.display='none';}}
+function closeMM(){var _mmc=document.getElementById('mm-overlay');if(_mmc){_mmc.style.display='';_mmc.classList.remove('open');}}
 
 function saveMissingFields(id){var m=members.find(function(x){return x.id===id;});if(!m)return;var fields=['email','phone','street','city','zip','first','last'];var updated=Object.assign({},m),filled=0;fields.forEach(function(f){var el=document.getElementById('miss-'+f);if(el&&el.value.trim()){updated[f]=f==='phone'?formatPhone(el.value):el.value.trim();filled++;}});if(!filled){showToast('Enter at least one field','warn');return;}saveMember(updated);showToast('Record updated','ok');setTimeout(function(){openMember(id,true);},250);}
 
@@ -5169,7 +5172,7 @@ function openNewIncident(){
   document.getElementById('inc-modal-title').textContent='New Incident';
   document.getElementById('inc-modal-body').innerHTML=buildIncidentForm(null);
   var _io=document.getElementById('inc-overlay');
-  if(_io){_io.style.display='flex';_io.classList.add('open');}
+  if(_io){_io.style.display='';_io.classList.add('open');}
 }
 
 function viewIncident(id){
@@ -5265,7 +5268,7 @@ function saveFollowupNote(id){
 
 function closeIncident(){
   var _io2=document.getElementById('inc-overlay');
-  if(_io2){_io2.style.display='none';_io2.classList.remove('open');}
+  if(_io2){_io2.style.display='';_io2.classList.remove('open');}
   window._viewingIncidentId=null;
 }
 
@@ -5765,6 +5768,9 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }, 8000);
 });
+
+
+
 
 
 
