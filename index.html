@@ -612,6 +612,8 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
 
 
 
+
+
 var _APP_VERSION="v1.9.1";
 
 // ── SELF CHECK-IN MODE ────────────────────────────────────────────────────────
@@ -1908,8 +1910,7 @@ function sciShowCheckin() {
       + '<div class="sci-sub2">Your membership is not currently active. Please see the attendant to resolve your account.</div>';
     return;
   }
-  // Check grace period
-  var unpaidDays = getUnpaidDays(m.id);
+  // Check paid status
   if (m.status !== 'paid') {
     document.getElementById('sci-body').innerHTML = '<div class="sci-title" style="color:var(--re)">Check-In Blocked</div>'
       + '<div class="sci-sub2">Your membership payment is overdue. Please see the attendant.</div>';
@@ -3901,10 +3902,9 @@ function openMember(id,ciMode){
     +'</div>';
   if(m.nannyEnabled&&m.nannyName){html+='<div class="nanny-card"><div class="nanny-title">&#x1F476; Authorized Nanny</div><div class="nanny-row"><span class="nanny-lbl">Name</span><span class="nanny-val">'+m.nannyName+'</span></div><div class="nanny-row"><span class="nanny-lbl">Phone</span><span class="nanny-val">'+(m.nannyPhone||'&mdash;')+'</span></div><div class="nanny-row"><span class="nanny-lbl">Age</span><span class="nanny-val">'+(m.nannyDob?calcAge(m.nannyDob)+' years old':'&mdash;')+'</span></div></div>';}
   if(ciMode){
-    var unpaidDays=getUnpaidDays(m.id);
     var hardBlock=(m.status!=='paid');
     if(hardBlock){
-      html+='<div class="ci-blocked" style="display:flex;flex-direction:column;gap:8px;text-align:center"><div style="font-size:28px">&#x1F6AB;</div><div style="font-size:16px;font-weight:700">Check-In Blocked</div><div style="font-size:13px;font-weight:400;opacity:.85">This membership has checked in unpaid for '+unpaidDays+' days. Payment required before re-entry.</div></div>';
+      html+='<div class="ci-blocked" style="display:flex;flex-direction:column;gap:8px;text-align:center"><div style="font-size:28px">&#x1F6AB;</div><div style="font-size:16px;font-weight:700">Check-In Blocked</div><div style="font-size:13px;font-weight:400;opacity:.85">This membership is not marked as Paid. Please see a board member.</div></div>';
     } else {
       var missing=[];
       if(!m.email)missing.push({key:'email',label:'Email',type:'email'});
@@ -5569,7 +5569,6 @@ function sciShowCheckin(){
   if(!m){sciForgetDevice();return;}
   // Check paid status
   if(m.status!=='paid'){
-    var daysUnpaid=getUnpaidDays(m.id);
     if(m.status!=='paid'){
       document.getElementById('sci-body').innerHTML='<div style="text-align:center;padding:20px">'
         +'<div style="font-size:48px;margin-bottom:12px">🚫</div>'
@@ -5768,6 +5767,8 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }, 8000);
 });
+
+
 
 
 
