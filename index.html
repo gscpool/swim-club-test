@@ -346,7 +346,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.6.2</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.6.3</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -569,6 +569,8 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script>
+
+
 
 
 
@@ -4011,10 +4013,11 @@ function openMember(id,ciMode){
   html+=(m.status==='paid'?'<button class="btn-s" style="margin-bottom:6px" onclick="generateSciCode(&quot;'+m.id+'&quot;)">&#x1F4F1; Set Up Self Check-In</button>':'');
     html+='<button class="btn-s" onclick="openEdit(\''+m.id+'\')">&#x270F;&#xFE0F; Edit Member</button>';
   document.getElementById('mm-body').innerHTML=html;
-  document.getElementById('mm-overlay').classList.add('open');
+  var _mmo=document.getElementById('mm-overlay');
+  if(_mmo){_mmo.style.display='flex';_mmo.classList.add('open');}
 
 }
-function closeMM(){document.getElementById('mm-overlay').classList.remove('open');}
+function closeMM(){var _mmc=document.getElementById('mm-overlay');if(_mmc){_mmc.classList.remove('open');_mmc.style.display='none';}}
 
 function saveMissingFields(id){var m=members.find(function(x){return x.id===id;});if(!m)return;var fields=['email','phone','street','city','zip','first','last'];var updated=Object.assign({},m),filled=0;fields.forEach(function(f){var el=document.getElementById('miss-'+f);if(el&&el.value.trim()){updated[f]=f==='phone'?formatPhone(el.value):el.value.trim();filled++;}});if(!filled){showToast('Enter at least one field','warn');return;}saveMember(updated);showToast('Record updated','ok');setTimeout(function(){openMember(id,true);},250);}
 
@@ -5762,6 +5765,8 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }, 8000);
 });
+
+
 
 
 
