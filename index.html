@@ -346,7 +346,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.6.0</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.6.2</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -569,6 +569,10 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script>
+
+
+
+
 
 
 
@@ -1553,7 +1557,7 @@ var DEFAULT_PERMISSIONS={
   },
   attendant:{
     canCheckin:true,canEditMembers:false,canChangePayment:false,
-    canAddDeleteMembers:false,canImportExport:false,canViewReports:false,
+    canAddDeleteMembers:false,canImportExport:false,canViewReports:true,
     canViewIncidents:false,canFileIncidents:true,canVoteApplications:false,
     canViewApplications:false,canManageAnnouncements:false,canAccessSettings:false,
     canManageUsers:false
@@ -3952,7 +3956,7 @@ function openMember(id,ciMode){
       }
       // Guest passes counter
       var gpSection=m.guestsTotal>0
-        ?'<div style="border-top:1px solid rgba(255,255,255,.15);padding-top:10px"><div class="gp-counter-row"><div><div class="ci-lbl">&#x1F3AB; Guest Passes</div><div class="ci-sub">'+m.guestsTotal+' allotted &middot; '+(m.guestsUsed||0)+' used &middot; '+rem+' remaining</div></div><div class="ctr"><button class="cbtn" onclick="adjGuests(-1)">&minus;</button><div class="cval" id="ci-guests">0</div><button class="cbtn" onclick="adjGuests(1)">+</button></div></div><div id="gp-live-status" style="margin-top:6px"></div></div>'
+        ?'<div style="border-top:2px solid var(--am);padding-top:10px;margin-top:4px">'+'<div class="gp-counter-row">'+'<div>'+'<div class="ci-lbl" style="color:var(--am)">&#x1F3AB; Guest Passes — Non-Members Only</div>'+'<div class="ci-sub" style="color:var(--bld);font-weight:600">'+m.guestsTotal+' allotted &middot; '+(m.guestsUsed||0)+' used &middot; '+rem+' remaining</div>'+'</div>'+'<div class="ctr">'+'<button class="cbtn" onclick="adjGuests(-1)">&minus;</button>'+'<div class="cval" id="ci-guests">0</div>'+'<button class="cbtn" onclick="adjGuests(1)" id="gp-plus-btn">+</button>'+'</div></div>'+'<div style="background:var(--aml);border:1.5px solid var(--am);border-radius:var(--r-sm);padding:8px 10px;margin-top:8px;display:flex;align-items:flex-start;gap:8px">'+'<div style="font-size:16px;flex-shrink:0">⚠️</div>'+'<div style="font-size:12px;color:var(--am);font-weight:600;line-height:1.4">For visitors who are <b>NOT</b> on this membership. Adding a family member? Use <b>Edit Member</b> below instead.</div>'+'</div>'+'<div id="gp-live-status" style="margin-top:6px"></div>'+'<div id="gp-confirm" style="display:none"></div>'+'</div>'
         :'';
       // Build missing info prompt if needed
       var missing=getMissingSteps(m);
@@ -4082,9 +4086,49 @@ function ciConfirmNewKid(inputId){
 
 function adjGuests(delta){
   var m=members.find(function(x){return x.id===ciMemberId;}); if(!m) return;
+  // When adding a guest (+1), show confirmation first
+  if(delta>0){
+    showGuestPassConfirm(m);
+    return;
+  }
   ciGuests=Math.max(0,ciGuests+delta);
   var el=document.getElementById('ci-guests'); if(el) el.textContent=ciGuests;
   updateGPLiveStatus(m);
+}
+
+function showGuestPassConfirm(m){
+  var conf=document.getElementById('gp-confirm');
+  if(!conf) return;
+  // If already showing, dismiss (second tap cancels)
+  if(conf.style.display!=='none'){conf.style.display='none';return;}
+  conf.style.display='block';
+  conf.innerHTML=''
+    +'<div style="background:#fff;border:2px solid var(--am);border-radius:var(--r-sm);padding:12px 14px;margin-top:8px">'
+    +'<div style="font-size:13px;font-weight:800;color:var(--bld);margin-bottom:4px">Is this person a non-member guest?</div>'
+    +'<div style="font-size:12px;color:var(--mu);margin-bottom:10px">Guest passes are for visitors who are <b>not</b> on this membership. If they are a household member, add them to the record instead.</div>'
+    +'<div style="display:flex;gap:8px">'
+    +'<button onclick="confirmAddGuest()" style="flex:1;padding:10px;background:var(--or);border:none;border-radius:9px;font-size:13px;font-weight:700;color:#fff;font-family:-apple-system,sans-serif;cursor:pointer">✅ Yes — this is a guest</button>'
+    +'<button onclick="openEditInstead()" style="flex:1;padding:10px;background:var(--bl);border:none;border-radius:9px;font-size:13px;font-weight:700;color:#fff;font-family:-apple-system,sans-serif;cursor:pointer">➕ Add to family instead</button>'
+    +'</div></div>';
+}
+
+function confirmAddGuest(){
+  var conf=document.getElementById('gp-confirm');
+  if(conf) conf.style.display='none';
+  var m=members.find(function(x){return x.id===ciMemberId;}); if(!m) return;
+  ciGuests=Math.min(ciGuests+1,(m.guestsTotal||0)-(m.guestsUsed||0));
+  var el=document.getElementById('ci-guests'); if(el) el.textContent=ciGuests;
+  updateGPLiveStatus(m);
+}
+
+function openEditInstead(){
+  var conf=document.getElementById('gp-confirm');
+  if(conf) conf.style.display='none';
+  closeMM();
+  setTimeout(function(){
+    switchTab('dir');
+    setTimeout(function(){ openEdit(ciMemberId); }, 150);
+  }, 100);
 }
 function updateGPLiveStatus(m){
   var el=document.getElementById('gp-live-status'); if(!el) return;
@@ -5718,6 +5762,10 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }, 8000);
 });
+
+
+
+
 
 
 
