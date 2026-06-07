@@ -346,7 +346,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.6.4</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.6.5</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -569,6 +569,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script>
+
 
 
 
@@ -2982,8 +2983,6 @@ function processCheckin(){
       if(raw) checkedAdults.push(raw);
     });
   }
-  if(checkedAdults.length===0) checkedAdults.push(m.first+' '+m.last);
-
   // Read checked kids from ci-kid-list
   var checkedKids=[];
   var kList=document.getElementById('ci-kids-list');
@@ -3007,6 +3006,11 @@ function processCheckin(){
   var rem=(m.guestsTotal||0)-(m.guestsUsed||0);
   if(passesUsed>rem){showToast('Not enough guest passes remaining','warn');return;}
 
+  // Must have at least one person selected
+  if(checkedAdults.length===0&&checkedKids.length===0&&newKids.length===0&&passesUsed===0){
+    showToast('Select at least one person to check in','warn');
+    return;
+  }
   commitCheckin(m,checkedAdults,checkedKids,newKids,passesUsed,false);
 }
 
@@ -5767,6 +5771,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }, 8000);
 });
+
 
 
 
