@@ -346,7 +346,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.6.5</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.6.6</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -569,6 +569,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script>
+
 
 
 
@@ -4318,6 +4319,15 @@ function renderRep(){
   var terminatedCount=members.filter(function(m){return m.status==='terminated';}).length;
   var needsAttention=unpaidCount; // current members who haven't paid dues
   var activeTotal=paid+unpaidCount; // current members only (paid or not yet paid)
+  // People totals: sum adults+children per membership
+  var MAX_CAPACITY=250;
+  var paidPeople=members.filter(function(m){return m.status==='paid';}).reduce(function(t,m){return t+(m.adults||1)+(m.children||0);},0);
+  var unpaidPeople=members.filter(function(m){return m.status==='unpaid';}).reduce(function(t,m){return t+(m.adults||1)+(m.children||0);},0);
+  var approvedPeople=members.filter(function(m){return m.status==='approved';}).reduce(function(t,m){return t+(m.adults||1)+(m.children||0);},0);
+  var activePeople=paidPeople+unpaidPeople;
+  var capPct=Math.min(100,Math.round((activePeople/MAX_CAPACITY)*100));
+  var capColor=capPct>=95?RE:capPct>=85?AM:GR;
+
   var paidPct=activeTotal?Math.round(paid/activeTotal*100):0;
   var totalPurchased=seasonV.reduce(function(s,v){return s+(v.passesPurchased||0);},0);
   var totalGPUsed=seasonV.reduce(function(s,v){return s+(v.guestPasses||0);},0);
@@ -4582,29 +4592,48 @@ function renderRep(){
     +'<div style="height:100%;width:'+duesPct+'%;background:'+duesBarColor+';border-radius:4px;transition:width .4s"></div>'
     +'</div></div>';
 
+  var capBarHtml='<div style="margin:0 0 12px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">'
+    +'<span style="font-size:11px;font-weight:600;color:var(--mu)">Total people (bylaw cap: 250)</span>'
+    +'<span style="font-size:14px;font-weight:800;color:'+capColor+'">'+activePeople+'<span style="font-size:10px;font-weight:500;color:var(--mu)"> / 250</span></span>'
+    +'</div>'
+    +'<div style="height:10px;background:var(--sand2);border-radius:5px;overflow:hidden">'
+    +'<div style="height:100%;width:'+capPct+'%;background:'+capColor+';border-radius:5px;transition:width .4s"></div>'
+    +'</div>'
+    +(capPct>=95?'<div style="font-size:11px;color:'+RE+';margin-top:4px;font-weight:700">⚠️ At capacity — consider opening a waitlist</div>'
+      :capPct>=85?'<div style="font-size:11px;color:'+AM+';margin-top:4px;font-weight:600">Approaching capacity</div>':'')
+    +'</div>';
+
   html+='<div class="rsec">'
     +'<div class="rsec-title">Membership</div>'
+    +capBarHtml
     +duesBar
-    +'<div class="rstat-grid" style="grid-template-columns:repeat(3,1fr);margin-top:10px">'
+    +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin:12px 0 6px">Memberships (households)</div>'
+    +'<div class="rstat-grid" style="grid-template-columns:repeat(3,1fr)">'
     +stat(paid,'✓ Paid',GR)
     +stat(unpaidCount,'Unpaid',RE)
-    +stat(approvedCount,'Approved (pending payment)','#0e7490')
+    +stat(approvedCount,'Approved','#0e7490')
     +'</div>'
-    +(resignedCount||terminatedCount
-      ?'<div class="rstat-grid" style="grid-template-columns:repeat(3,1fr);margin-top:8px">'
-        +stat(activeTotal,'Total Members',BL)
-        +stat(resignedCount,'Resigned',AM)
-        +stat(terminatedCount,'Terminated',RE)
-        +'</div>'
-      :'<div style="text-align:center;margin-top:8px">'
-        +stat(activeTotal,'Total Members',BL)
-        +'</div>'
-    )
+    +'<div class="rstat-grid" style="grid-template-columns:repeat(3,1fr);margin-top:8px">'
+    +stat(activeTotal,'Total Households',BL)
+    +stat(resignedCount,'Resigned',AM)
+    +stat(terminatedCount,'Terminated',RE)
+    +'</div>'
+    +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin:14px 0 6px">People (individuals)</div>'
+    +'<div class="rstat-grid" style="grid-template-columns:repeat(3,1fr)">'
+    +stat(paidPeople,'Paid Members',GR)
+    +stat(unpaidPeople,'Unpaid Members',RE)
+    +stat(approvedPeople,'Approved','#0e7490')
+    +'</div>'
+    +'<div class="rstat-grid" style="grid-template-columns:repeat(2,1fr);margin-top:8px">'
+    +stat(activePeople,'Active People',BL)
+    +stat(MAX_CAPACITY-activePeople,'Spots Remaining',capPct>=95?RE:capPct>=85?AM:GR)
+    +'</div>'
     +(needsAttention>0
       ?'<div style="margin-top:10px;background:var(--aml);border:1.5px solid var(--am);border-radius:var(--r-sm);padding:10px 12px;display:flex;align-items:center;gap:8px">'
         +'<div style="font-size:18px">⚠️</div>'
-        +'<div><div style="font-size:13px;font-weight:700;color:var(--am)">'+needsAttention+' member'+(needsAttention>1?'s':'')+' not yet paid</div>'
-        +'<div style="font-size:11px;color:var(--mu);margin-top:2px">'+unpaidCount+' unpaid · '+approvedCount+' approved awaiting payment</div></div>'
+        +'<div><div style="font-size:13px;font-weight:700;color:var(--am)">'+needsAttention+' membership'+(needsAttention>1?'s':'')+' with unpaid dues</div>'
+        +'<div style="font-size:11px;color:var(--mu);margin-top:2px">'+(approvedCount>0?approvedCount+' approved awaiting payment':'')+'</div></div>'
         +'</div>'
       :'')
     +'</div>';
@@ -5777,6 +5806,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }, 8000);
 });
+
 
 
 
