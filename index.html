@@ -615,6 +615,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
 
 
 
+
 var _APP_VERSION="v1.9.1";
 
 // ── SELF CHECK-IN MODE ────────────────────────────────────────────────────────
@@ -1134,15 +1135,21 @@ function quickCheckIn(memberId, event){
   setTimeout(function(){ciLastAlpha='';ciFirstAlpha='';ciGuests=0;closeMM();switchTab('ci');renderCI();},1800);
 }
 
-function showSuccessFlash(name, members){
+function showSuccessFlash(membershipName, checkedNames){
   var el=document.getElementById('ci-success-flash');
   var nameEl=document.getElementById('flash-name');
   var subEl=document.getElementById('flash-sub');
   if(!el) return;
-  if(nameEl) nameEl.textContent=name;
-  if(subEl) subEl.textContent=members||'';
+  // Main line: the people who actually checked in
+  if(nameEl){
+    nameEl.textContent=checkedNames||membershipName;
+  }
+  // Sub line: membership label for context
+  if(subEl){
+    subEl.textContent=checkedNames ? membershipName+' membership' : '';
+  }
   el.classList.add('show');
-  setTimeout(function(){el.classList.remove('show');},2000);
+  setTimeout(function(){el.classList.remove('show');},2200);
 }
 
 function playChime(){
@@ -4173,8 +4180,7 @@ function commitCheckin(m,checkedAdults,checkedKids,newKids,passesUsed,purchased)
   if(checkedKids.length||newKids.length) p.push((checkedKids.concat(newKids)).join(', '));
   if(passesUsed>0) p.push(passesUsed+' guest pass'+(passesUsed>1?'es':'')+(purchased?' purchased':''));
   updateHeadcountBar();
-  updateHeadcountBar();
-  showSuccessFlash(m.first+' '+m.last, p.join(' · '));
+  showSuccessFlash(m.last+', '+m.first, p.join(' · '));
   playChime();
   // Reset check-in tab after flash
   setTimeout(function(){
@@ -5771,6 +5777,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }, 8000);
 });
+
 
 
 
