@@ -617,6 +617,10 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
 
 
 
+
+
+
+
 var _APP_VERSION="v1.9.1";
 
 // ── SELF CHECK-IN MODE ────────────────────────────────────────────────────────
@@ -640,6 +644,8 @@ var DEFAULT_CONFIG={
   clubName:'Gibsonville Swim Club',
   seasonYear: new Date().getFullYear(),
   guestPrice:5,
+  maxMemberships:250,
+  maxPeople:0, // 0 = not configured (hides people cap bar)
   
   notifyEmail:'jeff@gsrconline.com',
   membershipTypes:[
@@ -3459,6 +3465,31 @@ function renderChartBuilder(){
   canvas.innerHTML=legend+'<div style="overflow-x:auto;-webkit-overflow-scrolling:touch">'+svg+'</div>'+summary;
 }
 
+
+function saveCapacityLimits(){
+  var maxM=parseInt(document.getElementById('cfg-max-memberships').value)||250;
+  var maxP=parseInt(document.getElementById('cfg-max-people').value)||600;
+  CONFIG.maxMemberships=maxM;
+  CONFIG.maxPeople=maxP;
+  if(fbReady&&db){
+    db.collection('config').doc('settings').update({
+      maxMemberships:maxM,
+      maxPeople:maxP
+    }).then(function(){
+      showToast('Capacity limits saved','ok');
+      renderRep();
+    }).catch(function(e){
+      // If doc doesn't exist, set it
+      db.collection('config').doc('settings').set({maxMemberships:maxM,maxPeople:maxP},{merge:true})
+        .then(function(){showToast('Capacity limits saved','ok');renderRep();});
+    });
+  } else {
+    try{localStorage.setItem('gsc_max_memberships',maxM);localStorage.setItem('gsc_max_people',maxP);}catch(e){}
+    showToast('Capacity limits saved','ok');
+    renderRep();
+  }
+}
+
 function renderAll(){renderCI();renderDir();renderRep();renderAnnouncement();  updateHeadcountBar();
 }
 
@@ -4320,13 +4351,16 @@ function renderRep(){
   var needsAttention=unpaidCount; // current members who haven't paid dues
   var activeTotal=paid+unpaidCount; // current members only (paid or not yet paid)
   // People totals: sum adults+children per membership
-  var MAX_CAPACITY=250;
-  var paidPeople=members.filter(function(m){return m.status==='paid';}).reduce(function(t,m){return t+(m.adults||1)+(m.children||0);},0);
-  var unpaidPeople=members.filter(function(m){return m.status==='unpaid';}).reduce(function(t,m){return t+(m.adults||1)+(m.children||0);},0);
-  var approvedPeople=members.filter(function(m){return m.status==='approved';}).reduce(function(t,m){return t+(m.adults||1)+(m.children||0);},0);
+  var MAX_MEMBERSHIPS=CONFIG.maxMemberships||250;
+  var MAX_PEOPLE=CONFIG.maxPeople||600;
+  var paidPeople=members.filter(function(m){return m.status==='paid';}).reduce(function(t,m){return t+(m.adults||0)+(m.children||0);},0);
+  var unpaidPeople=members.filter(function(m){return m.status==='unpaid';}).reduce(function(t,m){return t+(m.adults||0)+(m.children||0);},0);
+  var approvedPeople=members.filter(function(m){return m.status==='approved';}).reduce(function(t,m){return t+(m.adults||0)+(m.children||0);},0);
   var activePeople=paidPeople+unpaidPeople;
-  var capPct=Math.min(100,Math.round((activePeople/MAX_CAPACITY)*100));
-  var capColor=capPct>=95?RE:capPct>=85?AM:GR;
+  var mbrPct=Math.min(100,Math.round((activeTotal/MAX_MEMBERSHIPS)*100));
+  var mbrColor=mbrPct>=95?RE:mbrPct>=85?AM:GR;
+  var peoplePct=MAX_PEOPLE>0?Math.min(100,Math.round((activePeople/MAX_PEOPLE)*100)):0;
+  var peopleColor=peoplePct>=95?RE:peoplePct>=85?AM:GR;
 
   var paidPct=activeTotal?Math.round(paid/activeTotal*100):0;
   var totalPurchased=seasonV.reduce(function(s,v){return s+(v.passesPurchased||0);},0);
@@ -4592,17 +4626,34 @@ function renderRep(){
     +'<div style="height:100%;width:'+duesPct+'%;background:'+duesBarColor+';border-radius:4px;transition:width .4s"></div>'
     +'</div></div>';
 
-  var capBarHtml='<div style="margin:0 0 12px">'
-    +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">'
-    +'<span style="font-size:11px;font-weight:600;color:var(--mu)">Total people (bylaw cap: 250)</span>'
-    +'<span style="font-size:14px;font-weight:800;color:'+capColor+'">'+activePeople+'<span style="font-size:10px;font-weight:500;color:var(--mu)"> / 250</span></span>'
+  var capBarHtml=''
+    +'<div style="margin:0 0 14px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">'
+    +'<span style="font-size:11px;font-weight:700;color:var(--mu)">MEMBERSHIPS (bylaw cap)</span>'
+    +'<span style="font-size:15px;font-weight:800;color:'+mbrColor+'">'+activeTotal
+    +'<span style="font-size:11px;font-weight:500;color:var(--mu)"> / '+MAX_MEMBERSHIPS+'</span></span>'
     +'</div>'
-    +'<div style="height:10px;background:var(--sand2);border-radius:5px;overflow:hidden">'
-    +'<div style="height:100%;width:'+capPct+'%;background:'+capColor+';border-radius:5px;transition:width .4s"></div>'
+    +'<div style="height:11px;background:var(--sand2);border-radius:5px;overflow:hidden">'
+    +'<div style="height:100%;width:'+mbrPct+'%;background:'+mbrColor+';border-radius:5px;transition:width .4s"></div>'
     +'</div>'
-    +(capPct>=95?'<div style="font-size:11px;color:'+RE+';margin-top:4px;font-weight:700">⚠️ At capacity — consider opening a waitlist</div>'
-      :capPct>=85?'<div style="font-size:11px;color:'+AM+';margin-top:4px;font-weight:600">Approaching capacity</div>':'')
-    +'</div>';
+    +'<div style="display:flex;justify-content:space-between;margin-top:4px">'
+    +'<span style="font-size:10px;color:var(--mu)">'+(MAX_MEMBERSHIPS-activeTotal)+' spots remaining</span>'
+    +'<span style="font-size:10px;font-weight:700;color:'+mbrColor+'">'+mbrPct+'%</span>'
+    +'</div>'
+    +(mbrPct>=95?'<div style="font-size:11px;color:'+RE+';margin-top:4px;font-weight:700">⚠️ At capacity — consider a waitlist</div>'
+      :mbrPct>=85?'<div style="font-size:11px;color:'+AM+';margin-top:4px;font-weight:600">Approaching bylaw cap</div>':'')
+    +'</div>'
+    +(MAX_PEOPLE>0
+      ?'<div style="margin:0 0 10px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">'
+      +'<span style="font-size:11px;font-weight:700;color:var(--mu)">PEOPLE (configured cap)</span>'
+      +'<span style="font-size:13px;font-weight:800;color:'+peopleColor+'">'+activePeople
+      +'<span style="font-size:11px;font-weight:500;color:var(--mu)"> / '+MAX_PEOPLE+'</span></span>'
+      +'</div>'
+      +'<div style="height:8px;background:var(--sand2);border-radius:4px;overflow:hidden">'
+      +'<div style="height:100%;width:'+peoplePct+'%;background:'+peopleColor+';border-radius:4px;transition:width .4s"></div>'
+      +'</div></div>'
+      :'');
 
   html+='<div class="rsec">'
     +'<div class="rsec-title">Membership</div>'
@@ -4615,7 +4666,7 @@ function renderRep(){
     +stat(approvedCount,'Approved','#0e7490')
     +'</div>'
     +'<div class="rstat-grid" style="grid-template-columns:repeat(3,1fr);margin-top:8px">'
-    +stat(activeTotal,'Total Households',BL)
+    +stat(activeTotal+' / '+MAX_MEMBERSHIPS,'Memberships',BL)
     +stat(resignedCount,'Resigned',AM)
     +stat(terminatedCount,'Terminated',RE)
     +'</div>'
@@ -4627,7 +4678,7 @@ function renderRep(){
     +'</div>'
     +'<div class="rstat-grid" style="grid-template-columns:repeat(2,1fr);margin-top:8px">'
     +stat(activePeople,'Active People',BL)
-    +stat(MAX_CAPACITY-activePeople,'Spots Remaining',capPct>=95?RE:capPct>=85?AM:GR)
+    +stat(activePeople,'Total People',BL)
     +'</div>'
     +(needsAttention>0
       ?'<div style="margin-top:10px;background:var(--aml);border:1.5px solid var(--am);border-radius:var(--r-sm);padding:10px 12px;display:flex;align-items:center;gap:8px">'
@@ -4922,6 +4973,17 @@ function openSettings(){
     +'<button class="btn-p" style="flex:1" onclick="saveAnnouncementFromSettings()">Save</button>'
     +'<button class="btn-d" style="flex:1" onclick="clearAnnouncement()">Clear</button>'
     +'</div></div>'
+
+    // ── SECTION: Capacity Limits ────────────────────────────────────
+    +'<div class="st-section">'
+    +'<div class="st-sec-hdr">&#x1F4CA; Capacity Limits</div>'
+    +'<p class="fnote">Maximum memberships and total people tracked in the Reports KPIs. Update to match your current bylaws.</p>'
+    +'<div class="fg"><label class="fl">Max Memberships (households)</label>'
+    +'<input class="fi" id="cfg-max-memberships" type="number" min="1" value="'+(CONFIG.maxMemberships||250)+'"></div>'
+    +'<div class="fg"><label class="fl">Max Total People (individuals)</label>'
+    +'<input class="fi" id="cfg-max-people" type="number" min="1" value="'+(CONFIG.maxPeople||600)+'"></div>'
+    +'<button class="btn-p" onclick="saveCapacityLimits()">&#x1F4BE; Save Limits</button>'
+    +'</div>'
 
     // ── SECTION: Membership Types ──────────────────────────────────
     +'<div class="st-section">'
@@ -5806,6 +5868,10 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }, 8000);
 });
+
+
+
+
 
 
 
