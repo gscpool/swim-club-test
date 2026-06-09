@@ -349,7 +349,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.7.0</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.7.2</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -4364,6 +4364,9 @@ function renderRep(){
   var paidPeople=members.filter(function(m){return m.status==='paid';}).reduce(function(t,m){return t+(m.adults||0)+(m.children||0);},0);
   var unpaidPeople=members.filter(function(m){return m.status==='unpaid';}).reduce(function(t,m){return t+(m.adults||0)+(m.children||0);},0);
   var approvedPeople=members.filter(function(m){return m.status==='approved';}).reduce(function(t,m){return t+(m.adults||0)+(m.children||0);},0);
+  var frozenPeople=members.filter(function(m){return m.status==='frozen';}).reduce(function(t,m){return t+(m.adults||0)+(m.children||0);},0);
+  var resignedPeople=members.filter(function(m){return m.status==='resigned';}).reduce(function(t,m){return t+(m.adults||0)+(m.children||0);},0);
+  var terminatedPeople=members.filter(function(m){return m.status==='terminated';}).reduce(function(t,m){return t+(m.adults||0)+(m.children||0);},0);
   var activePeople=paidPeople+unpaidPeople;
   var mbrPct=Math.min(100,Math.round((activeTotal/MAX_MEMBERSHIPS)*100));
   var mbrColor=mbrPct>=95?RE:mbrPct>=85?AM:GR;
@@ -4580,24 +4583,6 @@ function renderRep(){
   html+='<div class="rsec">'
     +'<div class="rsec-title">Most Active — This Season</div>'
 
-    // Membership type breakdown
-    +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin-bottom:8px">By Membership Type</div>'
-    +'<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px">';
-
-  typeRanked.forEach(function(t){
-    var v=typeVisits[t];
-    var pct=Math.round((v/typeMax)*100);
-    html+='<div style="display:flex;align-items:center;gap:8px">'
-      +'<div style="width:80px;font-size:12px;font-weight:700;color:var(--bld);flex-shrink:0">'+t+'</div>'
-      +'<div style="flex:1;height:20px;background:var(--sand2);border-radius:4px;overflow:hidden">'
-      +'<div style="height:100%;width:'+pct+'%;background:#003087;border-radius:4px;transition:width .3s"></div></div>'
-      +'<div style="width:48px;font-size:11px;font-weight:700;color:var(--bld);text-align:right;flex-shrink:0">'+v+' visits</div>'
-      +'</div>';
-  });
-
-  html+='</div>'
-
-    // Top members
     +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin-bottom:8px">Top Members</div>'
     +'<div style="display:flex;flex-direction:column;gap:6px">';
 
@@ -4673,21 +4658,23 @@ function renderRep(){
     +stat(unpaidCount,'Unpaid',RE)
     +stat(approvedCount,'Approved','#0e7490')
     +stat(frozenCount,'Frozen','#0369a1')
-    +'</div>'
-    +'<div class="rstat-grid" style="grid-template-columns:repeat(3,1fr);margin-top:8px">'
-    +stat(activeTotal+' / '+MAX_MEMBERSHIPS,'Memberships',BL)
     +stat(resignedCount,'Resigned',AM)
     +stat(terminatedCount,'Terminated',RE)
     +'</div>'
+    +'<div class="rstat-grid" style="grid-template-columns:repeat(1,1fr);margin-top:8px">'
+    +stat(activeTotal+' / '+MAX_MEMBERSHIPS,'Total Active Memberships',BL)
+    +'</div>'
     +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin:14px 0 6px">People (individuals)</div>'
     +'<div class="rstat-grid" style="grid-template-columns:repeat(3,1fr)">'
-    +stat(paidPeople,'Paid Members',GR)
-    +stat(unpaidPeople,'Unpaid Members',RE)
+    +stat(paidPeople,'✓ Paid',GR)
+    +stat(unpaidPeople,'Unpaid',RE)
     +stat(approvedPeople,'Approved','#0e7490')
+    +stat(frozenPeople,'Frozen','#0369a1')
+    +stat(resignedPeople,'Resigned',AM)
+    +stat(terminatedPeople,'Terminated',RE)
     +'</div>'
-    +'<div class="rstat-grid" style="grid-template-columns:repeat(2,1fr);margin-top:8px">'
-    +stat(activePeople,'Active People',BL)
-    +stat(activePeople,'Total People',BL)
+    +'<div class="rstat-grid" style="grid-template-columns:repeat(1,1fr);margin-top:8px">'
+    +stat(activePeople,'Total Active People',BL)
     +'</div>'
     +(needsAttention>0
       ?'<div style="margin-top:10px;background:var(--aml);border:1.5px solid var(--am);border-radius:var(--r-sm);padding:10px 12px;display:flex;align-items:center;gap:8px">'
