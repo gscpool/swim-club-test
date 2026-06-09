@@ -349,7 +349,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.6.8</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.7.0</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -728,7 +728,7 @@ var db=null,fbReady=false;
       if(APPLY_MODE){initApplyMode();}
       if(!APPLY_MODE&&!SCI_MODE){loadApplications();}
       renderAnnouncement();
-      checkRenewalExpiry();
+      checkRenewalExpiry();checkUnpaidResignation();
       loadIncidents();
       initSelfCIMode();
       // Set up real-time listeners after boot
@@ -754,7 +754,7 @@ var db=null,fbReady=false;
       if(APPLY_MODE){initApplyMode();}
       if(!APPLY_MODE&&!SCI_MODE){loadApplications();}
       renderAnnouncement();
-      checkRenewalExpiry();
+      checkRenewalExpiry();checkUnpaidResignation();
       loadIncidents();
       initSelfCIMode();
       _db.collection('members').orderBy('last').onSnapshot(function(snap){
@@ -3889,7 +3889,7 @@ function renderDir(){
   if(dirFilter==='former'){
     list=members.filter(function(m){return m.status==='resigned'||m.status==='terminated'||m.status==='inactive';});
   } else if(dirFilter==='unpaid'){
-    list=members.filter(function(m){return m.status==='unpaid'||m.status==='approved';});
+    list=members.filter(function(m){return m.status==='unpaid';});
   } else if(statusKeys.indexOf(dirFilter)>=0&&dirFilter!=='all'){
     list=members.filter(function(m){return m.status===dirFilter;});
   } else if(dirFilter!=='all'){
@@ -5215,6 +5215,29 @@ function checkRenewalExpiry(){
   });
   localStorage.setItem(flagKey,'done');
   if(updated){renderAll();showToast('Memberships expired Oct 1 — statuses updated','warn');}
+}
+
+function checkUnpaidResignation(){
+  // Run daily - on/after July 1, auto-resign any still-unpaid members
+  var now=new Date();
+  var cutoff=new Date(now.getFullYear(),6,1); // month 6 = July
+  if(now<cutoff) return; // Not yet July 1
+  var flagKey='gsc_unpaid_resign_'+now.getFullYear();
+  if(localStorage.getItem(flagKey)) return;
+  var updated=false;
+  members.forEach(function(m){
+    if(m.status==='unpaid'){
+      var note={id:uid(),ts:Date.now(),text:'Auto-resigned '+now.getFullYear()+'/07/01 due to non-payment of renewal dues.',showAtCheckin:false};
+      var history=(m.notes_history||[]).concat([note]);
+      var upd=Object.assign({},m,{status:'resigned',notes_history:history});
+      saveMember(upd);
+      var i=members.findIndex(function(x){return x.id===m.id;});
+      if(i>=0) members[i]=upd;
+      updated=true;
+    }
+  });
+  localStorage.setItem(flagKey,'done');
+  if(updated){renderAll();showToast('Unpaid memberships auto-resigned as of July 1','warn');}
 }
 
 function getMemberRenewalStatus(m){
