@@ -349,7 +349,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.7.3</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.8.0</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -644,13 +644,45 @@ var FIREBASE_CONFIG = {
 // ══════════════════════════════════════════════════════
 
 // ── DEFAULT CONFIG (overridden by Firebase if available) ──
+// ── PRICING ───────────────────────────────────────────────────────────────────
+var PRICING = {
+  Family:     { dues:750, initiation:400 },
+  Couples:    { dues:550, initiation:300 },
+  Individual: { dues:350, initiation:200 },
+  Board:      { dues:0,   initiation:0   },
+  Comp:       { dues:0,   initiation:0   }
+};
+var EARLY_BIRD_DISCOUNT = 0.15;   // 15% off dues, renewals only, paid by Dec 31
+var SERVICE_DISCOUNT    = 0.15;   // 15% off dues, new or renewal, board-verified
+
+function calcDues(type, isNewMember, discountType) {
+  // discountType: null | 'earlybird' | 'service'
+  var p = PRICING[type] || { dues:0, initiation:0 };
+  var dues = p.dues;
+  var initiation = isNewMember ? p.initiation : 0;
+  var discount = 0;
+  if (discountType === 'earlybird' && !isNewMember) {
+    discount = Math.round(dues * EARLY_BIRD_DISCOUNT * 100) / 100;
+  } else if (discountType === 'service') {
+    discount = Math.round(dues * SERVICE_DISCOUNT * 100) / 100;
+  }
+  var total = dues - discount + initiation;
+  return { dues:dues, initiation:initiation, discount:discount, discountType:discountType, total:total };
+}
+
+function isEarlyBird() {
+  // Early bird: payment on or before Dec 31 of current calendar year
+  var now = new Date();
+  var endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+  return now <= endOfYear;
+}
+
 var DEFAULT_CONFIG={
   clubName:'Gibsonville Swim Club',
   seasonYear: new Date().getFullYear(),
   guestPrice:5,
   maxMemberships:250,
-  maxPeople:0, // 0 = not configured (hides total member cap bar)
-  
+  maxPeople:0,
   notifyEmail:'jeff@gsrconline.com',
   membershipTypes:[
     {key:'Individual', label:'Individual',    adults:1, maxAdults:1, allowChildren:false, guestPasses:5,  requireSecond:false},
@@ -730,6 +762,12 @@ var db=null,fbReady=false;
       renderAnnouncement();
       checkRenewalExpiry();checkUnpaidResignation();
       loadIncidents();
+      loadWelcomeTemplate();
+      loadRenewalTemplates();
+      loadApprovalTemplates();
+      loadWaitlistConfig();
+      loadWaitlist();
+      loadWaitlistTemplate();
       initSelfCIMode();
       // Set up real-time listeners after boot
       _db.collection('members').orderBy('last').onSnapshot(function(snap){
@@ -756,6 +794,12 @@ var db=null,fbReady=false;
       renderAnnouncement();
       checkRenewalExpiry();checkUnpaidResignation();
       loadIncidents();
+      loadWelcomeTemplate();
+      loadRenewalTemplates();
+      loadApprovalTemplates();
+      loadWaitlistConfig();
+      loadWaitlist();
+      loadWaitlistTemplate();
       initSelfCIMode();
       _db.collection('members').orderBy('last').onSnapshot(function(snap){
         members=snap.docs.map(function(d){
@@ -2354,9 +2398,21 @@ function submitApplication(){
   applyData.signature=sig.value.trim();
   applyData.sigDate=sd?sd.value:new Date().toISOString().slice(0,10);
   applyData.submittedAt=Date.now();
+  applyData.id=uid();
+  // If waitlist mode is on, add to waitlist instead of applications
+  if(_waitlistMode){
+    applyData.status='waitlisted';
+    addToWaitlist(applyData);
+    document.getElementById('apply-body').innerHTML='<div style="background:#fff;border-radius:14px;padding:30px;text-align:center">'
+      +'<div style="font-size:60px;margin-bottom:12px">📋</div>'
+      +'<div style="font-size:20px;font-weight:800;color:#92400e;margin-bottom:8px">Added to Waitlist!</div>'
+      +'<div style="font-size:14px;color:var(--mu);line-height:1.6">Thank you, '+applyData.first+'! We currently have a waitlist for new memberships. We have received your application and will contact you at '+applyData.email+' when a spot becomes available.</div>'
+      +'</div>';
+    applyData={};
+    return;
+  }
   applyData.status='pending';
   applyData.votes={approve:[],reject:[]};
-  applyData.id=uid();
   saveApplication(applyData);
   // Notify board GroupMe
   var _k=(applyData.kids&&applyData.kids.length)?(' + '+applyData.kids.length+' child'+(applyData.kids.length>1?'ren':'')):'';
@@ -2384,7 +2440,20 @@ function renderApplications(){
   var rejected=applications.filter(function(a){return a.status==='rejected';});
   var totalBoard=members.filter(function(m){return m.type==='Board';}).length||9;
   var majority=Math.floor(totalBoard/2)+1;
-  var html='<div style="padding:12px;display:flex;flex-direction:column;gap:10px">';
+  // Tab bar: Applications | Waitlist
+  var activeTab = window._appTab || 'applications';
+  var html='<div style="display:flex;gap:8px;padding:12px 12px 0">'
+    +'<button onclick="window._appTab='applications';renderApplications()" style="flex:1;padding:9px;border-radius:9px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;border:2px solid '+(activeTab==='applications'?'#003087':'var(--sand2)')+';background:'+(activeTab==='applications'?'#003087':'var(--sand2)')+';color:'+(activeTab==='applications'?'#fff':'var(--bld)')+'">Applications ('+pending.length+')</button>'
+    +'<button onclick="window._appTab='waitlist';renderApplications()" style="flex:1;padding:9px;border-radius:9px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;border:2px solid '+(_waitlistMode?'#f59e0b':activeTab==='waitlist'?'#003087':'var(--sand2)')+';background:'+(_waitlistMode?'#fef3c7':activeTab==='waitlist'?'#003087':'var(--sand2)')+';color:'+(_waitlistMode?'#92400e':activeTab==='waitlist'?'#fff':'var(--bld)')+'">⏳ Waitlist ('+(waitlist.filter(function(w){return w.status==='waiting'||w.status==='notified';}).length)+')</button>'
+    +'</div>';
+
+  if (activeTab === 'waitlist') {
+    html += renderWaitlistTab();
+    el.innerHTML = html;
+    return;
+  }
+
+  html+='<div style="padding:12px;display:flex;flex-direction:column;gap:10px">';
   html+='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu)">Pending ('+pending.length+') — '+majority+' votes needed for approval</div>';
   if(!pending.length) html+='<div class="empty" style="padding:20px 0"><div class="ico">&#x1F44D;</div><p>No pending applications.</p></div>';
   pending.forEach(function(a){html+=appCard(a,majority);});
@@ -2554,6 +2623,9 @@ function adminRejectApp(appId){
   closeAppReview();
   showToast('Application rejected','ok');
   renderApplications();
+  // Send rejection email
+  var rejMember = { first: updated.first, last: updated.last, email: updated.email, type: updated.mtype || 'Family' };
+  if (rejMember.email) setTimeout(function() { sendRejectionEmail(rejMember); }, 300);
 }
 
 function convertApplicationToMember(a){
@@ -2574,6 +2646,10 @@ function convertApplicationToMember(a){
   saveMember(newMember);
   members.push(newMember);
   renderDir();
+  // Prompt approval email
+  if (newMember.email) {
+    setTimeout(function() { promptApprovalEmail(newMember); }, 400);
+  }
 }
 
 function saveAppNote(appId){
@@ -3154,7 +3230,211 @@ function exportIncidentPDF(id){
     +'<div style="font-size:10px;color:#9ca3af">Confidential</div></div>'
     +'<div class="noprint" style="text-align:center;margin-top:20px">'
     +'<button onclick="window.print()" style="padding:10px 24px;background:#003087;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">&#x1F5A8; Print / Save as PDF</button>'
-    +'</div></body></html>';
+    +'</div>
+<!-- Welcome Email Prompt Overlay -->
+<div id="welcome-email-overlay" class="overlay" style="z-index:1100">
+  <div class="sheet" style="max-width:480px;width:100%;padding:24px">
+    <div style="font-size:20px;font-weight:800;color:var(--bld);margin-bottom:6px">✉️ Send Welcome Email?</div>
+    <div style="font-size:14px;color:var(--mu);margin-bottom:16px" id="welcome-email-desc"></div>
+    <div style="background:var(--sand);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--mu);margin-bottom:20px;line-height:1.5" id="welcome-email-preview"></div>
+    <div style="display:flex;gap:10px">
+      <button onclick="sendWelcomeEmail()" style="flex:1;padding:13px;background:#003087;border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Send Email</button>
+      <button onclick="closeWelcomePrompt()" style="flex:1;padding:13px;background:var(--sand2);border:none;color:var(--bld);border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Skip</button>
+    </div>
+  </div>
+</div>
+
+<!-- Welcome Email Template Editor Overlay -->
+<div id="welcome-template-overlay" class="overlay" style="z-index:1100">
+  <div class="sheet" style="max-width:540px;width:100%;padding:24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:18px;font-weight:800;color:var(--bld)">✉️ Welcome Email Template</div>
+      <button onclick="closeWelcomeTemplate()" style="background:var(--sand2);border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px">✕</button>
+    </div>
+    <div style="font-size:12px;color:var(--mu);margin-bottom:6px">Subject line</div>
+    <input id="wt-subject" class="fi" style="margin-bottom:14px" placeholder="Welcome to Gibsonville Swim Club!">
+    <div style="font-size:12px;color:var(--mu);margin-bottom:6px">Email body — use {{name}}, {{type}}, {{season}} as placeholders</div>
+    <textarea id="wt-body" style="width:100%;min-height:220px;padding:12px;border:2px solid var(--sand2);border-radius:10px;font-size:14px;font-family:Inter,sans-serif;color:var(--tx);background:var(--sand);resize:vertical;box-sizing:border-box" placeholder="Dear {{name}}, ..."></textarea>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button onclick="saveWelcomeTemplate()" style="flex:1;padding:13px;background:#003087;border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Save Template</button>
+      <button onclick="closeWelcomeTemplate()" style="padding:13px 18px;background:var(--sand2);border:none;color:var(--bld);border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Log Payment Overlay -->
+<div id="pay-overlay" class="overlay" style="z-index:1100">
+  <div class="sheet" style="max-width:480px;width:100%;padding:24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:18px;font-weight:800;color:var(--bld)">💳 Log Payment</div>
+      <button onclick="closePayOverlay()" style="background:var(--sand2);border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px">✕</button>
+    </div>
+    <div id="pay-member-name" style="font-size:15px;font-weight:700;color:var(--bld);margin-bottom:4px"></div>
+    <div id="pay-dues-breakdown" style="font-size:12px;color:var(--mu);margin-bottom:16px;line-height:1.6;background:var(--sand);border-radius:8px;padding:10px 12px"></div>
+
+    <div class="fg" style="margin-bottom:12px">
+      <label class="fl">Discount</label>
+      <select class="fs" id="pay-discount" onchange="updatePayBreakdown()">
+        <option value="">No Discount</option>
+        <option value="earlybird">Early Bird (15% off dues)</option>
+        <option value="service">Service / Senior (15% off dues)</option>
+      </select>
+    </div>
+
+    <div class="fg" style="margin-bottom:12px">
+      <label class="fl">Amount Received ($)</label>
+      <input class="fi" id="pay-amount" type="number" min="0" step="0.01">
+    </div>
+
+    <div class="fg" style="margin-bottom:12px">
+      <label class="fl">Payment Method</label>
+      <select class="fs" id="pay-method">
+        <option value="Square">Square (card/ACH)</option>
+        <option value="Cash">Cash</option>
+        <option value="Check">Check</option>
+      </select>
+    </div>
+
+    <div class="fg" style="margin-bottom:12px">
+      <label class="fl">Received By</label>
+      <input class="fi" id="pay-receiver" placeholder="Name of board member who received payment">
+    </div>
+
+    <div class="fg" style="margin-bottom:20px">
+      <label class="fl">Notes</label>
+      <input class="fi" id="pay-notes" placeholder="e.g. check #1042, Square ref, etc.">
+    </div>
+
+    <div style="display:flex;gap:10px">
+      <button onclick="commitPayment()" style="flex:1;padding:13px;background:#003087;border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">✓ Log Payment &amp; Mark Paid</button>
+      <button onclick="closePayOverlay()" style="padding:13px 18px;background:var(--sand2);border:none;color:var(--bld);border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Renewal Template Editor Overlay -->
+<div id="renewal-template-overlay" class="overlay" style="z-index:1100">
+  <div class="sheet" style="max-width:560px;width:100%;padding:24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-size:18px;font-weight:800;color:var(--bld)">🔄 Renewal Email Templates</div>
+      <button onclick="closeRenewalTemplate()" style="background:var(--sand2);border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px">✕</button>
+    </div>
+    <div style="font-size:11px;color:var(--mu);margin-bottom:14px">Placeholders: {{name}} {{type}} {{dues}} {{discount}} {{total}} {{deadline}} {{season}}</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap" id="rt-tab-row">
+      <button class="fbtn" id="rt-tab-0" onclick="switchRTTab(0)">Initial Notice</button>
+      <button class="fbtn" id="rt-tab-1" onclick="switchRTTab(1)">Reminder 1</button>
+      <button class="fbtn" id="rt-tab-2" onclick="switchRTTab(2)">Reminder 2</button>
+      <button class="fbtn" id="rt-tab-3" onclick="switchRTTab(3)">Final Warning</button>
+    </div>
+    <div class="fg" style="margin-bottom:10px">
+      <label class="fl">Subject</label>
+      <input class="fi" id="rt-subject">
+    </div>
+    <div class="fg" style="margin-bottom:16px">
+      <label class="fl">Body</label>
+      <textarea id="rt-body" style="width:100%;min-height:200px;padding:12px;border:2px solid var(--sand2);border-radius:10px;font-size:13px;font-family:Inter,sans-serif;color:var(--tx);background:var(--sand);resize:vertical;box-sizing:border-box"></textarea>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button onclick="saveRenewalTemplate()" style="flex:1;padding:13px;background:#003087;border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Save Template</button>
+      <button onclick="closeRenewalTemplate()" style="padding:13px 18px;background:var(--sand2);border:none;color:var(--bld);border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk Renewal Send Overlay -->
+<div id="bulk-renewal-overlay" class="overlay" style="z-index:1100">
+  <div class="sheet" style="max-width:520px;width:100%;padding:24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:18px;font-weight:800;color:var(--bld)">📨 Send Renewal Notices</div>
+      <button onclick="closeBulkRenewal()" style="background:var(--sand2);border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px">✕</button>
+    </div>
+    <div id="bulk-renewal-summary" style="background:var(--sand);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--mu);margin-bottom:14px;line-height:1.6"></div>
+    <div class="fg" style="margin-bottom:12px">
+      <label class="fl">Email Type</label>
+      <select class="fs" id="bulk-renewal-type">
+        <option value="0">Initial Notice</option>
+        <option value="1">Reminder 1</option>
+        <option value="2">Reminder 2</option>
+        <option value="3">Final Warning</option>
+      </select>
+    </div>
+    <div class="fg" style="margin-bottom:12px">
+      <label class="fl">Send To</label>
+      <select class="fs" id="bulk-renewal-filter">
+        <option value="unpaid">All Unpaid Members (with email)</option>
+        <option value="unpaid-no-contact">Unpaid — Never Contacted</option>
+        <option value="frozen">All Frozen Members (with email)</option>
+      </select>
+    </div>
+    <div class="fg" style="margin-bottom:20px">
+      <label class="fl">Renewal Deadline (shown in email)</label>
+      <input class="fi" id="bulk-renewal-deadline" placeholder="e.g. June 30, 2026">
+    </div>
+    <div id="bulk-renewal-progress" style="display:none;margin-bottom:14px">
+      <div style="font-size:13px;font-weight:600;color:var(--bld);margin-bottom:6px" id="bulk-renewal-status">Sending...</div>
+      <div style="height:8px;background:var(--sand2);border-radius:4px;overflow:hidden"><div id="bulk-renewal-bar" style="height:100%;background:#003087;width:0%;border-radius:4px"></div></div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button onclick="startBulkRenewal()" id="bulk-renewal-send-btn" style="flex:1;padding:13px;background:#003087;border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Send Renewal Emails</button>
+      <button onclick="closeBulkRenewal()" style="padding:13px 18px;background:var(--sand2);border:none;color:var(--bld);border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Application Approval Email Template Overlay -->
+<div id="approval-template-overlay" class="overlay" style="z-index:1100">
+  <div class="sheet" style="max-width:540px;width:100%;padding:24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:18px;font-weight:800;color:var(--bld)">✉️ Application Email Templates</div>
+      <button onclick="closeApprovalTemplate()" style="background:var(--sand2);border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px">✕</button>
+    </div>
+    <!-- Tab selector -->
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button onclick="setAppTplTab(0)" id="apptpl-tab-0" style="flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;border:2px solid #003087;background:#003087;color:#fff">Approval</button>
+      <button onclick="setAppTplTab(1)" id="apptpl-tab-1" style="flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;border:2px solid var(--sand2);background:var(--sand2);color:var(--bld)">Rejection</button>
+    </div>
+    <div style="font-size:12px;color:var(--mu);margin-bottom:6px">Subject line</div>
+    <input id="apptpl-subject" class="fi" style="margin-bottom:14px">
+    <div style="font-size:12px;color:var(--mu);margin-bottom:6px">Email body — use {{name}}, {{type}}, {{dues}}, {{initiation}}, {{total}}, {{season}}</div>
+    <textarea id="apptpl-body" style="width:100%;min-height:200px;padding:12px;border:2px solid var(--sand2);border-radius:10px;font-size:14px;font-family:Inter,sans-serif;color:var(--tx);background:var(--sand);resize:vertical;box-sizing:border-box"></textarea>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button onclick="saveApprovalTemplate()" style="flex:1;padding:13px;background:#003087;border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Save Template</button>
+      <button onclick="closeApprovalTemplate()" style="padding:13px 18px;background:var(--sand2);border:none;color:var(--bld);border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Approval Email Prompt -->
+<div id="approval-email-overlay" class="overlay" style="z-index:1200">
+  <div class="sheet" style="max-width:480px;width:100%;padding:24px">
+    <div style="font-size:20px;font-weight:800;color:var(--bld);margin-bottom:6px">✅ Application Approved</div>
+    <div style="font-size:14px;color:var(--mu);margin-bottom:16px" id="approval-email-desc"></div>
+    <div style="background:var(--sand);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--mu);margin-bottom:20px;line-height:1.5" id="approval-email-preview"></div>
+    <div style="display:flex;gap:10px">
+      <button onclick="sendApprovalEmail()" style="flex:1;padding:13px;background:#166534;border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">✉️ Send Approval Email</button>
+      <button onclick="closeApprovalEmailPrompt()" style="flex:1;padding:13px;background:var(--sand2);border:none;color:var(--bld);border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Skip</button>
+    </div>
+  </div>
+</div>
+
+<!-- Waitlist Notify Template Overlay -->
+<div id="waitlist-template-overlay" class="overlay" style="z-index:1100">
+  <div class="sheet" style="max-width:540px;width:100%;padding:24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:18px;font-weight:800;color:var(--bld)">📋 Waitlist Notification Template</div>
+      <button onclick="closeWaitlistTemplate()" style="background:var(--sand2);border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px">✕</button>
+    </div>
+    <div style="font-size:12px;color:var(--mu);margin-bottom:6px">Subject line</div>
+    <input id="wlt-subject" class="fi" style="margin-bottom:14px">
+    <div style="font-size:12px;color:var(--mu);margin-bottom:6px">Body — use {{name}}, {{type}}, {{season}}</div>
+    <textarea id="wlt-body" style="width:100%;min-height:200px;padding:12px;border:2px solid var(--sand2);border-radius:10px;font-size:14px;font-family:Inter,sans-serif;color:var(--tx);background:var(--sand);resize:vertical;box-sizing:border-box"></textarea>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button onclick="saveWaitlistTemplate()" style="flex:1;padding:13px;background:#003087;border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Save</button>
+      <button onclick="closeWaitlistTemplate()" style="padding:13px 18px;background:var(--sand2);border:none;color:var(--bld);border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Cancel</button>
+    </div>
+  </div>
+</div>
+</body></html>';
   var w=window.open('','_blank','width=780,height=900');
   if(w){w.document.write(html);w.document.close();}
   else showToast('Allow pop-ups to export PDF','warn');
@@ -4062,8 +4342,37 @@ function openMember(id,ciMode){
         +'</div>';
     }
   }
+  // Renewal contact log (for unpaid/frozen members)
+  if((m.status==='unpaid'||m.status==='frozen')&&m.renewalContactLog&&m.renewalContactLog.length){
+    var rcl=m.renewalContactLog.slice().sort(function(a,b){return b.ts-a.ts;});
+    html+='<div><div class="sec-lbl" style="margin-bottom:6px">Renewal Contact History</div><div class="vlog">';
+    rcl.forEach(function(c){
+      html+='<div class="vitem"><span style="font-weight:700">'+c.date+' &middot; '+c.templateName+'</span>'
+        +'<span style="color:var(--mu)">'+(c.ok?'✓ Sent':'✗ Failed')+(c.email?' to '+c.email:'')+'</span></div>';
+    });
+    html+='</div></div>';
+  }
+
+  // Payment history
+  if(m.paymentHistory&&m.paymentHistory.length){
+    var ph=m.paymentHistory.slice().sort(function(a,b){return b.ts-a.ts;});
+    html+='<div><div class="sec-lbl" style="margin-bottom:6px">Payment History</div><div class="vlog">';
+    ph.forEach(function(p){
+      var disc=p.discountType==='earlybird'?'Early Bird':p.discountType==='service'?'Service/Senior':'';
+      html+='<div class="vitem"><span style="font-weight:700">'+p.date+' &middot; '+fmtMoney(p.amount)+'</span>'
+        +'<span style="color:var(--mu)">'+p.method+(p.receiver&&p.receiver!=='Square'?' via '+p.receiver:'')+(disc?' &middot; '+disc+' discount':'')+(p.notes?' &middot; '+p.notes:'')+'</span></div>';
+    });
+    html+='</div></div>';
+  }
+  // Service discount flag
+  if(m.serviceDiscount){html+='<div style="background:#e0f2fe;border:1.5px solid #7dd3fc;border-radius:8px;padding:8px 10px;font-size:12px;font-weight:600;color:#075985;margin-bottom:4px">✓ Service/Senior discount on file</div>';}
+
   if(mv.length){html+='<div><div class="sec-lbl" style="margin-bottom:6px">Recent Visits</div><div class="vlog">'+mv.slice(0,15).map(function(v){var p=[];if(v.adults>0)p.push(v.adults+'A');if(v.children>0)p.push(v.children+'C');if(v.guestPasses>0)p.push('&#x1F3AB;&times;'+v.guestPasses);return'<div class="vitem"><span>'+fmtDate(v.ts)+' '+fmtTime(v.ts)+'</span><span style="color:var(--mu)">'+(p.join(' &middot; ')||'member only')+'</span></div>';}).join('')+'</button></div>';}
   html+=(m.status==='paid'?'<button class="btn-s" style="margin-bottom:6px" onclick="generateSciCode(&quot;'+m.id+'&quot;)">&#x1F4F1; Set Up Self Check-In</button>':'');
+  html+=(m.status==='paid'&&m.email?'<button class="btn-s" style="margin-bottom:6px;background:var(--bl);color:#fff" onclick="sendWelcomeEmailForMember(&quot;'+m.id+'&quot;)">✉️ Send Welcome Email</button>':'');
+  html+='<button class="btn-s" style="margin-bottom:6px;background:#166534;color:#fff" onclick="openPayOverlay(&quot;'+m.id+'&quot;)">💳 Log Payment</button>';
+  html+=((m.status==='unpaid'||m.status==='frozen')&&m.email?'<button class="btn-s" style="margin-bottom:6px;background:#0369a1;color:#fff" onclick="sendRenewalToMemberCard(&quot;'+m.id+'&quot;)">📨 Send Renewal Email</button>':'');
+  html+=(m.status==='resigned'?'<button class="btn-s" style="margin-bottom:6px;background:#7c3aed;color:#fff" onclick="requestReinstatement(&quot;'+m.id+'&quot;)">↩️ Request Reinstatement</button>':'');
     html+='<button class="btn-s" onclick="openEdit(\''+m.id+'\')">&#x270F;&#xFE0F; Edit Member</button>';
   document.getElementById('mm-body').innerHTML=html;
   var _mmo=document.getElementById('mm-overlay');
@@ -4256,6 +4565,8 @@ document.getElementById('ed-body').innerHTML=
   +'<div class="fg"><label class="fl">Children\'s Names</label><div id="kids-list" style="display:flex;flex-direction:column;gap:6px">'+((m.kids&&m.kids.length?m.kids:['']).map(function(k){return'<div style="display:flex;gap:6px;align-items:center"><input class="fi kid-input" value="'+k+'" placeholder="Child first name" style="flex:1"><button onclick="removeKid(this)" style="background:var(--rel);border:none;color:var(--re);width:32px;height:32px;border-radius:8px;font-size:16px;cursor:pointer;flex-shrink:0">&#x2715;</button></div>';}).join(''))+'</div><button onclick="addKid()" class="btn-s" style="margin-top:4px">&#xFF0B; Add Child</button></div>'
   +'<div class="sec-lbl">Notes</div>'
   +'<div class="fg"><textarea class="fi" id="ef-notes" rows="3" placeholder="Internal notes..." style="resize:vertical">'+(m.notes||'')+'</textarea></div>'
+  +'<div class="fg" style="flex-direction:row;align-items:center;gap:10px;justify-content:space-between"><label class="fl" style="margin:0">Service / Senior Discount Verified</label><label class="toggle-wrap"><input type="checkbox" id="ef-service-discount"'+(m.serviceDiscount?' checked':'')+' ><span class="toggle-slider"></span></label></div>'
+  +'<div style="font-size:11px;color:var(--mu);margin-top:-6px;padding-left:2px">15% off annual dues — board verified (military, first responder, or senior 65+)</div>'
   +'<div class="sec-lbl">Nanny / Authorized Non-Household Member</div>'
   +'<div class="fg" style="flex-direction:row;align-items:center;gap:10px;justify-content:space-between"><label class="fl" style="margin:0">Enable Nanny Add-On</label><label class="toggle-wrap"><input type="checkbox" id="ef-nanny-enabled" onchange="toggleNanny()"'+(m.nannyEnabled?' checked':'')+' ><span class="toggle-slider"></span></label></div>'
   +'<div id="nanny-fields" style="display:'+(m.nannyEnabled?'flex':'none')+';flex-direction:column;gap:10px">'
@@ -4305,7 +4616,13 @@ function closeEdit(){document.getElementById('ed-overlay').classList.remove('ope
 function commitEdit(){var _existingMember=editingId?members.find(function(x){return x.id===editingId;}):null;var first=document.getElementById('ef-first').value.trim();var last=document.getElementById('ef-last').value.trim();if(!first||!last){showToast('Name required','warn');return;}var type=document.getElementById('ef-type').value;var gtotal=parseInt(document.getElementById('ef-gtotal').value);if(isNaN(gtotal))gtotal=GUEST_PASSES[type];var secRow=document.getElementById('sec-name-row');var secOk=secRow&&secRow.style.display!=='none';var kids=(function(){var inputs=document.querySelectorAll('.kid-input'),arr=[];inputs.forEach(function(i){var v=i.value.trim();if(v)arr.push(v);});return arr;})();var _existingM=editingId?members.find(function(x){return x.id===editingId;}):null;
   var m={id:editingId||uid(),tasks:(_existingMember&&_existingMember.tasks)||[],activity:(_existingMember&&_existingMember.activity)||[],
     tasks:(_existingM&&_existingM.tasks)||[],
-    activity:(_existingM&&_existingM.activity)||[],first:first,last:last,type:type,status:document.getElementById('ef-status').value,email:document.getElementById('ef-email').value.trim(),phone:formatPhone(document.getElementById('ef-phone').value),street:document.getElementById('ef-street').value.trim(),city:document.getElementById('ef-city').value.trim(),state:document.getElementById('ef-state').value.trim(),zip:document.getElementById('ef-zip').value.trim(),adults:parseInt(document.getElementById('ef-adults').value)||1,kids:kids,children:kids.length,guestsUsed:parseInt(document.getElementById('ef-gused').value)||0,guestsTotal:gtotal,secFirst:secOk&&document.getElementById('ef-sec-first')?document.getElementById('ef-sec-first').value.trim():'',secLast:secOk&&document.getElementById('ef-sec-last')?document.getElementById('ef-sec-last').value.trim():'',secPhone:secOk&&document.getElementById('ef-sec-phone')?formatPhone(document.getElementById('ef-sec-phone').value):'',secEmail:secOk&&document.getElementById('ef-sec-email')?document.getElementById('ef-sec-email').value.trim():'',notes:document.getElementById('ef-notes').value.trim(),nannyEnabled:document.getElementById('ef-nanny-enabled').checked,nannyName:document.getElementById('ef-nanny-name')?document.getElementById('ef-nanny-name').value.trim():'',nannyPhone:document.getElementById('ef-nanny-phone')?formatPhone(document.getElementById('ef-nanny-phone').value):'',nannyStreet:document.getElementById('ef-nanny-street')?document.getElementById('ef-nanny-street').value.trim():'',nannyCity:document.getElementById('ef-nanny-city')?document.getElementById('ef-nanny-city').value.trim():'',nannyState:document.getElementById('ef-nanny-state')?document.getElementById('ef-nanny-state').value.trim():'',nannyZip:document.getElementById('ef-nanny-zip')?document.getElementById('ef-nanny-zip').value.trim():'',nannyDob:document.getElementById('ef-nanny-dob')?document.getElementById('ef-nanny-dob').value:''};saveMember(m);closeEdit();showToast(m.first+' '+m.last+' '+(editingId?'updated':'added'),'ok');}
+    activity:(_existingM&&_existingM.activity)||[],first:first,last:last,type:type,status:document.getElementById('ef-status').value,email:document.getElementById('ef-email').value.trim(),phone:formatPhone(document.getElementById('ef-phone').value),street:document.getElementById('ef-street').value.trim(),city:document.getElementById('ef-city').value.trim(),state:document.getElementById('ef-state').value.trim(),zip:document.getElementById('ef-zip').value.trim(),adults:parseInt(document.getElementById('ef-adults').value)||1,kids:kids,children:kids.length,guestsUsed:parseInt(document.getElementById('ef-gused').value)||0,guestsTotal:gtotal,secFirst:secOk&&document.getElementById('ef-sec-first')?document.getElementById('ef-sec-first').value.trim():'',secLast:secOk&&document.getElementById('ef-sec-last')?document.getElementById('ef-sec-last').value.trim():'',secPhone:secOk&&document.getElementById('ef-sec-phone')?formatPhone(document.getElementById('ef-sec-phone').value):'',secEmail:secOk&&document.getElementById('ef-sec-email')?document.getElementById('ef-sec-email').value.trim():'',notes:document.getElementById('ef-notes').value.trim(),serviceDiscount:document.getElementById('ef-service-discount')?document.getElementById('ef-service-discount').checked:false,paymentHistory:(_existingM&&_existingM.paymentHistory)||[],nannyEnabled:document.getElementById('ef-nanny-enabled').checked,nannyName:document.getElementById('ef-nanny-name')?document.getElementById('ef-nanny-name').value.trim():'',nannyPhone:document.getElementById('ef-nanny-phone')?formatPhone(document.getElementById('ef-nanny-phone').value):'',nannyStreet:document.getElementById('ef-nanny-street')?document.getElementById('ef-nanny-street').value.trim():'',nannyCity:document.getElementById('ef-nanny-city')?document.getElementById('ef-nanny-city').value.trim():'',nannyState:document.getElementById('ef-nanny-state')?document.getElementById('ef-nanny-state').value.trim():'',nannyZip:document.getElementById('ef-nanny-zip')?document.getElementById('ef-nanny-zip').value.trim():'',nannyDob:document.getElementById('ef-nanny-dob')?document.getElementById('ef-nanny-dob').value:''};saveMember(m);closeEdit();showToast(m.first+' '+m.last+' '+(editingId?'updated':'added'),'ok');
+  // Prompt welcome email if status just changed from approved to paid
+  var _prevStatus=_existingMember?_existingMember.status:'';
+  if(_prevStatus==='approved'&&m.status==='paid'&&m.email){
+    setTimeout(function(){promptWelcomeEmail(m);},400);
+  }
+}
 function cancelDelete(){var e=document.getElementById('delete-confirm-bar');if(e)e.remove();}
 function confirmDelete(id){
   if(!can('canAddDeleteMembers')){showToast('Permission denied','warn');return;}
@@ -4694,8 +5011,14 @@ function renderRep(){
     +'<button class="exp-btn" onclick="exportVisitsRange(&quot;all&quot;)">All-Time Check-Ins (CSV)</button>'
     +'</div></div>';
 
+  // Renewals section
+  html+='<div class="rsec"><div class="rsec-title">Renewals</div>'    +'<div style="display:flex;flex-direction:column;gap:8px">'    +'<div style="font-size:12px;color:var(--mu);line-height:1.5;margin-bottom:4px">'    +'Send renewal emails to unpaid members. The app tracks who has been contacted and when.</div>'    +'<button class="exp-btn" style="background:#003087;color:#fff;border:none" onclick="openBulkRenewal()">📨 Send Bulk Renewal Emails</button>'    +'<button class="exp-btn" onclick="requireAdminPin(function(){openRenewalTemplate();})">✏️ Edit Renewal Email Templates</button>'    +'</div></div>';
+
   html+='<div class="rsec"><div class="rsec-title">Member Data</div>'
     +'<div style="display:flex;flex-direction:column;gap:8px">'
+    +'<button class="exp-btn" onclick="requireAdminPin(function(){openWaitlistTemplate();})">📋 Edit Waitlist Notification Template</button>'\
+    +'<button class="exp-btn" onclick="requireAdminPin(function(){openApprovalTemplate();})">✉️ Edit Application Email Templates</button>'\
+    +'<button class="exp-btn" onclick="requireAdminPin(function(){openWelcomeTemplate();})">✉️ Edit Welcome Email Template</button>'\
     +'<button class="exp-btn" onclick="requireAdminPin(function(){exportCSV(\'members\');})">Export Member List (CSV)</button>'
     +'<button class="imp-btn" onclick="requireAdminPin(function(){openCSVImport();})">Import Members from CSV</button>'
     +'<button class="exp-btn" onclick="requireAdminPin(function(){downloadTemplate();})">Download CSV Template</button>'
@@ -6003,6 +6326,1003 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 
+
+// ── WELCOME EMAIL ─────────────────────────────────────────────────────────────
+var _welcomeEmailMember = null;
+
+var DEFAULT_WELCOME_SUBJECT = 'Welcome to Gibsonville Swim Club!';
+var DEFAULT_WELCOME_BODY = 'Dear {{name}},\n\nWelcome to the Gibsonville Swim Club! Your {{type}} membership is now active for the {{season}} season.\n\nWe look forward to seeing you at the pool. If you have any questions, please reply to this email or reach out to a board member.\n\nSee you at the pool!\n\nGibsonville Swim Club Board\nthepool@gsrconline.com';
+
+var _welcomeTemplate = { subject: DEFAULT_WELCOME_SUBJECT, body: DEFAULT_WELCOME_BODY };
+
+function loadWelcomeTemplate() {
+  if (fbReady && _db) {
+    _db.collection('config').doc('welcomeEmail').get().then(function(doc) {
+      if (doc.exists) {
+        var d = doc.data();
+        _welcomeTemplate.subject = d.subject || DEFAULT_WELCOME_SUBJECT;
+        _welcomeTemplate.body = d.body || DEFAULT_WELCOME_BODY;
+      }
+    }).catch(function() {});
+  }
+}
+
+function saveWelcomeTemplate() {
+  var subj = document.getElementById('wt-subject').value.trim();
+  var body = document.getElementById('wt-body').value.trim();
+  if (!subj || !body) { showToast('Subject and body are required', 'warn'); return; }
+  _welcomeTemplate.subject = subj;
+  _welcomeTemplate.body = body;
+  if (fbReady && _db) {
+    _db.collection('config').doc('welcomeEmail').set({ subject: subj, body: body })
+      .then(function() { showToast('Template saved', 'ok'); closeWelcomeTemplate(); })
+      .catch(function() { showToast('Save failed', 'err'); });
+  } else {
+    showToast('Template saved (local only)', 'ok');
+    closeWelcomeTemplate();
+  }
+}
+
+function openWelcomeTemplate() {
+  var el = document.getElementById('welcome-template-overlay');
+  document.getElementById('wt-subject').value = _welcomeTemplate.subject;
+  document.getElementById('wt-body').value = _welcomeTemplate.body;
+  el.style.display = '';
+  el.classList.add('open');
+}
+
+function closeWelcomeTemplate() {
+  var el = document.getElementById('welcome-template-overlay');
+  el.style.display = '';
+  el.classList.remove('open');
+}
+
+function fillTemplate(tpl, m) {
+  var season = new Date().getFullYear() + ' Season';
+  return tpl
+    .replace(/{{name}}/g, m.first + ' ' + m.last)
+    .replace(/{{type}}/g, m.type || 'Family')
+    .replace(/{{season}}/g, season);
+}
+
+function promptWelcomeEmail(m) {
+  if (!m || !m.email) return;
+  _welcomeEmailMember = m;
+  var desc = document.getElementById('welcome-email-desc');
+  var preview = document.getElementById('welcome-email-preview');
+  if (desc) desc.textContent = 'Send to ' + m.first + ' ' + m.last + ' at ' + m.email;
+  if (preview) preview.textContent = fillTemplate(_welcomeTemplate.body, m).substring(0, 200) + '...';
+  var el = document.getElementById('welcome-email-overlay');
+  el.style.display = '';
+  el.classList.add('open');
+}
+
+function closeWelcomePrompt() {
+  var el = document.getElementById('welcome-email-overlay');
+  el.style.display = '';
+  el.classList.remove('open');
+  _welcomeEmailMember = null;
+}
+
+function sendWelcomeEmail() {
+  var m = _welcomeEmailMember;
+  if (!m || !m.email) { showToast('No email address on file', 'warn'); return; }
+  var subject = fillTemplate(_welcomeTemplate.subject, m);
+  var body = fillTemplate(_welcomeTemplate.body, m);
+  if (typeof emailjs === 'undefined') { showToast('Email service not available', 'err'); return; }
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    to_email: m.email,
+    to_name: m.first + ' ' + m.last,
+    from_name: 'Gibsonville Swim Club',
+    reply_to: 'thepool@gsrconline.com',
+    subject: subject,
+    message: body
+  }).then(function() {
+    showToast('Welcome email sent to ' + m.email, 'ok');
+    closeWelcomePrompt();
+  }).catch(function(err) {
+    console.error('EmailJS error:', err);
+    showToast('Failed to send email — check EmailJS config', 'err');
+    closeWelcomePrompt();
+  });
+}
+
+function sendWelcomeEmailForMember(id) {
+  var m = members.find(function(x) { return x.id === id; });
+  if (!m) return;
+  if (!m.email) { showToast('No email address on record for this member', 'warn'); return; }
+  promptWelcomeEmail(m);
+}
+
+
+// ── PAYMENT LOGGING ───────────────────────────────────────────────────────────
+var _payMemberId = null;
+
+function openPayOverlay(memberId) {
+  requireAdminPin(function() {
+    var m = members.find(function(x) { return x.id === memberId; });
+    if (!m) return;
+    _payMemberId = memberId;
+
+    var isNew = (m.status === 'approved'); // new member coming from approved
+    var nameEl = document.getElementById('pay-member-name');
+    if (nameEl) nameEl.textContent = m.first + ' ' + m.last + ' — ' + m.type;
+
+    // Set discount based on member flag if set
+    var discSel = document.getElementById('pay-discount');
+    if (discSel) {
+      discSel.value = m.serviceDiscount ? 'service' : (isNew ? '' : (isEarlyBird() ? 'earlybird' : ''));
+      if (isNew) {
+        // Disable earlybird for new members
+        Array.from(discSel.options).forEach(function(o) {
+          if (o.value === 'earlybird') o.disabled = true;
+        });
+      } else {
+        Array.from(discSel.options).forEach(function(o) { o.disabled = false; });
+      }
+    }
+
+    updatePayBreakdown();
+
+    var el = document.getElementById('pay-overlay');
+    el.style.display = '';
+    el.classList.add('open');
+  });
+}
+
+function updatePayBreakdown() {
+  var m = members.find(function(x) { return x.id === _payMemberId; });
+  if (!m) return;
+  var isNew = (m.status === 'approved');
+  var disc = document.getElementById('pay-discount') ? document.getElementById('pay-discount').value : '';
+  var calc = calcDues(m.type, isNew, disc || null);
+
+  var lines = [];
+  lines.push('Annual dues: $' + calc.dues.toFixed(2));
+  if (isNew && calc.initiation > 0) lines.push('One-time initiation fee: $' + calc.initiation.toFixed(2));
+  if (calc.discount > 0) lines.push('Discount (' + (disc === 'earlybird' ? 'Early Bird' : 'Service/Senior') + ' 15%): −$' + calc.discount.toFixed(2));
+  lines.push('<strong>Total due: $' + calc.total.toFixed(2) + '</strong>');
+
+  var bd = document.getElementById('pay-dues-breakdown');
+  if (bd) bd.innerHTML = lines.join('<br>');
+
+  var amtEl = document.getElementById('pay-amount');
+  if (amtEl) amtEl.value = calc.total.toFixed(2);
+}
+
+function closePayOverlay() {
+  var el = document.getElementById('pay-overlay');
+  el.style.display = '';
+  el.classList.remove('open');
+  _payMemberId = null;
+}
+
+function commitPayment() {
+  var m = members.find(function(x) { return x.id === _payMemberId; });
+  if (!m) return;
+
+  var amount = parseFloat(document.getElementById('pay-amount').value);
+  var method = document.getElementById('pay-method').value;
+  var receiver = document.getElementById('pay-receiver').value.trim();
+  var notes = document.getElementById('pay-notes').value.trim();
+  var disc = document.getElementById('pay-discount').value;
+
+  if (isNaN(amount) || amount < 0) { showToast('Please enter a valid amount', 'warn'); return; }
+  if (method !== 'Square' && !receiver) { showToast('Please enter who received the payment', 'warn'); return; }
+
+  var isNew = (m.status === 'approved');
+  var calc = calcDues(m.type, isNew, disc || null);
+
+  var payment = {
+    id: uid(),
+    ts: Date.now(),
+    date: new Date().toISOString().substring(0, 10),
+    amount: amount,
+    expectedAmount: calc.total,
+    dues: calc.dues,
+    initiation: calc.initiation,
+    discount: calc.discount,
+    discountType: disc || null,
+    method: method,
+    receiver: receiver || 'Square',
+    notes: notes,
+    season: CONFIG.seasonYear || new Date().getFullYear(),
+    isNewMember: isNew
+  };
+
+  var paymentHistory = (m.paymentHistory || []).concat([payment]);
+  var updated = Object.assign({}, m, {
+    status: 'paid',
+    serviceDiscount: disc === 'service' ? true : (m.serviceDiscount || false),
+    renewalYear: new Date().getFullYear(),
+    paymentHistory: paymentHistory
+  });
+
+  saveMember(updated);
+  var idx = members.findIndex(function(x) { return x.id === m.id; });
+  if (idx >= 0) members[idx] = updated;
+
+  closePayOverlay();
+  showToast('Payment logged — ' + m.first + ' ' + m.last + ' marked Paid', 'ok');
+  renderAll();
+
+  // Prompt welcome email for new members
+  if (isNew && m.email) {
+    setTimeout(function() { promptWelcomeEmail(updated); }, 400);
+  }
+
+  setTimeout(function() { openMember(m.id, true); }, 300);
+}
+
+function fmtMoney(n) { return '$' + (n||0).toFixed(2); }
+
+
+// ── RENEWAL EMAIL SYSTEM ──────────────────────────────────────────────────────
+var RENEWAL_TEMPLATE_NAMES = ['Initial Notice','Reminder 1','Reminder 2','Final Warning'];
+var _currentRTTab = 0;
+
+var DEFAULT_RENEWAL_TEMPLATES = [
+  {
+    subject: 'Your {{season}} Gibsonville Swim Club Membership Renewal',
+    body: 'Dear {{name}},\n\nWe hope you had a wonderful season at the pool! It\'s time to renew your {{type}} membership for {{season}}.\n\nYour renewal details:\n  Annual Dues: ${{dues}}\n  Discount: {{discount}}\n  Total Due: ${{total}}\n\nPlease renew by {{deadline}} to keep your membership active. Payments can be made via the Square invoice you will receive separately, or by cash/check at the pool.\n\nIf you have any questions, please reply to this email.\n\nWe look forward to seeing you next season!\n\nGibsonville Swim Club Board\nthepool@gsrconline.com'
+  },
+  {
+    subject: 'Reminder: {{season}} GSC Membership Renewal Due {{deadline}}',
+    body: 'Dear {{name}},\n\nThis is a friendly reminder that your {{type}} membership renewal for {{season}} is still outstanding.\n\nTotal Due: ${{total}}\nDeadline: {{deadline}}\n\nPlease renew soon to secure your membership. Contact us at thepool@gsrconline.com with any questions.\n\nGibsonville Swim Club Board'
+  },
+  {
+    subject: 'Second Reminder: GSC Membership Renewal — Action Required',
+    body: 'Dear {{name}},\n\nWe still haven\'t received your {{season}} membership renewal. Your {{type}} membership will lapse if not renewed by {{deadline}}.\n\nTotal Due: ${{total}}\n\nPlease act soon. Reply to this email or contact a board member if you have questions or need to make other arrangements.\n\nGibsonville Swim Club Board\nthepool@gsrconline.com'
+  },
+  {
+    subject: 'Final Notice: GSC Membership Expires {{deadline}}',
+    body: 'Dear {{name}},\n\nThis is your final notice. Your Gibsonville Swim Club {{type}} membership will be automatically resigned on {{deadline}} if renewal dues of ${{total}} are not received.\n\nWe value your membership and hope to see you at the pool next season. Please contact us immediately at thepool@gsrconline.com to make arrangements.\n\nGibsonville Swim Club Board'
+  }
+];
+
+var _renewalTemplates = DEFAULT_RENEWAL_TEMPLATES.map(function(t) { return Object.assign({}, t); });
+
+function loadRenewalTemplates() {
+  if (fbReady && _db) {
+    _db.collection('config').doc('renewalEmails').get().then(function(doc) {
+      if (doc.exists) {
+        var d = doc.data();
+        if (d.templates && d.templates.length === 4) {
+          _renewalTemplates = d.templates;
+        }
+      }
+    }).catch(function() {});
+  }
+}
+
+var _currentRTTabIndex = 0;
+function switchRTTab(idx) {
+  // Save current tab before switching
+  _renewalTemplates[_currentRTTabIndex].subject = document.getElementById('rt-subject').value;
+  _renewalTemplates[_currentRTTabIndex].body = document.getElementById('rt-body').value;
+  _currentRTTabIndex = idx;
+  document.getElementById('rt-subject').value = _renewalTemplates[idx].subject;
+  document.getElementById('rt-body').value = _renewalTemplates[idx].body;
+  // Update tab styles
+  for (var i = 0; i < 4; i++) {
+    var btn = document.getElementById('rt-tab-' + i);
+    if (btn) btn.style.background = i === idx ? 'var(--bl)' : '';
+    if (btn) btn.style.color = i === idx ? '#fff' : '';
+  }
+}
+
+function openRenewalTemplate() {
+  _currentRTTabIndex = 0;
+  document.getElementById('rt-subject').value = _renewalTemplates[0].subject;
+  document.getElementById('rt-body').value = _renewalTemplates[0].body;
+  for (var i = 0; i < 4; i++) {
+    var btn = document.getElementById('rt-tab-' + i);
+    if (btn) { btn.style.background = i === 0 ? 'var(--bl)' : ''; btn.style.color = i === 0 ? '#fff' : ''; }
+  }
+  var el = document.getElementById('renewal-template-overlay');
+  el.style.display = ''; el.classList.add('open');
+}
+
+function closeRenewalTemplate() {
+  var el = document.getElementById('renewal-template-overlay');
+  el.style.display = ''; el.classList.remove('open');
+}
+
+function saveRenewalTemplate() {
+  // Save current tab first
+  _renewalTemplates[_currentRTTabIndex].subject = document.getElementById('rt-subject').value;
+  _renewalTemplates[_currentRTTabIndex].body = document.getElementById('rt-body').value;
+  if (fbReady && _db) {
+    _db.collection('config').doc('renewalEmails').set({ templates: _renewalTemplates })
+      .then(function() { showToast('Renewal templates saved', 'ok'); closeRenewalTemplate(); })
+      .catch(function() { showToast('Save failed', 'err'); });
+  } else {
+    showToast('Templates saved (local only)', 'ok');
+    closeRenewalTemplate();
+  }
+}
+
+function fillRenewalTemplate(tpl, m, deadline) {
+  var isNew = (m.status === 'approved');
+  var disc = m.serviceDiscount ? 'service' : (isEarlyBird() && !isNew ? 'earlybird' : null);
+  var calc = calcDues(m.type, isNew, disc);
+  var discLabel = calc.discount > 0 ? ('-$' + calc.discount.toFixed(2) + ' (' + (disc === 'earlybird' ? 'Early Bird' : 'Service/Senior') + ')') : 'None';
+  var season = (CONFIG.seasonYear || new Date().getFullYear()) + ' Season';
+  return tpl
+    .replace(/{{name}}/g, m.first + ' ' + m.last)
+    .replace(/{{type}}/g, m.type || 'Family')
+    .replace(/{{dues}}/g, calc.dues.toFixed(2))
+    .replace(/{{discount}}/g, discLabel)
+    .replace(/{{total}}/g, calc.total.toFixed(2))
+    .replace(/{{deadline}}/g, deadline || 'June 30')
+    .replace(/{{season}}/g, season);
+}
+
+function sendRenewalEmailToMember(memberId, templateIdx, deadline, onDone) {
+  var m = members.find(function(x) { return x.id === memberId; });
+  if (!m || !m.email) { if (onDone) onDone(false); return; }
+  var tpl = _renewalTemplates[templateIdx || 0];
+  var subject = fillRenewalTemplate(tpl.subject, m, deadline);
+  var body = fillRenewalTemplate(tpl.body, m, deadline);
+  if (typeof emailjs === 'undefined') { if (onDone) onDone(false); return; }
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    to_email: m.email,
+    to_name: m.first + ' ' + m.last,
+    from_name: 'Gibsonville Swim Club',
+    reply_to: 'thepool@gsrconline.com',
+    subject: subject,
+    message: body
+  }).then(function() {
+    // Log the contact on the member record
+    var log = { id: uid(), ts: Date.now(), type: 'renewal-email', templateIdx: templateIdx, templateName: RENEWAL_TEMPLATE_NAMES[templateIdx], deadline: deadline };
+    var contactLog = (m.renewalContactLog || []).concat([log]);
+    var updated = Object.assign({}, m, { renewalContactLog: contactLog });
+    saveMember(updated);
+    var i = members.findIndex(function(x) { return x.id === m.id; });
+    if (i >= 0) members[i] = updated;
+    if (onDone) onDone(true);
+  }).catch(function() { if (onDone) onDone(false); });
+}
+
+function sendRenewalToMemberCard(memberId) {
+  requireAdminPin(function() {
+    var deadline = prompt('Renewal deadline to show in email (e.g. June 30, 2026):', 'June 30, ' + (CONFIG.seasonYear || new Date().getFullYear()));
+    if (deadline === null) return;
+    var typeIdx = 0;
+    var m = members.find(function(x) { return x.id === memberId; });
+    if (m && m.renewalContactLog && m.renewalContactLog.length) {
+      typeIdx = Math.min(m.renewalContactLog.length, 3);
+    }
+    sendRenewalEmailToMember(memberId, typeIdx, deadline, function(ok) {
+      showToast(ok ? 'Renewal email sent' : 'Failed to send — check EmailJS config', ok ? 'ok' : 'err');
+      if (ok) setTimeout(function() { openMember(memberId, true); }, 300);
+    });
+  });
+}
+
+// ── BULK RENEWAL ──────────────────────────────────────────────────────────────
+function openBulkRenewal() {
+  requireAdminPin(function() {
+    var unpaid = members.filter(function(m) { return m.status === 'unpaid' && m.email; });
+    var frozen = members.filter(function(m) { return m.status === 'frozen' && m.email; });
+    var neverContacted = unpaid.filter(function(m) { return !m.renewalContactLog || !m.renewalContactLog.length; });
+    var sumEl = document.getElementById('bulk-renewal-summary');
+    if (sumEl) sumEl.innerHTML =
+      '<strong>' + unpaid.length + '</strong> unpaid members with email<br>' +
+      '<strong>' + neverContacted.length + '</strong> unpaid — never contacted<br>' +
+      '<strong>' + frozen.length + '</strong> frozen members with email';
+    var dl = document.getElementById('bulk-renewal-deadline');
+    if (dl && !dl.value) dl.value = 'June 30, ' + (CONFIG.seasonYear || new Date().getFullYear());
+    var prog = document.getElementById('bulk-renewal-progress');
+    if (prog) prog.style.display = 'none';
+    var btn = document.getElementById('bulk-renewal-send-btn');
+    if (btn) { btn.disabled = false; btn.textContent = 'Send Renewal Emails'; }
+    var el = document.getElementById('bulk-renewal-overlay');
+    el.style.display = ''; el.classList.add('open');
+  });
+}
+
+function closeBulkRenewal() {
+  var el = document.getElementById('bulk-renewal-overlay');
+  el.style.display = ''; el.classList.remove('open');
+}
+
+function startBulkRenewal() {
+  var filter = document.getElementById('bulk-renewal-filter').value;
+  var typeIdx = parseInt(document.getElementById('bulk-renewal-type').value);
+  var deadline = document.getElementById('bulk-renewal-deadline').value.trim() || 'June 30';
+
+  var targets = members.filter(function(m) {
+    if (!m.email) return false;
+    if (filter === 'unpaid') return m.status === 'unpaid';
+    if (filter === 'unpaid-no-contact') return m.status === 'unpaid' && (!m.renewalContactLog || !m.renewalContactLog.length);
+    if (filter === 'frozen') return m.status === 'frozen';
+    return false;
+  });
+
+  if (!targets.length) { showToast('No members match this filter', 'warn'); return; }
+
+  var btn = document.getElementById('bulk-renewal-send-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+  var prog = document.getElementById('bulk-renewal-progress');
+  if (prog) prog.style.display = '';
+
+  var sent = 0, failed = 0, idx = 0;
+
+  function sendNext() {
+    if (idx >= targets.length) {
+      var statusEl = document.getElementById('bulk-renewal-status');
+      if (statusEl) statusEl.textContent = 'Done — ' + sent + ' sent, ' + failed + ' failed.';
+      var barEl = document.getElementById('bulk-renewal-bar');
+      if (barEl) barEl.style.width = '100%';
+      if (btn) { btn.disabled = false; btn.textContent = 'Done'; }
+      showToast('Renewal emails sent: ' + sent + ' success, ' + failed + ' failed', sent > 0 ? 'ok' : 'err');
+      return;
+    }
+    var m = targets[idx];
+    var pct = Math.round((idx / targets.length) * 100);
+    var statusEl = document.getElementById('bulk-renewal-status');
+    if (statusEl) statusEl.textContent = 'Sending ' + (idx + 1) + ' of ' + targets.length + '...';
+    var barEl = document.getElementById('bulk-renewal-bar');
+    if (barEl) barEl.style.width = pct + '%';
+    idx++;
+    sendRenewalEmailToMember(m.id, typeIdx, deadline, function(ok) {
+      if (ok) sent++; else failed++;
+      // Throttle to avoid EmailJS rate limits (200/month free tier)
+      setTimeout(sendNext, 600);
+    });
+  }
+  sendNext();
+}
+
+
+// ── APPLICATION EMAIL SYSTEM ──────────────────────────────────────────────────
+var _currentAppTplTab = 0; // 0=approval, 1=rejection
+var _pendingApprovalMember = null;
+
+var DEFAULT_APPROVAL_TEMPLATES = [
+  {
+    subject: 'Your Gibsonville Swim Club Membership Has Been Approved!',
+    body: 'Dear {{name}},\n\nCongratulations! The Gibsonville Swim Club board has approved your {{type}} membership application for the {{season}} season.\n\nPayment Details:\n  Annual Dues: ${{dues}}\n  One-Time Initiation Fee: ${{initiation}}\n  Total Due: ${{total}}\n\nTo complete your membership, please submit payment by one of the following methods:\n  • Credit card or ACH: Pay via our Square invoice (you will receive a separate invoice by email)\n  • Cash or check: Bring payment to the pool and see a board member\n\nYour membership will be activated once payment is received. If you have any questions, please reply to this email.\n\nWe look forward to welcoming you to the club!\n\nGibsonville Swim Club Board\nthepool@gsrconline.com'
+  },
+  {
+    subject: 'Gibsonville Swim Club Membership Application',
+    body: 'Dear {{name}},\n\nThank you for your interest in joining the Gibsonville Swim Club.\n\nAfter careful consideration, the board has decided not to approve your {{type}} membership application at this time.\n\nIf you have questions or would like more information, please contact us at thepool@gsrconline.com.\n\nWe appreciate your interest in our community.\n\nGibsonville Swim Club Board\nthepool@gsrconline.com'
+  }
+];
+
+var _approvalTemplates = DEFAULT_APPROVAL_TEMPLATES.map(function(t) { return Object.assign({}, t); });
+
+function loadApprovalTemplates() {
+  if (fbReady && _db) {
+    _db.collection('config').doc('applicationEmails').get().then(function(doc) {
+      if (doc.exists) {
+        var d = doc.data();
+        if (d.templates && d.templates.length >= 2) _approvalTemplates = d.templates;
+      }
+    }).catch(function() {});
+  }
+}
+
+function openApprovalTemplate() {
+  _currentAppTplTab = 0;
+  setAppTplTab(0);
+  var el = document.getElementById('approval-template-overlay');
+  el.style.display = ''; el.classList.add('open');
+}
+
+function closeApprovalTemplate() {
+  var el = document.getElementById('approval-template-overlay');
+  el.style.display = ''; el.classList.remove('open');
+}
+
+function setAppTplTab(idx) {
+  // Save current tab content before switching
+  if (document.getElementById('apptpl-subject')) {
+    _approvalTemplates[_currentAppTplTab].subject = document.getElementById('apptpl-subject').value;
+    _approvalTemplates[_currentAppTplTab].body = document.getElementById('apptpl-body').value;
+  }
+  _currentAppTplTab = idx;
+  var tpl = _approvalTemplates[idx];
+  document.getElementById('apptpl-subject').value = tpl.subject;
+  document.getElementById('apptpl-body').value = tpl.body;
+  // Update tab styles
+  [0,1].forEach(function(i) {
+    var btn = document.getElementById('apptpl-tab-' + i);
+    if (!btn) return;
+    btn.style.background = i === idx ? '#003087' : 'var(--sand2)';
+    btn.style.color = i === idx ? '#fff' : 'var(--bld)';
+    btn.style.borderColor = i === idx ? '#003087' : 'var(--sand2)';
+  });
+}
+
+function saveApprovalTemplate() {
+  // Save current tab first
+  _approvalTemplates[_currentAppTplTab].subject = document.getElementById('apptpl-subject').value.trim();
+  _approvalTemplates[_currentAppTplTab].body = document.getElementById('apptpl-body').value.trim();
+  if (fbReady && _db) {
+    _db.collection('config').doc('applicationEmails').set({ templates: _approvalTemplates })
+      .then(function() { showToast('Templates saved', 'ok'); closeApprovalTemplate(); })
+      .catch(function() { showToast('Save failed', 'err'); });
+  } else {
+    showToast('Templates saved (local only)', 'ok');
+    closeApprovalTemplate();
+  }
+}
+
+function fillAppTemplate(tpl, m) {
+  var isNew = true;
+  var calc = calcDues(m.type, isNew, m.serviceDiscount ? 'service' : null);
+  var season = CONFIG.seasonYear || new Date().getFullYear();
+  return tpl
+    .replace(/{{name}}/g, m.first + ' ' + m.last)
+    .replace(/{{type}}/g, m.type || 'Family')
+    .replace(/{{season}}/g, season + ' Season')
+    .replace(/{{dues}}/g, calc.dues.toFixed(2))
+    .replace(/{{initiation}}/g, calc.initiation.toFixed(2))
+    .replace(/{{total}}/g, calc.total.toFixed(2));
+}
+
+function promptApprovalEmail(member) {
+  _pendingApprovalMember = member;
+  var tpl = _approvalTemplates[0];
+  var desc = document.getElementById('approval-email-desc');
+  var preview = document.getElementById('approval-email-preview');
+  if (desc) desc.textContent = 'Send to ' + member.first + ' ' + member.last + ' at ' + (member.email || 'no email on file');
+  if (preview) preview.textContent = fillAppTemplate(tpl.body, member).substring(0, 220) + '...';
+  var el = document.getElementById('approval-email-overlay');
+  el.style.display = ''; el.classList.add('open');
+}
+
+function closeApprovalEmailPrompt() {
+  var el = document.getElementById('approval-email-overlay');
+  el.style.display = ''; el.classList.remove('open');
+  _pendingApprovalMember = null;
+}
+
+function sendApprovalEmail() {
+  var m = _pendingApprovalMember;
+  if (!m || !m.email) { showToast('No email address on file', 'warn'); return; }
+  var tpl = _approvalTemplates[0];
+  _sendAppEmail(m, tpl, function(ok) {
+    if (ok) showToast('Approval email sent to ' + m.email, 'ok');
+    else showToast('Failed to send email — check EmailJS config', 'err');
+    closeApprovalEmailPrompt();
+  });
+}
+
+function sendRejectionEmail(m) {
+  if (!m || !m.email) return;
+  var tpl = _approvalTemplates[1];
+  _sendAppEmail(m, tpl, function(ok) {
+    if (ok) showToast('Rejection email sent to ' + m.email, 'ok');
+  });
+}
+
+function _sendAppEmail(m, tpl, cb) {
+  if (typeof emailjs === 'undefined') { cb(false); return; }
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    to_email: m.email,
+    to_name: m.first + ' ' + m.last,
+    from_name: 'Gibsonville Swim Club',
+    reply_to: 'thepool@gsrconline.com',
+    subject: fillAppTemplate(tpl.subject, m),
+    message: fillAppTemplate(tpl.body, m)
+  }).then(function() { cb(true); }).catch(function(e) { console.error('EmailJS:', e); cb(false); });
+}
+
+
+// ── WAITLIST SYSTEM ───────────────────────────────────────────────────────────
+var waitlist = [];
+var _waitlistMode = false;
+
+function saveConfig(cfg) {
+  CONFIG = Object.assign({}, CONFIG, cfg);
+  try { localStorage.setItem('gsc_config', JSON.stringify(CONFIG)); } catch(e) {}
+  if (fbReady && _db) {
+    _db.collection('config').doc('settings').set(cfg, {merge:true}).catch(function(e){console.error(e);});
+  }
+  rebuildDerivedConfig();
+}
+
+function loadWaitlistConfig() {
+  if (fbReady && _db) {
+    _db.collection('config').doc('settings').get().then(function(doc) {
+      if (doc.exists && doc.data().waitlistMode !== undefined) {
+        _waitlistMode = !!doc.data().waitlistMode;
+        updateWaitlistBanner();
+      }
+    }).catch(function(){});
+  }
+}
+
+function setWaitlistMode(on) {
+  _waitlistMode = on;
+  saveConfig({ waitlistMode: on });
+  updateWaitlistBanner();
+  showToast('Waitlist ' + (on ? 'enabled' : 'disabled'), 'ok');
+}
+
+function updateWaitlistBanner() {
+  var b = document.getElementById('waitlist-banner');
+  if (b) b.style.display = _waitlistMode ? '' : 'none';
+}
+
+function loadWaitlist() {
+  if (!fbReady || !_db) return;
+  _db.collection('waitlist').orderBy('position','asc').onSnapshot(function(snap) {
+    waitlist = snap.docs.map(function(d) { return Object.assign({id:d.id}, d.data()); });
+    if (document.getElementById('pane-app') && document.getElementById('pane-app').classList.contains('on')) {
+      renderApplications();
+    }
+  });
+}
+
+function saveWaitlistEntry(entry) {
+  if (!fbReady || !_db) return;
+  var copy = Object.assign({}, entry);
+  var id = copy.id; delete copy.id;
+  _db.collection('waitlist').doc(id).set(copy).catch(function(e){console.error(e);});
+}
+
+function deleteWaitlistEntry(id) {
+  if (!fbReady || !_db) return;
+  _db.collection('waitlist').doc(id).delete().catch(function(e){console.error(e);});
+}
+
+function addToWaitlist(data) {
+  var maxPos = waitlist.reduce(function(m,w){ return Math.max(m, w.position||0); }, 0);
+  var entry = Object.assign({}, data, {
+    id: uid(),
+    position: maxPos + 1,
+    addedAt: Date.now(),
+    status: 'waiting', // waiting | notified | converted | removed
+    notifyLog: []
+  });
+  saveWaitlistEntry(entry);
+  waitlist.push(entry);
+  return entry;
+}
+
+function moveWaitlistEntry(id, direction) {
+  var idx = waitlist.findIndex(function(w){ return w.id === id; });
+  if (idx < 0) return;
+  var swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+  if (swapIdx < 0 || swapIdx >= waitlist.length) return;
+  var posA = waitlist[idx].position;
+  var posB = waitlist[swapIdx].position;
+  waitlist[idx].position = posB;
+  waitlist[swapIdx].position = posA;
+  saveWaitlistEntry(waitlist[idx]);
+  saveWaitlistEntry(waitlist[swapIdx]);
+  renderApplications();
+}
+
+function removeFromWaitlist(id) {
+  if (!confirm('Remove this person from the waitlist?')) return;
+  deleteWaitlistEntry(id);
+  waitlist = waitlist.filter(function(w){ return w.id !== id; });
+  renderApplications();
+  showToast('Removed from waitlist', 'ok');
+}
+
+function notifyNextOnWaitlist() {
+  var next = waitlist.filter(function(w){ return w.status === 'waiting'; })
+    .sort(function(a,b){ return (a.position||0)-(b.position||0); })[0];
+  if (!next) { showToast('No one on waitlist to notify', 'warn'); return; }
+  if (!next.email) { showToast(next.first + ' ' + next.last + ' has no email on file', 'warn'); return; }
+  sendWaitlistNotification(next, function(ok) {
+    if (ok) {
+      var log = (next.notifyLog||[]).concat([{ts:Date.now(), date: new Date().toISOString().substring(0,10)}]);
+      var updated = Object.assign({}, next, {status:'notified', notifyLog:log});
+      saveWaitlistEntry(updated);
+      var i = waitlist.findIndex(function(w){return w.id===next.id;});
+      if (i>=0) waitlist[i] = updated;
+      renderApplications();
+      showToast('Waitlist notification sent to ' + next.first + ' ' + next.last, 'ok');
+    } else {
+      showToast('Failed to send notification email', 'err');
+    }
+  });
+}
+
+function sendWaitlistNotification(w, cb) {
+  if (typeof emailjs === 'undefined') { cb(false); return; }
+  var tpl = _waitlistNotifyTemplate;
+  var season = CONFIG.seasonYear || new Date().getFullYear();
+  var body = tpl.body
+    .replace(/{{name}}/g, w.first + ' ' + w.last)
+    .replace(/{{type}}/g, w.mtype || 'Family')
+    .replace(/{{season}}/g, season + ' Season');
+  var subject = tpl.subject
+    .replace(/{{name}}/g, w.first + ' ' + w.last)
+    .replace(/{{season}}/g, season + ' Season');
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    to_email: w.email,
+    to_name: w.first + ' ' + w.last,
+    from_name: 'Gibsonville Swim Club',
+    reply_to: 'thepool@gsrconline.com',
+    subject: subject,
+    message: body
+  }).then(function(){ cb(true); }).catch(function(e){ console.error(e); cb(false); });
+}
+
+function convertWaitlistToApplication(id) {
+  var w = waitlist.find(function(x){ return x.id === id; });
+  if (!w) return;
+  // Create a full application record from the waitlist entry
+  var app = Object.assign({}, w, {
+    id: uid(),
+    status: 'pending',
+    submittedAt: w.addedAt || Date.now(),
+    fromWaitlist: true,
+    waitlistId: id
+  });
+  saveApplication(app);
+  applications.push(app);
+  // Mark waitlist entry as converted
+  var updated = Object.assign({}, w, { status: 'converted', applicationId: app.id });
+  saveWaitlistEntry(updated);
+  var i = waitlist.findIndex(function(x){ return x.id === id; });
+  if (i >= 0) waitlist[i] = updated;
+  renderApplications();
+  showToast(w.first + ' ' + w.last + ' moved to Applications', 'ok');
+}
+
+function renderWaitlistTab() {
+  var waiting = waitlist.filter(function(w){ return w.status === 'waiting' || w.status === 'notified'; })
+    .sort(function(a,b){ return (a.position||0)-(b.position||0); });
+  var converted = waitlist.filter(function(w){ return w.status === 'converted' || w.status === 'removed'; });
+
+  var html = '<div style="padding:0 0 12px">';
+
+  // Waitlist mode toggle
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;background:' + (_waitlistMode?'#fef3c7':'var(--sand)') + ';border:2px solid ' + (_waitlistMode?'#f59e0b':'var(--sand2)') + ';border-radius:12px;padding:12px 14px;margin-bottom:14px">'
+    + '<div><div style="font-size:14px;font-weight:800;color:var(--bld)">Waitlist Mode</div>'
+    + '<div style="font-size:12px;color:var(--mu)">' + (_waitlistMode ? '⚠️ Active — new applicants are added to waitlist' : 'Off — new applicants go through normal application flow') + '</div></div>'
+    + '<button onclick="requireAdminPin(function(){setWaitlistMode(' + (!_waitlistMode) + ');})" style="padding:8px 16px;background:' + (_waitlistMode?'#f59e0b':'#003087') + ';border:none;color:#fff;border-radius:8px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">'
+    + (_waitlistMode ? 'Disable' : 'Enable') + '</button>'
+    + '</div>';
+
+  if (waiting.length) {
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
+      + '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu)">On Waitlist (' + waiting.length + ')</div>'
+      + '<button onclick="requireAdminPin(function(){notifyNextOnWaitlist();})" style="padding:6px 12px;background:#003087;border:none;color:#fff;border-radius:8px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">📨 Notify Next</button>'
+      + '</div>';
+
+    waiting.forEach(function(w, i) {
+      var isNotified = w.status === 'notified';
+      html += '<div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:8px;border:2px solid ' + (isNotified?'#f59e0b':'var(--sand2)') + '">'
+        + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">'
+        + '<div style="flex:1">'
+        + '<div style="font-size:15px;font-weight:800;color:var(--bld)">#' + (i+1) + ' · ' + w.first + ' ' + w.last + '</div>'
+        + '<div style="font-size:12px;color:var(--mu);margin-top:2px">' + (w.mtype||'Family') + (w.isRejoin?' · Rejoining':'') + (w.email?' · '+w.email:'') + '</div>'
+        + (isNotified?'<div style="font-size:11px;color:#92400e;font-weight:600;margin-top:4px">📨 Notified ' + (w.notifyLog&&w.notifyLog.length?w.notifyLog[w.notifyLog.length-1].date:'') + '</div>':'')
+        + '</div>'
+        + '<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">'
+        + (i>0?'<button onclick="moveWaitlistEntry(''+w.id+'','up')" style="background:var(--sand2);border:none;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:12px">▲</button>':'')
+        + (i<waiting.length-1?'<button onclick="moveWaitlistEntry(''+w.id+'','down')" style="background:var(--sand2);border:none;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:12px">▼</button>':'')
+        + '</div></div>'
+        + '<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">'
+        + '<button onclick="requireAdminPin(function(){convertWaitlistToApplication(''+w.id+'');})" style="padding:7px 12px;background:#003087;border:none;color:#fff;border-radius:8px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">→ Move to Applications</button>'
+        + '<button onclick="requireAdminPin(function(){sendWaitlistNotification(waitlist.find(function(x){return x.id===''+w.id+'';}),function(ok){if(ok)showToast('Notification sent','ok');});})" style="padding:7px 12px;background:var(--sand2);border:none;color:var(--bld);border-radius:8px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">📨 Notify</button>'
+        + '<button onclick="removeFromWaitlist(''+w.id+'')" style="padding:7px 12px;background:var(--rel);border:none;color:var(--re);border-radius:8px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Remove</button>'
+        + '</div></div>';
+    });
+  } else {
+    html += '<div style="text-align:center;padding:24px 0;color:var(--mu);font-size:14px">No one on the waitlist.</div>';
+  }
+
+  if (converted.length) {
+    html += '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin:16px 0 8px">Converted / Removed (' + converted.length + ')</div>';
+    converted.forEach(function(w) {
+      html += '<div style="background:var(--sand);border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">'
+        + '<div><div style="font-size:13px;font-weight:700;color:var(--bld)">' + w.first + ' ' + w.last + '</div>'
+        + '<div style="font-size:11px;color:var(--mu)">' + (w.mtype||'Family') + ' · ' + w.status + '</div></div>'
+        + '</div>';
+    });
+  }
+
+  html += '</div>';
+  return html;
+}
+
+// Waitlist notify template
+var _waitlistNotifyTemplate = {
+  subject: 'A Spot Has Opened at Gibsonville Swim Club!',
+  body: 'Dear {{name}},\n\nGreat news! A membership spot has opened at the Gibsonville Swim Club for the {{season}} season.\n\nYou are next on our waitlist for a {{type}} membership. Please contact us at thepool@gsrconline.com within 7 days to confirm your interest and complete your application.\n\nIf we do not hear from you within 7 days, your spot may be offered to the next person on the waitlist.\n\nWe look forward to welcoming you to the club!\n\nGibsonville Swim Club Board\nthepool@gsrconline.com'
+};
+
+function loadWaitlistTemplate() {
+  if (fbReady && _db) {
+    _db.collection('config').doc('waitlistEmail').get().then(function(doc) {
+      if (doc.exists) _waitlistNotifyTemplate = Object.assign({}, _waitlistNotifyTemplate, doc.data());
+    }).catch(function(){});
+  }
+}
+
+function openWaitlistTemplate() {
+  document.getElementById('wlt-subject').value = _waitlistNotifyTemplate.subject;
+  document.getElementById('wlt-body').value = _waitlistNotifyTemplate.body;
+  var el = document.getElementById('waitlist-template-overlay');
+  el.style.display = ''; el.classList.add('open');
+}
+
+function closeWaitlistTemplate() {
+  var el = document.getElementById('waitlist-template-overlay');
+  el.style.display = ''; el.classList.remove('open');
+}
+
+function saveWaitlistTemplate() {
+  var subj = document.getElementById('wlt-subject').value.trim();
+  var body = document.getElementById('wlt-body').value.trim();
+  if (!subj || !body) { showToast('Subject and body required', 'warn'); return; }
+  _waitlistNotifyTemplate = { subject: subj, body: body };
+  if (fbReady && _db) {
+    _db.collection('config').doc('waitlistEmail').set(_waitlistNotifyTemplate)
+      .then(function(){ showToast('Template saved', 'ok'); closeWaitlistTemplate(); })
+      .catch(function(){ showToast('Save failed', 'err'); });
+  } else {
+    showToast('Template saved', 'ok');
+    closeWaitlistTemplate();
+  }
+}
+
+
+function requestReinstatement(memberId) {
+  var m = members.find(function(x){ return x.id === memberId; });
+  if (!m) return;
+  if (!confirm('Add ' + m.first + ' ' + m.last + ' to the waitlist for reinstatement?')) return;
+  var entry = {
+    first: m.first, last: m.last, email: m.email || '', phone: m.phone || '',
+    mtype: m.type, street: m.street||'', city: m.city||'', state: m.state||'NC', zip: m.zip||'',
+    isRejoin: true, originalMemberId: memberId,
+    secFirst: m.secFirst||'', secLast: m.secLast||'', kids: m.kids||[]
+  };
+  addToWaitlist(entry);
+  showToast(m.first + ' ' + m.last + ' added to waitlist for reinstatement', 'ok');
+}
+
 </script>
+
+<!-- Welcome Email Prompt Overlay -->
+<div id="welcome-email-overlay" class="overlay" style="z-index:1100">
+  <div class="sheet" style="max-width:480px;width:100%;padding:24px">
+    <div style="font-size:20px;font-weight:800;color:var(--bld);margin-bottom:6px">✉️ Send Welcome Email?</div>
+    <div style="font-size:14px;color:var(--mu);margin-bottom:16px" id="welcome-email-desc"></div>
+    <div style="background:var(--sand);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--mu);margin-bottom:20px;line-height:1.5" id="welcome-email-preview"></div>
+    <div style="display:flex;gap:10px">
+      <button onclick="sendWelcomeEmail()" style="flex:1;padding:13px;background:#003087;border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Send Email</button>
+      <button onclick="closeWelcomePrompt()" style="flex:1;padding:13px;background:var(--sand2);border:none;color:var(--bld);border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Skip</button>
+    </div>
+  </div>
+</div>
+
+<!-- Welcome Email Template Editor Overlay -->
+<div id="welcome-template-overlay" class="overlay" style="z-index:1100">
+  <div class="sheet" style="max-width:540px;width:100%;padding:24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:18px;font-weight:800;color:var(--bld)">✉️ Welcome Email Template</div>
+      <button onclick="closeWelcomeTemplate()" style="background:var(--sand2);border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px">✕</button>
+    </div>
+    <div style="font-size:12px;color:var(--mu);margin-bottom:6px">Subject line</div>
+    <input id="wt-subject" class="fi" style="margin-bottom:14px" placeholder="Welcome to Gibsonville Swim Club!">
+    <div style="font-size:12px;color:var(--mu);margin-bottom:6px">Email body — use {{name}}, {{type}}, {{season}} as placeholders</div>
+    <textarea id="wt-body" style="width:100%;min-height:220px;padding:12px;border:2px solid var(--sand2);border-radius:10px;font-size:14px;font-family:Inter,sans-serif;color:var(--tx);background:var(--sand);resize:vertical;box-sizing:border-box" placeholder="Dear {{name}}, ..."></textarea>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button onclick="saveWelcomeTemplate()" style="flex:1;padding:13px;background:#003087;border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Save Template</button>
+      <button onclick="closeWelcomeTemplate()" style="padding:13px 18px;background:var(--sand2);border:none;color:var(--bld);border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Log Payment Overlay -->
+<div id="pay-overlay" class="overlay" style="z-index:1100">
+  <div class="sheet" style="max-width:480px;width:100%;padding:24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:18px;font-weight:800;color:var(--bld)">💳 Log Payment</div>
+      <button onclick="closePayOverlay()" style="background:var(--sand2);border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px">✕</button>
+    </div>
+    <div id="pay-member-name" style="font-size:15px;font-weight:700;color:var(--bld);margin-bottom:4px"></div>
+    <div id="pay-dues-breakdown" style="font-size:12px;color:var(--mu);margin-bottom:16px;line-height:1.6;background:var(--sand);border-radius:8px;padding:10px 12px"></div>
+
+    <div class="fg" style="margin-bottom:12px">
+      <label class="fl">Discount</label>
+      <select class="fs" id="pay-discount" onchange="updatePayBreakdown()">
+        <option value="">No Discount</option>
+        <option value="earlybird">Early Bird (15% off dues)</option>
+        <option value="service">Service / Senior (15% off dues)</option>
+      </select>
+    </div>
+
+    <div class="fg" style="margin-bottom:12px">
+      <label class="fl">Amount Received ($)</label>
+      <input class="fi" id="pay-amount" type="number" min="0" step="0.01">
+    </div>
+
+    <div class="fg" style="margin-bottom:12px">
+      <label class="fl">Payment Method</label>
+      <select class="fs" id="pay-method">
+        <option value="Square">Square (card/ACH)</option>
+        <option value="Cash">Cash</option>
+        <option value="Check">Check</option>
+      </select>
+    </div>
+
+    <div class="fg" style="margin-bottom:12px">
+      <label class="fl">Received By</label>
+      <input class="fi" id="pay-receiver" placeholder="Name of board member who received payment">
+    </div>
+
+    <div class="fg" style="margin-bottom:20px">
+      <label class="fl">Notes</label>
+      <input class="fi" id="pay-notes" placeholder="e.g. check #1042, Square ref, etc.">
+    </div>
+
+    <div style="display:flex;gap:10px">
+      <button onclick="commitPayment()" style="flex:1;padding:13px;background:#003087;border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">✓ Log Payment &amp; Mark Paid</button>
+      <button onclick="closePayOverlay()" style="padding:13px 18px;background:var(--sand2);border:none;color:var(--bld);border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Application Approval Email Template Overlay -->
+<div id="approval-template-overlay" class="overlay" style="z-index:1100">
+  <div class="sheet" style="max-width:540px;width:100%;padding:24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:18px;font-weight:800;color:var(--bld)">✉️ Application Email Templates</div>
+      <button onclick="closeApprovalTemplate()" style="background:var(--sand2);border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px">✕</button>
+    </div>
+    <!-- Tab selector -->
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button onclick="setAppTplTab(0)" id="apptpl-tab-0" style="flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;border:2px solid #003087;background:#003087;color:#fff">Approval</button>
+      <button onclick="setAppTplTab(1)" id="apptpl-tab-1" style="flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;border:2px solid var(--sand2);background:var(--sand2);color:var(--bld)">Rejection</button>
+    </div>
+    <div style="font-size:12px;color:var(--mu);margin-bottom:6px">Subject line</div>
+    <input id="apptpl-subject" class="fi" style="margin-bottom:14px">
+    <div style="font-size:12px;color:var(--mu);margin-bottom:6px">Email body — use {{name}}, {{type}}, {{dues}}, {{initiation}}, {{total}}, {{season}}</div>
+    <textarea id="apptpl-body" style="width:100%;min-height:200px;padding:12px;border:2px solid var(--sand2);border-radius:10px;font-size:14px;font-family:Inter,sans-serif;color:var(--tx);background:var(--sand);resize:vertical;box-sizing:border-box"></textarea>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button onclick="saveApprovalTemplate()" style="flex:1;padding:13px;background:#003087;border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Save Template</button>
+      <button onclick="closeApprovalTemplate()" style="padding:13px 18px;background:var(--sand2);border:none;color:var(--bld);border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Approval Email Prompt -->
+<div id="approval-email-overlay" class="overlay" style="z-index:1200">
+  <div class="sheet" style="max-width:480px;width:100%;padding:24px">
+    <div style="font-size:20px;font-weight:800;color:var(--bld);margin-bottom:6px">✅ Application Approved</div>
+    <div style="font-size:14px;color:var(--mu);margin-bottom:16px" id="approval-email-desc"></div>
+    <div style="background:var(--sand);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--mu);margin-bottom:20px;line-height:1.5" id="approval-email-preview"></div>
+    <div style="display:flex;gap:10px">
+      <button onclick="sendApprovalEmail()" style="flex:1;padding:13px;background:#166534;border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">✉️ Send Approval Email</button>
+      <button onclick="closeApprovalEmailPrompt()" style="flex:1;padding:13px;background:var(--sand2);border:none;color:var(--bld);border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Skip</button>
+    </div>
+  </div>
+</div>
+
+<!-- Waitlist Notify Template Overlay -->
+<div id="waitlist-template-overlay" class="overlay" style="z-index:1100">
+  <div class="sheet" style="max-width:540px;width:100%;padding:24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:18px;font-weight:800;color:var(--bld)">📋 Waitlist Notification Template</div>
+      <button onclick="closeWaitlistTemplate()" style="background:var(--sand2);border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px">✕</button>
+    </div>
+    <div style="font-size:12px;color:var(--mu);margin-bottom:6px">Subject line</div>
+    <input id="wlt-subject" class="fi" style="margin-bottom:14px">
+    <div style="font-size:12px;color:var(--mu);margin-bottom:6px">Body — use {{name}}, {{type}}, {{season}}</div>
+    <textarea id="wlt-body" style="width:100%;min-height:200px;padding:12px;border:2px solid var(--sand2);border-radius:10px;font-size:14px;font-family:Inter,sans-serif;color:var(--tx);background:var(--sand);resize:vertical;box-sizing:border-box"></textarea>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button onclick="saveWaitlistTemplate()" style="flex:1;padding:13px;background:#003087;border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Save</button>
+      <button onclick="closeWaitlistTemplate()" style="padding:13px 18px;background:var(--sand2);border:none;color:var(--bld);border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Cancel</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
