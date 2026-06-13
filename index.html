@@ -746,6 +746,11 @@ var db=null,fbReady=false;
       loadWaitlistConfig();
       loadWaitlist();
       loadWaitlistTemplate();
+      // Load saved access code from Firestore
+      _db.collection('config').doc('settings').get().then(function(doc){
+        if(doc.exists&&doc.data().accessCode) APP_ACCESS_CODE=doc.data().accessCode;
+      }).catch(function(){});
+
       initSelfCIMode();
       // Set up real-time listeners after boot
       _db.collection('members').orderBy('last').onSnapshot(function(snap){
@@ -5021,6 +5026,22 @@ function importCSVReplace(){if(!csvParsed.length){showToast('No data','warn');re
 if(fbReady&&window._delMemberFB){members.forEach(function(m){window._delMemberFB(m.id);});}// Save new ones
 csvParsed.forEach(function(m){saveMember(m);});if(!fbReady){members=csvParsed;lSet('gsc_members',members);renderAll();}closeCSV();showToast('Replaced with '+csvParsed.length+' members','ok');}
 
+function copyAccessCode(){
+  var code=APP_ACCESS_CODE;
+  if(navigator.clipboard){navigator.clipboard.writeText(code).then(function(){showToast('Access code copied','ok');});}
+  else{var t=document.createElement('textarea');t.value=code;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);showToast('Access code copied','ok');}
+}
+
+function saveAccessCode(){
+  var inp=document.getElementById('st-access-code');
+  if(!inp||!inp.value.trim()){showToast('Enter a valid code','warn');return;}
+  APP_ACCESS_CODE=inp.value.trim().toLowerCase();
+  var disp=document.getElementById('access-code-display');
+  if(disp) disp.textContent=APP_ACCESS_CODE;
+  if(fbReady&&_db){_db.collection('config').doc('settings').set({accessCode:APP_ACCESS_CODE},{merge:true}).then(function(){showToast('Access code saved','ok');}).catch(function(){showToast('Save failed','err');});}
+  else{showToast('Access code updated (local only)','ok');}
+}
+
 function openSettings(){
   if(!can('canAccessSettings')){showToast('Admin login required','warn');openLogin();return;}
   (function(){
@@ -5050,6 +5071,18 @@ function openSettings(){
     +'<button class="btn-p" style="flex:1" onclick="saveAnnouncementFromSettings()">Save</button>'
     +'<button class="btn-d" style="flex:1" onclick="clearAnnouncement()">Clear</button>'
     +'</div></div>'
+
+    // ── SECTION: Application Access Code ───────────────────────────
+    +'<div class="st-section">'
+    +'<div class="st-sec-hdr">&#x1F511; Application Access Code</div>'
+    +'<p class="fnote">Share this code with prospective members so they can access the application form. It slows down bots without requiring verification.</p>'
+    +'<div style="display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--sand2);border-radius:10px;padding:12px 14px">'
+    +'<div style="font-size:22px;font-weight:800;color:var(--bl);letter-spacing:2px;flex:1" id="access-code-display">'+APP_ACCESS_CODE+'</div>'
+    +'<button onclick="copyAccessCode()" style="padding:8px 14px;background:var(--bl);border:none;color:#fff;border-radius:8px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Copy</button>'
+    +'</div>'
+    +'<div class="fg" style="margin-top:4px"><label class="fl">Change Code</label><input class="fi" id="st-access-code" value="'+APP_ACCESS_CODE+'" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Enter new access code"></div>'
+    +'<button class="btn-p" onclick="saveAccessCode()">Save Code</button>'
+    +'</div>'
 
     // ── SECTION: Capacity Limits ────────────────────────────────────
     +'<div class="st-section">'
