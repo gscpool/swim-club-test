@@ -351,7 +351,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.8.5</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.8.7</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -409,7 +409,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
   </div>
 
   <!-- APPLICATIONS PANE -->
-  <div id="pane-app" class="pane"><div id="waitlist-banner" style="display:none;background:#fef3c7;border-bottom:2px solid #f59e0b;padding:8px 14px;font-size:12px;font-weight:700;color:#92400e;flex-shrink:0">&#x23F3; Waitlist Mode Active — new applicants join the waitlist</div><div class="rep-scroll" id="app-body"></div></div>
+  <div id="pane-app" class="pane"><div class="rep-scroll" id="app-body"></div></div>
 
   <!-- REPORTS PANE -->
   <div id="pane-rep" class="pane"><div class="rep-scroll" id="rep-body"></div></div>
@@ -743,9 +743,6 @@ var db=null,fbReady=false;
       checkUnpaidResignation();
       loadIncidents();
       loadWelcomeTemplate();
-      loadWaitlistConfig();
-      loadWaitlist();
-      loadWaitlistTemplate();
       // Load saved access code from Firestore
       _db.collection('config').doc('settings').get().then(function(doc){
         if(doc.exists&&doc.data().accessCode) APP_ACCESS_CODE=doc.data().accessCode;
@@ -779,9 +776,6 @@ var db=null,fbReady=false;
       checkUnpaidResignation();
       loadIncidents();
       loadWelcomeTemplate();
-      loadWaitlistConfig();
-      loadWaitlist();
-      loadWaitlistTemplate();
       initSelfCIMode();
       _db.collection('members').orderBy('last').onSnapshot(function(snap){
         members=snap.docs.map(function(d){
@@ -2152,7 +2146,7 @@ function loadApplications(){
     db.collection('applications').orderBy('submittedAt','desc').onSnapshot(function(snap){
       applications = snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
       if(document.getElementById('pane-app').classList.contains('on')) renderApplications();
-    });
+    },function(e){console.warn('Applications collection unavailable:',e);});
   }
 }
 
@@ -2381,13 +2375,6 @@ function submitApplication(){
   applyData.sigDate=sd?sd.value:new Date().toISOString().slice(0,10);
   applyData.submittedAt=Date.now();
   applyData.id=uid();
-  if(_waitlistMode){
-    applyData.status='waitlisted';
-    addToWaitlist(applyData);
-    document.getElementById('apply-body').innerHTML='<div style="background:#fff;border-radius:14px;padding:30px;text-align:center"><div style="font-size:60px;margin-bottom:12px">&#x1F4CB;</div><div style="font-size:20px;font-weight:800;color:#92400e;margin-bottom:8px">Added to Waitlist!</div><div style="font-size:14px;color:var(--mu);line-height:1.6">Thank you, '+applyData.first+'! We will contact you at '+applyData.email+' when a spot becomes available.</div></div>';
-    applyData={};
-    return;
-  }
   applyData.status='pending';
   applyData.votes={approve:[],reject:[]};
   saveApplication(applyData);
@@ -2420,9 +2407,7 @@ function renderApplications(){
   var activeTab=window._appTab||'applications';
   var html='<div style="display:flex;gap:8px;padding:12px 12px 0">'
     +'<button onclick="window._appTab=&quot;applications&quot;;renderApplications()" style="flex:1;min-height:44px;padding:9px;border-radius:9px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;border:2px solid '+(activeTab==='applications'?'#003087':'var(--sand2)')+';background:'+(activeTab==='applications'?'#003087':'var(--sand2)')+';color:'+(activeTab==='applications'?'#fff':'var(--bld)')+'">Applications ('+pending.length+')</button>'
-    +'<button onclick="window._appTab=&quot;waitlist&quot;;renderApplications()" style="flex:1;min-height:44px;padding:9px;border-radius:9px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;border:2px solid '+(_waitlistMode?'#f59e0b':activeTab==='waitlist'?'#003087':'var(--sand2)')+';background:'+(_waitlistMode?'#fef3c7':activeTab==='waitlist'?'#003087':'var(--sand2)')+';color:'+(_waitlistMode?'#92400e':activeTab==='waitlist'?'#fff':'var(--bld)')+'">&#x23F3; Waitlist ('+(waitlist.filter(function(w){return w.status==='waiting'||w.status==='notified';}).length)+')</button>'
     +'</div>';
-  if(activeTab==='waitlist'){html+=renderWaitlistTab();el.innerHTML=html;return;}
   html+='<div style="padding:12px;display:flex;flex-direction:column;gap:10px">';
   html+='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu)">Pending ('+pending.length+') — '+majority+' votes needed for approval</div>';
   if(!pending.length) html+='<div class="empty" style="padding:20px 0"><div class="ico">&#x1F44D;</div><p>No pending applications.</p></div>';
@@ -4104,7 +4089,6 @@ function openMember(id,ciMode){
   html+='<button class="btn-s" style="margin-bottom:6px;background:#166534;color:#fff" onclick="openPayOverlay(&quot;'+m.id+'&quot;)">&#x1F4B3; Log Payment</button>';
   html+=((m.status==='paid'&&m.email)?'<button class="btn-s" style="margin-bottom:6px;background:#003087;color:#fff" onclick="sendWelcomeEmailForMember(&quot;'+m.id+'&quot;)">&#x2709;&#xFE0F; Send Welcome Email</button>':'');
   html+=((m.status==='unpaid'||m.status==='frozen')&&m.email?'<button class="btn-s" style="margin-bottom:6px;background:#0369a1;color:#fff" onclick="sendRenewalToMemberCard(&quot;'+m.id+'&quot;)">&#x1F4E8; Send Renewal Email</button>':'');
-  html+=(m.status==='resigned'?'<button class="btn-s" style="margin-bottom:6px;background:#7c3aed;color:#fff" onclick="requestReinstatement(&quot;'+m.id+'&quot;)">&#x21A9;&#xFE0F; Request Reinstatement</button>':'');
     html+='<button class="btn-s" onclick="openEdit(\''+m.id+'\')">&#x270F;&#xFE0F; Edit Member</button>';
   document.getElementById('mm-body').innerHTML=html;
   var _mmo=document.getElementById('mm-overlay');
@@ -4703,7 +4687,7 @@ function renderRep(){
     +'<span style="font-size:10px;color:var(--mu)">'+(MAX_MEMBERSHIPS-activeTotal)+' spots remaining</span>'
     +'<span style="font-size:10px;font-weight:700;color:'+mbrColor+'">'+mbrPct+'%</span>'
     +'</div>'
-    +(mbrPct>=95?'<div style="font-size:11px;color:'+RE+';margin-top:4px;font-weight:700">⚠️ Household cap reached — consider a waitlist</div>'
+    +(mbrPct>=95?'<div style="font-size:11px;color:'+RE+';margin-top:4px;font-weight:700">⚠️ Household cap reached</div>'
       :mbrPct>=85?'<div style="font-size:11px;color:'+AM+';margin-top:4px;font-weight:600">Approaching household cap</div>':'')
     +'</div>'
     +(MAX_PEOPLE>0
@@ -4776,7 +4760,6 @@ function renderRep(){
   html+='<div class="rsec"><div class="rsec-title">Renewals</div><div style="display:flex;flex-direction:column;gap:8px"><div style="font-size:12px;color:var(--mu);line-height:1.5;margin-bottom:4px">Send renewal emails to unpaid members.</div><button class="exp-btn" style="background:#003087;color:#fff;border:none" onclick="openBulkRenewal()">&#x1F4E8; Send Bulk Renewal Emails</button><button class="exp-btn" onclick="requireAdminPin(function(){openRenewalTemplate();})">&#x270F;&#xFE0F; Edit Renewal Email Templates</button></div></div>';
   html+='<div class="rsec"><div class="rsec-title">Member Data</div>'
     +'<div style="display:flex;flex-direction:column;gap:8px">'
-    +'<button class="exp-btn" onclick="requireAdminPin(function(){openWaitlistTemplate();})">&#x1F4CB; Edit Waitlist Template</button>'
     +'<button class="exp-btn" onclick="requireAdminPin(function(){openWelcomeTemplate();})">&#x2709;&#xFE0F; Edit Welcome Email Template</button>'
     +'<button class="exp-btn" onclick="requireAdminPin(function(){exportCSV(\'members\');})">Export Member List (CSV)</button>'
     +'<button class="imp-btn" onclick="requireAdminPin(function(){openCSVImport();})">Import Members from CSV</button>'
@@ -6152,51 +6135,6 @@ function sendWelcomeEmail(){var m=_welcomeEmailMember;if(!m||!m.email){showToast
 function sendWelcomeEmailForMember(id){var m=members.find(function(x){return x.id===id;});if(!m||!m.email){showToast('No email on file','warn');return;}promptWelcomeEmail(m);}
 
 
-// ── WAITLIST SYSTEM ──────────────────────────────────────────────────────────
-var waitlist=[];var _waitlistMode=false;
-function loadWaitlistConfig(){if(fbReady&&_db){_db.collection('config').doc('settings').get().then(function(doc){if(doc.exists&&doc.data().waitlistMode!==undefined){_waitlistMode=!!doc.data().waitlistMode;updateWaitlistBanner();}}).catch(function(){});}}
-function setWaitlistMode(on){_waitlistMode=on;saveConfig({waitlistMode:on});updateWaitlistBanner();showToast('Waitlist '+(on?'enabled':'disabled'),'ok');}
-function updateWaitlistBanner(){var b=document.getElementById('waitlist-banner');if(b)b.style.display=_waitlistMode?'':'none';}
-function loadWaitlist(){if(!fbReady||!_db)return;_db.collection('waitlist').orderBy('position','asc').onSnapshot(function(snap){waitlist=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});if(document.getElementById('app-body'))renderApplications();});}
-function saveWaitlistEntry(entry){if(!fbReady||!_db)return;var copy=Object.assign({},entry);var id=copy.id;delete copy.id;_db.collection('waitlist').doc(id).set(copy).catch(function(e){console.error(e);});}
-function deleteWaitlistEntry(id){if(!fbReady||!_db)return;_db.collection('waitlist').doc(id).delete().catch(function(e){console.error(e);});}
-function addToWaitlist(data){var maxPos=waitlist.reduce(function(m,w){return Math.max(m,w.position||0);},0);var entry=Object.assign({},data,{id:uid(),position:maxPos+1,addedAt:Date.now(),status:'waiting',notifyLog:[]});saveWaitlistEntry(entry);waitlist.push(entry);return entry;}
-function moveWaitlistEntry(id,direction){var idx=waitlist.findIndex(function(w){return w.id===id;});if(idx<0)return;var swapIdx=direction==='up'?idx-1:idx+1;if(swapIdx<0||swapIdx>=waitlist.length)return;var posA=waitlist[idx].position;waitlist[idx].position=waitlist[swapIdx].position;waitlist[swapIdx].position=posA;saveWaitlistEntry(waitlist[idx]);saveWaitlistEntry(waitlist[swapIdx]);renderApplications();}
-function removeFromWaitlist(id){if(!confirm('Remove this person from the waitlist?'))return;deleteWaitlistEntry(id);waitlist=waitlist.filter(function(w){return w.id!==id;});renderApplications();showToast('Removed from waitlist','ok');}
-function notifyNextOnWaitlist(){var next=waitlist.filter(function(w){return w.status==='waiting';}).sort(function(a,b){return (a.position||0)-(b.position||0);})[0];if(!next){showToast('No one on waitlist to notify','warn');return;}if(!next.email){showToast(next.first+' '+next.last+' has no email on file','warn');return;}sendWaitlistNotification(next,function(ok){if(ok){var log=(next.notifyLog||[]).concat([{ts:Date.now(),date:new Date().toISOString().substring(0,10)}]);var updated=Object.assign({},next,{status:'notified',notifyLog:log});saveWaitlistEntry(updated);var i=waitlist.findIndex(function(w){return w.id===next.id;});if(i>=0)waitlist[i]=updated;renderApplications();showToast('Notified '+next.first+' '+next.last,'ok');}else{showToast('Failed to send notification','err');}});}
-function sendWaitlistNotification(w,cb){if(typeof emailjs==='undefined'){cb(false);return;}var tpl=_waitlistNotifyTemplate;var season=CONFIG.seasonYear||new Date().getFullYear();var body=tpl.body.replace(/{{name}}/g,w.first+' '+w.last).replace(/{{type}}/g,w.mtype||'Family').replace(/{{season}}/g,season+' Season');emailjs.init(EMAILJS_PUBLIC_KEY);emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{to_email:w.email,to_name:w.first+' '+w.last,from_name:'Gibsonville Swim Club',reply_to:'thepool@gsrconline.com',subject:tpl.subject.replace(/{{season}}/g,season+' Season'),message:body}).then(function(){cb(true);}).catch(function(e){console.error(e);cb(false);});}
-function convertWaitlistToApplication(id){var w=waitlist.find(function(x){return x.id===id;});if(!w)return;var app=Object.assign({},w,{id:uid(),status:'pending',submittedAt:w.addedAt||Date.now(),fromWaitlist:true,waitlistId:id,votes:{approve:[],reject:[]}});saveApplication(app);applications.push(app);var updated=Object.assign({},w,{status:'converted',applicationId:app.id});saveWaitlistEntry(updated);var i=waitlist.findIndex(function(x){return x.id===id;});if(i>=0)waitlist[i]=updated;renderApplications();showToast(w.first+' '+w.last+' moved to Applications','ok');}
-var _waitlistNotifyTemplate={subject:'A Spot Has Opened at Gibsonville Swim Club!',body:'Dear {{name}},\n\nA membership spot has opened at Gibsonville Swim Club for the {{season}} season. You are next on our waitlist for a {{type}} membership.\n\nPlease contact us at thepool@gsrconline.com within 7 days to confirm your interest.\n\nGibsonville Swim Club Board'};
-function loadWaitlistTemplate(){if(fbReady&&_db){_db.collection('config').doc('waitlistEmail').get().then(function(doc){if(doc.exists)_waitlistNotifyTemplate=Object.assign({},_waitlistNotifyTemplate,doc.data());}).catch(function(){});}}
-function openWaitlistTemplate(){document.getElementById('wlt-subject').value=_waitlistNotifyTemplate.subject;document.getElementById('wlt-body').value=_waitlistNotifyTemplate.body;var el=document.getElementById('waitlist-template-overlay');el.style.display='';el.classList.add('open');}
-function closeWaitlistTemplate(){var el=document.getElementById('waitlist-template-overlay');el.style.display='';el.classList.remove('open');}
-function saveWaitlistTemplate(){var subj=document.getElementById('wlt-subject').value.trim();var body=document.getElementById('wlt-body').value.trim();if(!subj||!body){showToast('Subject and body required','warn');return;}_waitlistNotifyTemplate={subject:subj,body:body};if(fbReady&&_db){_db.collection('config').doc('waitlistEmail').set(_waitlistNotifyTemplate).then(function(){showToast('Template saved','ok');closeWaitlistTemplate();}).catch(function(){showToast('Save failed','err');});}else{showToast('Template saved','ok');closeWaitlistTemplate();}}
-function renderWaitlistTab(){
-  var waiting=waitlist.filter(function(w){return w.status==='waiting'||w.status==='notified';}).sort(function(a,b){return(a.position||0)-(b.position||0);});
-  var html='<div style="padding:0 0 12px">';
-  html+='<div style="display:flex;align-items:center;justify-content:space-between;background:'+(_waitlistMode?'#fef3c7':'var(--sand)')+';border:2px solid '+(_waitlistMode?'#f59e0b':'var(--sand2)')+';border-radius:12px;padding:12px 14px;margin-bottom:14px"><div><div style="font-size:14px;font-weight:800;color:var(--bld)">Waitlist Mode</div><div style="font-size:12px;color:var(--mu)">'+(_waitlistMode?'Active — new applicants join the waitlist':'Off — normal application flow')+'</div></div><button onclick="requireAdminPin(function(){setWaitlistMode(!_waitlistMode)})" style="min-height:44px;padding:8px 16px;background:'+(_waitlistMode?'#f59e0b':'#003087')+';border:none;color:#fff;border-radius:8px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">'+(_waitlistMode?'Disable':'Enable')+'</button></div>';
-  if(waiting.length){
-    html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu)">On Waitlist ('+waiting.length+')</div><button onclick="requireAdminPin(function(){notifyNextOnWaitlist()})" style="min-height:44px;padding:6px 12px;background:#003087;border:none;color:#fff;border-radius:8px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">&#x1F4E8; Notify Next</button></div>';
-    waiting.forEach(function(w,i){
-      var isN=w.status==='notified';
-      var wid=w.id;
-      html+='<div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:8px;border:2px solid '+(isN?'#f59e0b':'var(--sand2)')+'"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div style="flex:1"><div style="font-size:15px;font-weight:800;color:var(--bld)">#'+(i+1)+' · '+w.first+' '+w.last+'</div><div style="font-size:12px;color:var(--mu);margin-top:2px">'+(w.mtype||'Family')+(w.isRejoin?' · Rejoining':'')+(w.email?' · '+w.email:'')+'</div>'+(isN?'<div style="font-size:11px;color:#92400e;font-weight:600;margin-top:4px">&#x1F4E8; Notified '+(w.notifyLog&&w.notifyLog.length?w.notifyLog[w.notifyLog.length-1].date:'')+'</div>':'')+'</div>'
-        +'<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">'
-        +(i>0?'<button onclick="wlMove(this)" data-id="'+wid+'" data-dir="up" style="min-height:44px;background:var(--sand2);border:none;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:12px">▲</button>':'')
-        +(i<waiting.length-1?'<button onclick="wlMove(this)" data-id="'+wid+'" data-dir="down" style="min-height:44px;background:var(--sand2);border:none;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:12px">▼</button>':'')
-        +'</div></div>'
-        +'<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">'
-        +'<button onclick="requireAdminPin(function(){convertWaitlistToApplication(this.dataset.id)})" data-id="'+wid+'" style="min-height:44px;padding:7px 12px;background:#003087;border:none;color:#fff;border-radius:8px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">→ Move to Applications</button>'
-        +'<button onclick="removeFromWaitlist(this.dataset.id)" data-id="'+wid+'" style="min-height:44px;padding:7px 12px;background:var(--rel);border:none;color:var(--re);border-radius:8px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Remove</button>'
-        +'</div></div>';
-    });
-  }else{html+='<div style="text-align:center;padding:24px 0;color:var(--mu);font-size:14px">No one on the waitlist.</div>';}
-  html+='</div>';
-  return html;
-}
-function wlMove(btn){moveWaitlistEntry(btn.dataset.id,btn.dataset.dir);}
-function requestReinstatement(memberId){var m=members.find(function(x){return x.id===memberId;});if(!m)return;if(!confirm('Add '+m.first+' '+m.last+' to the waitlist for reinstatement?'))return;addToWaitlist({first:m.first,last:m.last,email:m.email||'',phone:m.phone||'',mtype:m.type,isRejoin:true,originalMemberId:memberId});showToast(m.first+' '+m.last+' added to waitlist','ok');}
-
 // ── REBUILDDERIVED & SAVECONFIG ──────────────────────────────────────────────
 function rebuildDerivedConfig(){if(CONFIG.membershipTypes){CONFIG.membershipTypes.forEach(function(t){if(GUEST_PASSES)GUEST_PASSES[t.key]=t.guestPasses||0;});}}
 function saveConfig(cfg){CONFIG=Object.assign({},CONFIG,cfg);try{localStorage.setItem('gsc_config',JSON.stringify(CONFIG));}catch(e){}if(fbReady&&_db){_db.collection('config').doc('settings').set(cfg,{merge:true}).catch(function(e){console.error(e);});}rebuildDerivedConfig();}
@@ -6263,22 +6201,6 @@ document.addEventListener('keydown',function(e){
   </div>
 </div>
 
-<!-- Waitlist Notify Template -->
-<div id="waitlist-template-overlay" class="overlay" style="z-index:1100">
-  <div class="sheet" style="max-width:540px;width:100%;padding:24px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <div style="font-size:18px;font-weight:800;color:var(--bld)">&#x1F4CB; Waitlist Notification Template</div>
-      <button onclick="closeWaitlistTemplate()" style="background:var(--sand2);border:none;width:44px;height:44px;border-radius:10px;cursor:pointer;font-size:16px">&#x2715;</button>
-    </div>
-    <input id="wlt-subject" class="fi" style="margin-bottom:14px">
-    <div style="font-size:12px;color:var(--mu);margin-bottom:6px">Use {{name}}, {{type}}, {{season}}</div>
-    <textarea id="wlt-body" style="width:100%;min-height:200px;padding:12px;border:2px solid var(--sand2);border-radius:10px;font-size:14px;font-family:Inter,sans-serif;color:var(--tx);background:var(--sand);resize:vertical;box-sizing:border-box"></textarea>
-    <div style="display:flex;gap:10px;margin-top:16px">
-      <button onclick="saveWaitlistTemplate()" style="flex:1;padding:13px;background:#003087;border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Save</button>
-      <button onclick="closeWaitlistTemplate()" style="padding:13px 18px;background:var(--sand2);border:none;color:var(--bld);border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Cancel</button>
-    </div>
-  </div>
-</div>
 
 </body>
 </html>
