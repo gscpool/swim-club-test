@@ -349,7 +349,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.7.0</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.7.1</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -4479,7 +4479,14 @@ function renderRep(){
         +'</div>';
     });
     todayList+='</div>';
-    html+='<div class="rsec"><div class="rsec-title" style="margin-bottom:8px">Today\u2019s Check-Ins ('+todayV.length+')</div>'+todayList+'</div>';
+    var ciOpen=window._repCiOpen||false;
+    html+='<div class="rsec">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="window._repCiOpen=!window._repCiOpen;renderRep()">'
+      +'<div class="rsec-title" style="margin-bottom:0">Today\u2019s Check-Ins ('+todayV.length+')</div>'
+      +'<div style="font-size:13px;color:var(--mu);font-weight:700">'+(ciOpen?'&#x25B2;':'&#x25BC;')+'</div>'
+      +'</div>'
+      +(ciOpen?'<div style="margin-top:8px">'+todayList+'</div>':'')
+      +'</div>';
   }
 
   // Last 7 days
