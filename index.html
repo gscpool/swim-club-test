@@ -71,8 +71,7 @@ body{background:var(--sand);color:var(--tx)}
 .empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--mu);gap:8px;padding:40px;text-align:center}
 .empty .ico{font-size:46px}
 .empty p{font-size:14px;font-weight:500}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s}
-.overlay.open{backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:100;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s}
 .overlay.open{opacity:1;pointer-events:all}
 .mm-overlay .sheet{max-width:520px}
 .sheet{background:var(--wh);border-radius:20px 20px 0 0;padding:18px 16px max(32px,env(safe-area-inset-bottom));width:100%;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -92,7 +91,6 @@ body{background:var(--sand);color:var(--tx)}
 .ci-chk.on{background:var(--or);border-color:var(--or)}
 .ci-add{background:var(--sand);border:1.5px dashed var(--sand2);border-radius:10px;padding:10px 12px;cursor:pointer;color:var(--mu);font-size:13px;font-weight:600;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;width:100%;text-align:left}
 .btn-p{width:100%;padding:15px;border-radius:var(--r);background:var(--bl);border:none;color:#fff;font-size:16px;font-weight:700;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;cursor:pointer}
-.btn-p:active,.btn-s:active,.btn-d:active{opacity:.85;transform:scale(.98)}
 .btn-s{width:100%;padding:13px;border-radius:var(--r);background:var(--sand);border:2px solid var(--sand2);color:var(--tx);font-size:14px;font-weight:600;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;cursor:pointer}
 .btn-d{width:100%;padding:13px;border-radius:var(--r);background:var(--rel);border:2px solid var(--re);color:var(--re);font-size:14px;font-weight:700;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;cursor:pointer}
 .btn-o{width:100%;padding:13px;border-radius:11px;background:var(--orl);border:2px solid var(--or);color:var(--ord);font-size:14px;font-weight:700;font-family:-apple-system,'SF Pro Display','Inter',sans-serif;cursor:pointer}
@@ -191,7 +189,7 @@ body{background:var(--sand);color:var(--tx)}
 .ci-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);padding:4px 13px 3px;background:var(--sand);flex-shrink:0}
 .ci-alpha-row::-webkit-scrollbar{display:none}
 .ci-alpha-row{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:4px;padding:6px 13px;background:var(--sand);border-bottom:1px solid var(--sand2);flex-shrink:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
-.ci-alpha-btn{min-width:44px;width:44px;height:44px;min-height:44px;padding:0;border-radius:8px;border:1.5px solid var(--sand2);background:#fff;font-size:13px;font-weight:700;color:var(--bl);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
+.ci-alpha-btn{min-width:34px;width:34px;height:34px;min-height:34px;padding:0;border-radius:8px;border:1.5px solid var(--sand2);background:#fff;font-size:13px;font-weight:700;color:var(--bl);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
 .ci-alpha-btn.on{background:var(--or);border-color:var(--or);color:#fff;box-shadow:0 2px 8px rgba(250,70,22,.3)}
 .ci-alpha-btn:active{transform:scale(.93)}
 .predict-card{background:#fff;border-radius:var(--r);padding:14px 13px;box-shadow:var(--sh);display:flex;align-items:center;gap:10px;cursor:pointer;border-left:4px solid var(--or);transition:transform .1s;min-height:60px}
@@ -274,7 +272,7 @@ body.layout-laptop .rstat-grid{grid-template-columns:repeat(6,1fr)}
 .filter-group-label{display:none}
 .filter-row::-webkit-scrollbar{display:none}
 .filter-row{display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:1px}
-.fbtn{padding:10px 12px;min-height:44px;border-radius:16px;border:1.5px solid var(--sand2);background:var(--wh);font-size:11px;font-weight:600;color:var(--mu);cursor:pointer;font-family:-apple-system,sans-serif;transition:all .12s;white-space:nowrap;flex-shrink:0}
+.fbtn{padding:5px 10px;border-radius:16px;border:1.5px solid var(--sand2);background:var(--wh);font-size:11px;font-weight:600;color:var(--mu);cursor:pointer;font-family:-apple-system,sans-serif;transition:all .12s;white-space:nowrap;flex-shrink:0}
 .fbtn:active{transform:scale(.95)}
 .fbtn.on{border-color:var(--bl);background:var(--bl);color:var(--wh)}
 .fbtn.on-paid{border-color:#22c55e;background:#22c55e;color:#fff}
@@ -351,7 +349,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.8.7</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.7.0</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -376,7 +374,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
   <div id="pane-ci" class="pane on">
     <!-- HEADCOUNT BAR -->
     
-    <div id="ci-breadcrumb" style="display:none;padding:6px 13px;background:var(--bld);align-items:center;gap:8px;flex-shrink:0"></div>
+    <div id="ci-breadcrumb" style="display:none;padding:6px 13px;background:var(--bld);display:flex;align-items:center;gap:8px;flex-shrink:0"></div>
 
     <!-- Headcount progress bar -->
     <div id="ci-headcount-bar" style="padding:8px 13px 6px;background:var(--sand);border-bottom:1px solid var(--sand2);flex-shrink:0">
@@ -646,14 +644,6 @@ var FIREBASE_CONFIG = {
 // ══════════════════════════════════════════════════════
 
 // ── DEFAULT CONFIG (overridden by Firebase if available) ──
-// ── PRICING ─────────────────────────────────────────────────────────────────
-var PRICING={Family:{dues:750,initiation:400},Couples:{dues:550,initiation:300},Individual:{dues:350,initiation:200},Board:{dues:0,initiation:0},Comp:{dues:0,initiation:0}};
-var EARLY_BIRD_DISCOUNT=0.15;
-var SERVICE_DISCOUNT=0.15;
-function calcDues(type,isNewMember,discountType){var p=PRICING[type]||{dues:0,initiation:0};var dues=p.dues;var initiation=isNewMember?p.initiation:0;var discount=0;if(discountType==='earlybird'&&!isNewMember){discount=Math.round(dues*EARLY_BIRD_DISCOUNT*100)/100;}else if(discountType==='service'){discount=Math.round(dues*SERVICE_DISCOUNT*100)/100;}return{dues:dues,initiation:initiation,discount:discount,discountType:discountType,total:dues-discount+initiation};}
-function isEarlyBird(){var now=new Date();return now<=new Date(now.getFullYear(),11,31,23,59,59);}
-function fmtMoney(n){return '$'+(n||0).toFixed(2);}
-
 var DEFAULT_CONFIG={
   clubName:'Gibsonville Swim Club',
   seasonYear: new Date().getFullYear(),
@@ -716,7 +706,6 @@ var db=null,fbReady=false;
       _app = firebase.initializeApp(FIREBASE_CONFIG);
     }
     var _db = firebase.firestore();
-    db = _db;
     window._saveMemberFB=function(m){var c=Object.assign({},m);var id=c.id;delete c.id;_db.collection('members').doc(id).set(c).catch(function(e){console.error(e);});};
     window._delMemberFB=function(id){_db.collection('members').doc(id).delete().catch(function(e){console.error(e);});};
     window._saveVisitFB=function(v){var c=Object.assign({},v);var id=c.id;delete c.id;_db.collection('visits').doc(id).set(c).catch(function(e){console.error(e);});};
@@ -739,15 +728,8 @@ var db=null,fbReady=false;
       if(APPLY_MODE){initApplyMode();}
       if(!APPLY_MODE&&!SCI_MODE){loadApplications();}
       renderAnnouncement();
-      checkRenewalExpiry();
-      checkUnpaidResignation();
+      checkRenewalExpiry();checkUnpaidResignation();
       loadIncidents();
-      loadWelcomeTemplate();
-      // Load saved access code from Firestore
-      _db.collection('config').doc('settings').get().then(function(doc){
-        if(doc.exists&&doc.data().accessCode) APP_ACCESS_CODE=doc.data().accessCode;
-      }).catch(function(){});
-
       initSelfCIMode();
       // Set up real-time listeners after boot
       _db.collection('members').orderBy('last').onSnapshot(function(snap){
@@ -772,10 +754,8 @@ var db=null,fbReady=false;
       if(APPLY_MODE){initApplyMode();}
       if(!APPLY_MODE&&!SCI_MODE){loadApplications();}
       renderAnnouncement();
-      checkRenewalExpiry();
-      checkUnpaidResignation();
+      checkRenewalExpiry();checkUnpaidResignation();
       loadIncidents();
-      loadWelcomeTemplate();
       initSelfCIMode();
       _db.collection('members').orderBy('last').onSnapshot(function(snap){
         members=snap.docs.map(function(d){
@@ -2146,7 +2126,7 @@ function loadApplications(){
     db.collection('applications').orderBy('submittedAt','desc').onSnapshot(function(snap){
       applications = snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
       if(document.getElementById('pane-app').classList.contains('on')) renderApplications();
-    },function(e){console.warn('Applications collection unavailable:',e);});
+    });
   }
 }
 
@@ -2374,9 +2354,9 @@ function submitApplication(){
   applyData.signature=sig.value.trim();
   applyData.sigDate=sd?sd.value:new Date().toISOString().slice(0,10);
   applyData.submittedAt=Date.now();
-  applyData.id=uid();
   applyData.status='pending';
   applyData.votes={approve:[],reject:[]};
+  applyData.id=uid();
   saveApplication(applyData);
   // Notify board GroupMe
   var _k=(applyData.kids&&applyData.kids.length)?(' + '+applyData.kids.length+' child'+(applyData.kids.length>1?'ren':'')):'';
@@ -2404,11 +2384,7 @@ function renderApplications(){
   var rejected=applications.filter(function(a){return a.status==='rejected';});
   var totalBoard=members.filter(function(m){return m.type==='Board';}).length||9;
   var majority=Math.floor(totalBoard/2)+1;
-  var activeTab=window._appTab||'applications';
-  var html='<div style="display:flex;gap:8px;padding:12px 12px 0">'
-    +'<button onclick="window._appTab=&quot;applications&quot;;renderApplications()" style="flex:1;min-height:44px;padding:9px;border-radius:9px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;border:2px solid '+(activeTab==='applications'?'#003087':'var(--sand2)')+';background:'+(activeTab==='applications'?'#003087':'var(--sand2)')+';color:'+(activeTab==='applications'?'#fff':'var(--bld)')+'">Applications ('+pending.length+')</button>'
-    +'</div>';
-  html+='<div style="padding:12px;display:flex;flex-direction:column;gap:10px">';
+  var html='<div style="padding:12px;display:flex;flex-direction:column;gap:10px">';
   html+='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu)">Pending ('+pending.length+') — '+majority+' votes needed for approval</div>';
   if(!pending.length) html+='<div class="empty" style="padding:20px 0"><div class="ico">&#x1F44D;</div><p>No pending applications.</p></div>';
   pending.forEach(function(a){html+=appCard(a,majority);});
@@ -3570,7 +3546,7 @@ setInterval(function(){
 },150);
 function formatPhone(r){var d=(r||'').replace(/\D/g,'');if(d.length===10)return '('+d.slice(0,3)+') '+d.slice(3,6)+'-'+d.slice(6);if(d.length===11&&d[0]==='1')return '('+d.slice(1,4)+') '+d.slice(4,7)+'-'+d.slice(7);return r||'';}
 function calcAge(dob){var t=new Date(),b=new Date(dob),a=t.getFullYear()-b.getFullYear();var m=t.getMonth()-b.getMonth();if(m<0||(m===0&&t.getDate()<b.getDate()))a--;return a;}
-function statusBadge(s){var map={paid:['b-paid','Paid'],approved:['b-pending','Approved'],unpaid:['b-unpaid','Unpaid'],frozen:['b-frozen','Frozen'],resigned:['b-inactive','Resigned'],terminated:['b-inactive','Terminated']};var r=map[s]||['b-ind',s];return '<span class="badge '+r[0]+'">'+r[1]+'</span>';}
+function statusBadge(s){var map={paid:['b-paid','Paid'],approved:['b-pending','Approved'],unpaid:['b-unpaid','Unpaid'],resigned:['b-inactive','Resigned'],terminated:['b-inactive','Terminated'],frozen:['b-frozen','Frozen']};var r=map[s]||['b-ind',s];return '<span class="badge '+r[0]+'">'+r[1]+'</span>';}
 function typeBadge(t){var cls={Individual:'b-ind',Couples:'b-couples',Family:'b-family',Board:'b-boardtype',Comp:'b-comptype'}[t]||'b-ind';return '<span class="badge '+cls+'">'+t+'</span>';}
 function chipInfo(m){if(m.guestsTotal===0)return{cls:'none',lbl:'No passes'};var r=m.guestsTotal-(m.guestsUsed||0);return{cls:r<=0?'gone':r<=3?'low':'',lbl:'&#x1F3AB; '+r+' left'};}
 function cardCls(m){if(m.status==='unpaid')return'st-unpaid';if(m.status==='approved')return'st-pending';if(m.status==='frozen')return'st-frozen';if(m.status==='resigned'||m.status==='inactive')return'st-inactive';if(m.type==='Comp')return'st-comp';if(m.type==='Board')return'st-board';return'st-paid';}
@@ -3908,7 +3884,7 @@ function setAlpha(letter){
 
 function renderDir(){
   if(!dirFilter) dirFilter='all';
-  var statusKeys=['paid','unpaid','approved','resigned','terminated','former'];
+  var statusKeys=['paid','unpaid','approved','frozen','resigned','terminated','former'];
   var list;
   if(dirFilter==='former'){
     list=members.filter(function(m){return m.status==='resigned'||m.status==='terminated'||m.status==='inactive';});
@@ -3975,7 +3951,10 @@ function openMember(id,ciMode){
   if(ciMode){
     var hardBlock=(m.status!=='paid');
     if(hardBlock){
-      var blockMsg=m.status==='frozen'?'This membership is Frozen for the season. Check-in is not permitted.':'This membership is not marked as Paid. Please see a board member.';html+='<div class="ci-blocked" style="display:flex;flex-direction:column;gap:8px;text-align:center"><div style="font-size:28px">'+(m.status==='frozen'?'&#x2744;':'&#x1F6AB;')+'</div><div style="font-size:16px;font-weight:700">'+(m.status==='frozen'?'Membership Frozen':'Check-In Blocked')+'</div><div style="font-size:13px;font-weight:400;opacity:.85">'+blockMsg+'</div></div>';
+      var blockMsg=m.status==='frozen'
+        ?'This membership is Frozen for the season (1/3 dues paid). Check-in is not permitted. Please see a board member.'
+        :'This membership is not marked as Paid. Please see a board member.';
+      html+='<div class="ci-blocked" style="display:flex;flex-direction:column;gap:8px;text-align:center"><div style="font-size:28px">'+(m.status==='frozen'?'&#x2744;':'&#x1F6AB;')+'</div><div style="font-size:16px;font-weight:700">'+(m.status==='frozen'?'Membership Frozen':'Check-In Blocked')+'</div><div style="font-size:13px;font-weight:400;opacity:.85">'+blockMsg+'</div></div>';
     } else {
       var missing=[];
       if(!m.email)missing.push({key:'email',label:'Email',type:'email'});
@@ -4083,12 +4062,8 @@ function openMember(id,ciMode){
         +'</div>';
     }
   }
-  if(m.paymentHistory&&m.paymentHistory.length){var ph=m.paymentHistory.slice().sort(function(a,b){return b.ts-a.ts;});html+='<div><div class="sec-lbl" style="margin-bottom:6px">Payment History</div><div class="vlog">';ph.forEach(function(p){html+='<div class="vitem"><span style="font-weight:700">'+p.date+' &middot; '+fmtMoney(p.amount)+'</span><span style="color:var(--mu)">'+p.method+(p.receiver&&p.receiver!=='Square'?' via '+p.receiver:'')+(p.discountType?' &middot; '+(p.discountType==='earlybird'?'Early Bird':'Service/Senior')+' discount':'')+(p.notes?' &middot; '+p.notes:'')+'</span></div>';});html+='</div></div>';}
   if(mv.length){html+='<div><div class="sec-lbl" style="margin-bottom:6px">Recent Visits</div><div class="vlog">'+mv.slice(0,15).map(function(v){var p=[];if(v.adults>0)p.push(v.adults+'A');if(v.children>0)p.push(v.children+'C');if(v.guestPasses>0)p.push('&#x1F3AB;&times;'+v.guestPasses);return'<div class="vitem"><span>'+fmtDate(v.ts)+' '+fmtTime(v.ts)+'</span><span style="color:var(--mu)">'+(p.join(' &middot; ')||'member only')+'</span></div>';}).join('')+'</button></div>';}
   html+=(m.status==='paid'?'<button class="btn-s" style="margin-bottom:6px" onclick="generateSciCode(&quot;'+m.id+'&quot;)">&#x1F4F1; Set Up Self Check-In</button>':'');
-  html+='<button class="btn-s" style="margin-bottom:6px;background:#166534;color:#fff" onclick="openPayOverlay(&quot;'+m.id+'&quot;)">&#x1F4B3; Log Payment</button>';
-  html+=((m.status==='paid'&&m.email)?'<button class="btn-s" style="margin-bottom:6px;background:#003087;color:#fff" onclick="sendWelcomeEmailForMember(&quot;'+m.id+'&quot;)">&#x2709;&#xFE0F; Send Welcome Email</button>':'');
-  html+=((m.status==='unpaid'||m.status==='frozen')&&m.email?'<button class="btn-s" style="margin-bottom:6px;background:#0369a1;color:#fff" onclick="sendRenewalToMemberCard(&quot;'+m.id+'&quot;)">&#x1F4E8; Send Renewal Email</button>':'');
     html+='<button class="btn-s" onclick="openEdit(\''+m.id+'\')">&#x270F;&#xFE0F; Edit Member</button>';
   document.getElementById('mm-body').innerHTML=html;
   var _mmo=document.getElementById('mm-overlay');
@@ -4272,7 +4247,7 @@ document.getElementById('ed-body').innerHTML=
   +'<div class="frow"><div class="fg"><label class="fl">City</label><input class="fi" id="ef-city" value="'+(m.city||'')+'" placeholder="Gibsonville"></div><div class="fg"><label class="fl">State</label><input class="fi" id="ef-state" value="'+(m.state||'NC')+'" placeholder="NC"></div></div>'
   +'<div class="fg"><label class="fl">Zip Code</label><input class="fi" id="ef-zip" value="'+(m.zip||'')+'" placeholder="27249" style="max-width:140px"></div>'
   +'<div class="fg"><label class="fl">Membership Type</label><select class="fs" id="ef-type" onchange="typeChanged()">'+CONFIG.membershipTypes.map(function(t){return'<option value="'+t.key+'"'+(m.type===t.key?' selected':'')+'>'+t.label+(t.requireSecond?' (2 adults required)':t.maxAdults>1&&t.allowChildren?' (adults + children)':t.adults===1&&!t.allowChildren?' (1 adult)':t.maxAdults===2&&!t.allowChildren?' (2 adults)':'')+' &mdash; '+t.guestPasses+' passes'+'</option>';}).join('')+'</select></div>'
-  +'<div class="fg"><label class="fl">Payment Status</label><div style="display:flex;gap:8px;align-items:center"><div style="flex:1;padding:11px 13px;border:2px solid var(--sand2);border-radius:10px;background:var(--sand);font-size:16px;color:var(--tx)" id="status-display">'+({paid:'Paid',pending:'Pending',unpaid:'Unpaid'}[m.status||'paid']||'Paid')+'</div><input type="hidden" id="ef-status" value="'+(m.status||'paid')+'"><button onclick="changePaymentStatus()" style="padding:11px 13px;background:var(--bl);border:none;color:#fff;border-radius:10px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;white-space:nowrap">&#x1F511; Change</button></div></div>'
+  +'<div class="fg"><label class="fl">Payment Status</label><div style="display:flex;gap:8px;align-items:center"><div style="flex:1;padding:11px 13px;border:2px solid var(--sand2);border-radius:10px;background:var(--sand);font-size:16px;color:var(--tx)" id="status-display">'+({paid:'Paid',pending:'Pending',unpaid:'Unpaid',frozen:'Frozen',approved:'Approved',resigned:'Resigned',terminated:'Terminated'}[m.status||'paid']||'Paid')+'</div><input type="hidden" id="ef-status" value="'+(m.status||'paid')+'"><button onclick="changePaymentStatus()" style="padding:11px 13px;background:var(--bl);border:none;color:#fff;border-radius:10px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;white-space:nowrap">&#x1F511; Change</button></div></div>'
   +'<div class="sec-lbl">Guest Passes</div>'
   +'<div class="frow"><div class="fg"><label class="fl">Used</label><input class="fi" id="ef-gused" type="number" min="0" value="'+(m.guestsUsed||0)+'"></div><div class="fg"><label class="fl">Total Allotted</label><input class="fi" id="ef-gtotal" type="number" min="0" value="'+(m.guestsTotal!==undefined?m.guestsTotal:GUEST_PASSES[m.type||'Individual'])+'"></div></div>'
   +'<div class="sec-lbl">Household Roster</div>'
@@ -4281,8 +4256,6 @@ document.getElementById('ed-body').innerHTML=
   +'<div class="fg"><label class="fl">Children\'s Names</label><div id="kids-list" style="display:flex;flex-direction:column;gap:6px">'+((m.kids&&m.kids.length?m.kids:['']).map(function(k){return'<div style="display:flex;gap:6px;align-items:center"><input class="fi kid-input" value="'+k+'" placeholder="Child first name" style="flex:1"><button onclick="removeKid(this)" style="background:var(--rel);border:none;color:var(--re);width:32px;height:32px;border-radius:8px;font-size:16px;cursor:pointer;flex-shrink:0">&#x2715;</button></div>';}).join(''))+'</div><button onclick="addKid()" class="btn-s" style="margin-top:4px">&#xFF0B; Add Child</button></div>'
   +'<div class="sec-lbl">Notes</div>'
   +'<div class="fg"><textarea class="fi" id="ef-notes" rows="3" placeholder="Internal notes..." style="resize:vertical">'+(m.notes||'')+'</textarea></div>'
-  +'<div class="fg" style="flex-direction:row;align-items:center;gap:10px;justify-content:space-between"><label class="fl" style="margin:0">Service / Senior Discount Verified</label><label class="toggle-wrap"><input type="checkbox" id="ef-service-discount"'+(m.serviceDiscount?' checked':'')+' ><span class="toggle-slider"></span></label></div>'
-  +'<div style="font-size:11px;color:var(--mu);margin-top:-6px">15% off annual dues — board verified (military, first responder, senior 65+)</div>'
   +'<div class="sec-lbl">Nanny / Authorized Non-Household Member</div>'
   +'<div class="fg" style="flex-direction:row;align-items:center;gap:10px;justify-content:space-between"><label class="fl" style="margin:0">Enable Nanny Add-On</label><label class="toggle-wrap"><input type="checkbox" id="ef-nanny-enabled" onchange="toggleNanny()"'+(m.nannyEnabled?' checked':'')+' ><span class="toggle-slider"></span></label></div>'
   +'<div id="nanny-fields" style="display:'+(m.nannyEnabled?'flex':'none')+';flex-direction:column;gap:10px">'
@@ -4332,7 +4305,7 @@ function closeEdit(){document.getElementById('ed-overlay').classList.remove('ope
 function commitEdit(){var _existingMember=editingId?members.find(function(x){return x.id===editingId;}):null;var first=document.getElementById('ef-first').value.trim();var last=document.getElementById('ef-last').value.trim();if(!first||!last){showToast('Name required','warn');return;}var type=document.getElementById('ef-type').value;var gtotal=parseInt(document.getElementById('ef-gtotal').value);if(isNaN(gtotal))gtotal=GUEST_PASSES[type];var secRow=document.getElementById('sec-name-row');var secOk=secRow&&secRow.style.display!=='none';var kids=(function(){var inputs=document.querySelectorAll('.kid-input'),arr=[];inputs.forEach(function(i){var v=i.value.trim();if(v)arr.push(v);});return arr;})();var _existingM=editingId?members.find(function(x){return x.id===editingId;}):null;
   var m={id:editingId||uid(),tasks:(_existingMember&&_existingMember.tasks)||[],activity:(_existingMember&&_existingMember.activity)||[],
     tasks:(_existingM&&_existingM.tasks)||[],
-    activity:(_existingM&&_existingM.activity)||[],first:first,last:last,type:type,status:document.getElementById('ef-status').value,email:document.getElementById('ef-email').value.trim(),phone:formatPhone(document.getElementById('ef-phone').value),street:document.getElementById('ef-street').value.trim(),city:document.getElementById('ef-city').value.trim(),state:document.getElementById('ef-state').value.trim(),zip:document.getElementById('ef-zip').value.trim(),adults:parseInt(document.getElementById('ef-adults').value)||1,kids:kids,children:kids.length,guestsUsed:parseInt(document.getElementById('ef-gused').value)||0,guestsTotal:gtotal,secFirst:secOk&&document.getElementById('ef-sec-first')?document.getElementById('ef-sec-first').value.trim():'',secLast:secOk&&document.getElementById('ef-sec-last')?document.getElementById('ef-sec-last').value.trim():'',secPhone:secOk&&document.getElementById('ef-sec-phone')?formatPhone(document.getElementById('ef-sec-phone').value):'',secEmail:secOk&&document.getElementById('ef-sec-email')?document.getElementById('ef-sec-email').value.trim():'',notes:document.getElementById('ef-notes').value.trim(),serviceDiscount:document.getElementById('ef-service-discount')?document.getElementById('ef-service-discount').checked:false,paymentHistory:(_existingM&&_existingM.paymentHistory)||[],nannyEnabled:document.getElementById('ef-nanny-enabled').checked,nannyName:document.getElementById('ef-nanny-name')?document.getElementById('ef-nanny-name').value.trim():'',nannyPhone:document.getElementById('ef-nanny-phone')?formatPhone(document.getElementById('ef-nanny-phone').value):'',nannyStreet:document.getElementById('ef-nanny-street')?document.getElementById('ef-nanny-street').value.trim():'',nannyCity:document.getElementById('ef-nanny-city')?document.getElementById('ef-nanny-city').value.trim():'',nannyState:document.getElementById('ef-nanny-state')?document.getElementById('ef-nanny-state').value.trim():'',nannyZip:document.getElementById('ef-nanny-zip')?document.getElementById('ef-nanny-zip').value.trim():'',nannyDob:document.getElementById('ef-nanny-dob')?document.getElementById('ef-nanny-dob').value:''};saveMember(m);closeEdit();showToast(m.first+' '+m.last+' '+(editingId?'updated':'added'),'ok');}
+    activity:(_existingM&&_existingM.activity)||[],first:first,last:last,type:type,status:document.getElementById('ef-status').value,email:document.getElementById('ef-email').value.trim(),phone:formatPhone(document.getElementById('ef-phone').value),street:document.getElementById('ef-street').value.trim(),city:document.getElementById('ef-city').value.trim(),state:document.getElementById('ef-state').value.trim(),zip:document.getElementById('ef-zip').value.trim(),adults:parseInt(document.getElementById('ef-adults').value)||1,kids:kids,children:kids.length,guestsUsed:parseInt(document.getElementById('ef-gused').value)||0,guestsTotal:gtotal,secFirst:secOk&&document.getElementById('ef-sec-first')?document.getElementById('ef-sec-first').value.trim():'',secLast:secOk&&document.getElementById('ef-sec-last')?document.getElementById('ef-sec-last').value.trim():'',secPhone:secOk&&document.getElementById('ef-sec-phone')?formatPhone(document.getElementById('ef-sec-phone').value):'',secEmail:secOk&&document.getElementById('ef-sec-email')?document.getElementById('ef-sec-email').value.trim():'',notes:document.getElementById('ef-notes').value.trim(),nannyEnabled:document.getElementById('ef-nanny-enabled').checked,nannyName:document.getElementById('ef-nanny-name')?document.getElementById('ef-nanny-name').value.trim():'',nannyPhone:document.getElementById('ef-nanny-phone')?formatPhone(document.getElementById('ef-nanny-phone').value):'',nannyStreet:document.getElementById('ef-nanny-street')?document.getElementById('ef-nanny-street').value.trim():'',nannyCity:document.getElementById('ef-nanny-city')?document.getElementById('ef-nanny-city').value.trim():'',nannyState:document.getElementById('ef-nanny-state')?document.getElementById('ef-nanny-state').value.trim():'',nannyZip:document.getElementById('ef-nanny-zip')?document.getElementById('ef-nanny-zip').value.trim():'',nannyDob:document.getElementById('ef-nanny-dob')?document.getElementById('ef-nanny-dob').value:''};saveMember(m);closeEdit();showToast(m.first+' '+m.last+' '+(editingId?'updated':'added'),'ok');}
 function cancelDelete(){var e=document.getElementById('delete-confirm-bar');if(e)e.remove();}
 function confirmDelete(id){
   if(!can('canAddDeleteMembers')){showToast('Permission denied','warn');return;}
@@ -4383,8 +4356,6 @@ function renderRep(){
   var frozenCount=members.filter(function(m){return m.status==='frozen';}).length;
   var resignedCount=members.filter(function(m){return m.status==='resigned';}).length;
   var terminatedCount=members.filter(function(m){return m.status==='terminated';}).length;
-  var resignedCount=members.filter(function(m){return m.status==='resigned';}).length;
-  var terminatedCount=members.filter(function(m){return m.status==='terminated';}).length;
   var needsAttention=unpaidCount; // current members who haven't paid dues
   var activeTotal=paid+unpaidCount; // current members only (paid or not yet paid)
   // People totals: sum adults+children per membership
@@ -4393,9 +4364,6 @@ function renderRep(){
   var paidPeople=members.filter(function(m){return m.status==='paid';}).reduce(function(t,m){return t+(m.adults||0)+(m.children||0);},0);
   var unpaidPeople=members.filter(function(m){return m.status==='unpaid';}).reduce(function(t,m){return t+(m.adults||0)+(m.children||0);},0);
   var approvedPeople=members.filter(function(m){return m.status==='approved';}).reduce(function(t,m){return t+(m.adults||0)+(m.children||0);},0);
-  var frozenPeople=members.filter(function(m){return m.status==='frozen';}).reduce(function(t,m){return t+(m.adults||0)+(m.children||0);},0);
-  var resignedPeople=members.filter(function(m){return m.status==='resigned';}).reduce(function(t,m){return t+(m.adults||0)+(m.children||0);},0);
-  var terminatedPeople=members.filter(function(m){return m.status==='terminated';}).reduce(function(t,m){return t+(m.adults||0)+(m.children||0);},0);
   var activePeople=paidPeople+unpaidPeople;
   var mbrPct=Math.min(100,Math.round((activeTotal/MAX_MEMBERSHIPS)*100));
   var mbrColor=mbrPct>=95?RE:mbrPct>=85?AM:GR;
@@ -4511,14 +4479,7 @@ function renderRep(){
         +'</div>';
     });
     todayList+='</div>';
-    var _ciCol=window._ciListCollapsed||false;
-    html+='<div class="rsec">'
-      +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:2px 0" onclick="window._ciListCollapsed=!window._ciListCollapsed;renderRep()">'
-      +'<div class="rsec-title" style="margin-bottom:0">Today\'s Check-Ins ('+todayV.length+')</div>'
-      +'<div style="font-size:18px;color:var(--mu);transform:rotate('+(_ciCol?'-90':'0')+'deg)">&#x25BE;</div>'
-      +'</div>'
-      +(_ciCol?'':'<div style="margin-top:8px">'+todayList+'</div>')
-      +'</div>';
+    html+='<div class="rsec"><div class="rsec-title" style="margin-bottom:8px">Today\u2019s Check-Ins ('+todayV.length+')</div>'+todayList+'</div>';
   }
 
   // Last 7 days
@@ -4670,7 +4631,7 @@ function renderRep(){
     +'<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--mu);margin-bottom:4px">'
     +'<span>Dues collected</span><span style="font-weight:700;color:'+duesBarColor+'">'+duesPct+'%</span></div>'
     +'<div style="height:8px;background:var(--sand2);border-radius:4px;overflow:hidden">'
-    +'<div style="height:100%;id=\"bar-dues\" data-w='+duesPct+' style=\"width:0%;background:'+duesBarColor+';border-radius:4px;transition:width .4s"></div>'
+    +'<div style="height:100%;width:'+duesPct+'%;background:'+duesBarColor+';border-radius:4px;transition:width .4s"></div>'
     +'</div></div>';
 
   var capBarHtml=''
@@ -4681,13 +4642,13 @@ function renderRep(){
     +'<span style="font-size:11px;font-weight:500;color:var(--mu)"> / '+MAX_MEMBERSHIPS+'</span></span>'
     +'</div>'
     +'<div style="height:11px;background:var(--sand2);border-radius:5px;overflow:hidden">'
-    +'<div style="height:100%;id=\"bar-mbr\" data-w='+mbrPct+' style=\"width:0%;background:'+mbrColor+';border-radius:5px;transition:width .4s"></div>'
+    +'<div style="height:100%;width:'+mbrPct+'%;background:'+mbrColor+';border-radius:5px;transition:width .4s"></div>'
     +'</div>'
     +'<div style="display:flex;justify-content:space-between;margin-top:4px">'
     +'<span style="font-size:10px;color:var(--mu)">'+(MAX_MEMBERSHIPS-activeTotal)+' spots remaining</span>'
     +'<span style="font-size:10px;font-weight:700;color:'+mbrColor+'">'+mbrPct+'%</span>'
     +'</div>'
-    +(mbrPct>=95?'<div style="font-size:11px;color:'+RE+';margin-top:4px;font-weight:700">⚠️ Household cap reached</div>'
+    +(mbrPct>=95?'<div style="font-size:11px;color:'+RE+';margin-top:4px;font-weight:700">⚠️ Household cap reached — consider a waitlist</div>'
       :mbrPct>=85?'<div style="font-size:11px;color:'+AM+';margin-top:4px;font-weight:600">Approaching household cap</div>':'')
     +'</div>'
     +(MAX_PEOPLE>0
@@ -4698,7 +4659,7 @@ function renderRep(){
       +'<span style="font-size:11px;font-weight:500;color:var(--mu)"> / '+MAX_PEOPLE+'</span></span>'
       +'</div>'
       +'<div style="height:8px;background:var(--sand2);border-radius:4px;overflow:hidden">'
-      +'<div style="height:100%;id=\"bar-ppl\" data-w='+peoplePct+' style=\"width:0%;background:'+peopleColor+';border-radius:4px;transition:width .4s"></div>'
+      +'<div style="height:100%;width:'+peoplePct+'%;background:'+peopleColor+';border-radius:4px;transition:width .4s"></div>'
       +'</div></div>'
       :'');
 
@@ -4708,15 +4669,10 @@ function renderRep(){
     +duesBar
     +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin:12px 0 6px">Memberships (households)</div>'
     +'<div class="rstat-grid" style="grid-template-columns:repeat(3,1fr)">'
-    +stat(paid,'\u2713 Paid',GR)
+    +stat(paid,'✓ Paid',GR)
     +stat(unpaidCount,'Unpaid',RE)
     +stat(approvedCount,'Approved','#0e7490')
     +stat(frozenCount,'Frozen','#0369a1')
-    +stat(resignedCount,'Resigned',AM)
-    +stat(terminatedCount,'Terminated',RE)
-    +'</div>'
-    +'<div class="rstat-grid" style="grid-template-columns:repeat(1,1fr);margin-top:8px">'
-    +stat(activeTotal+' / '+MAX_MEMBERSHIPS,'Total Active Memberships',BL)
     +'</div>'
     +'<div class="rstat-grid" style="grid-template-columns:repeat(3,1fr);margin-top:8px">'
     +stat(activeTotal+' / '+MAX_MEMBERSHIPS,'Memberships',BL)
@@ -4725,15 +4681,9 @@ function renderRep(){
     +'</div>'
     +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin:14px 0 6px">People (individuals)</div>'
     +'<div class="rstat-grid" style="grid-template-columns:repeat(3,1fr)">'
-    +stat(paidPeople,'\u2713 Paid',GR)
-    +stat(unpaidPeople,'Unpaid',RE)
+    +stat(paidPeople,'Paid Members',GR)
+    +stat(unpaidPeople,'Unpaid Members',RE)
     +stat(approvedPeople,'Approved','#0e7490')
-    +stat(frozenPeople,'Frozen','#0369a1')
-    +stat(resignedPeople,'Resigned',AM)
-    +stat(terminatedPeople,'Terminated',RE)
-    +'</div>'
-    +'<div class="rstat-grid" style="grid-template-columns:repeat(1,1fr);margin-top:8px">'
-    +stat(activePeople,'Total Active People',BL)
     +'</div>'
     +'<div class="rstat-grid" style="grid-template-columns:repeat(2,1fr);margin-top:8px">'
     +stat(activePeople,'Active People',BL)
@@ -4757,10 +4707,8 @@ function renderRep(){
     +'<button class="exp-btn" onclick="exportVisitsRange(&quot;all&quot;)">All-Time Check-Ins (CSV)</button>'
     +'</div></div>';
 
-  html+='<div class="rsec"><div class="rsec-title">Renewals</div><div style="display:flex;flex-direction:column;gap:8px"><div style="font-size:12px;color:var(--mu);line-height:1.5;margin-bottom:4px">Send renewal emails to unpaid members.</div><button class="exp-btn" style="background:#003087;color:#fff;border:none" onclick="openBulkRenewal()">&#x1F4E8; Send Bulk Renewal Emails</button><button class="exp-btn" onclick="requireAdminPin(function(){openRenewalTemplate();})">&#x270F;&#xFE0F; Edit Renewal Email Templates</button></div></div>';
   html+='<div class="rsec"><div class="rsec-title">Member Data</div>'
     +'<div style="display:flex;flex-direction:column;gap:8px">'
-    +'<button class="exp-btn" onclick="requireAdminPin(function(){openWelcomeTemplate();})">&#x2709;&#xFE0F; Edit Welcome Email Template</button>'
     +'<button class="exp-btn" onclick="requireAdminPin(function(){exportCSV(\'members\');})">Export Member List (CSV)</button>'
     +'<button class="imp-btn" onclick="requireAdminPin(function(){openCSVImport();})">Import Members from CSV</button>'
     +'<button class="exp-btn" onclick="requireAdminPin(function(){downloadTemplate();})">Download CSV Template</button>'
@@ -4774,8 +4722,8 @@ function renderRep(){
     +'<div id="tasks-dashboard-wrap" style="display:none;margin-top:8px;padding:8px;background:var(--sand);border-radius:var(--r)">'
     +'<div id="tasks-dashboard"></div></div></div>';
   html=_tw+html;
-  // ── Charts section (rendered first, prepended to top) ──────────────────────────────────────────────────────────
-  var chartHtml='<div class="rsec" id="chart-builder-section">'
+  // ── Charts section ──────────────────────────────────────────────────────────
+  html+='<div class="rsec" id="chart-builder-section">'
     +'<div class="rsec-title">Charts</div>'
     +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">'
     +(function(){var _p=window._cbPreset||'7d';function pb(id,lbl,preset){var on=_p===preset;return '<button onclick="setCBPreset(\''+preset+'\')" id="cbp-'+preset+'" style="padding:5px 10px;border-radius:14px;border:1.5px solid '+(on?'var(--bl)':'var(--sand2)')+';background:'+(on?'var(--bl)':'#fff')+';color:'+(on?'#fff':'var(--mu)')+';font-size:11px;font-weight:700;font-family:-apple-system,sans-serif;cursor:pointer">'+lbl+'</button>';}return pb('7d','Last 7 days','7d')+pb('30d','Last 30 days','30d')+pb('season','This season','season')+pb('custom','Custom','custom');})()
@@ -4793,12 +4741,8 @@ function renderRep(){
     +'</div></div>'
     +'<div id="chart-builder-canvas" style="overflow-x:auto;-webkit-overflow-scrolling:touch"></div>'
     +'</div>';
-  html=chartHtml+html;
 
   el.innerHTML=html;
-  requestAnimationFrame(function(){requestAnimationFrame(function(){
-    ['bar-dues','bar-mbr','bar-ppl'].forEach(function(id){var b=document.getElementById(id);if(b)b.style.width=b.getAttribute('data-w')+'%';});
-  });});
   if(!window._cbPreset) window._cbPreset='7d';
   if(!window._cbMetrics) window._cbMetrics={headcount:true,checkins:false,guests:false};
   renderChartBuilder();
@@ -5009,22 +4953,6 @@ function importCSVReplace(){if(!csvParsed.length){showToast('No data','warn');re
 if(fbReady&&window._delMemberFB){members.forEach(function(m){window._delMemberFB(m.id);});}// Save new ones
 csvParsed.forEach(function(m){saveMember(m);});if(!fbReady){members=csvParsed;lSet('gsc_members',members);renderAll();}closeCSV();showToast('Replaced with '+csvParsed.length+' members','ok');}
 
-function copyAccessCode(){
-  var code=APP_ACCESS_CODE;
-  if(navigator.clipboard){navigator.clipboard.writeText(code).then(function(){showToast('Access code copied','ok');});}
-  else{var t=document.createElement('textarea');t.value=code;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);showToast('Access code copied','ok');}
-}
-
-function saveAccessCode(){
-  var inp=document.getElementById('st-access-code');
-  if(!inp||!inp.value.trim()){showToast('Enter a valid code','warn');return;}
-  APP_ACCESS_CODE=inp.value.trim().toLowerCase();
-  var disp=document.getElementById('access-code-display');
-  if(disp) disp.textContent=APP_ACCESS_CODE;
-  if(fbReady&&_db){_db.collection('config').doc('settings').set({accessCode:APP_ACCESS_CODE},{merge:true}).then(function(){showToast('Access code saved','ok');}).catch(function(){showToast('Save failed','err');});}
-  else{showToast('Access code updated (local only)','ok');}
-}
-
 function openSettings(){
   if(!can('canAccessSettings')){showToast('Admin login required','warn');openLogin();return;}
   (function(){
@@ -5054,18 +4982,6 @@ function openSettings(){
     +'<button class="btn-p" style="flex:1" onclick="saveAnnouncementFromSettings()">Save</button>'
     +'<button class="btn-d" style="flex:1" onclick="clearAnnouncement()">Clear</button>'
     +'</div></div>'
-
-    // ── SECTION: Application Access Code ───────────────────────────
-    +'<div class="st-section">'
-    +'<div class="st-sec-hdr">&#x1F511; Application Access Code</div>'
-    +'<p class="fnote">Share this code with prospective members so they can access the application form. It slows down bots without requiring verification.</p>'
-    +'<div style="display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--sand2);border-radius:10px;padding:12px 14px">'
-    +'<div style="font-size:22px;font-weight:800;color:var(--bl);letter-spacing:2px;flex:1" id="access-code-display">'+APP_ACCESS_CODE+'</div>'
-    +'<button onclick="copyAccessCode()" style="padding:8px 14px;background:var(--bl);border:none;color:#fff;border-radius:8px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Copy</button>'
-    +'</div>'
-    +'<div class="fg" style="margin-top:4px"><label class="fl">Change Code</label><input class="fi" id="st-access-code" value="'+APP_ACCESS_CODE+'" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Enter new access code"></div>'
-    +'<button class="btn-p" onclick="saveAccessCode()">Save Code</button>'
-    +'</div>'
 
     // ── SECTION: Capacity Limits ────────────────────────────────────
     +'<div class="st-section">'
@@ -5277,30 +5193,6 @@ function getRenewalExpiry(year){
   return new Date(year||new Date().getFullYear(), 9, 1); // month 9 = October
 }
 
-
-function checkUnpaidResignation(){
-  var now=new Date();
-  var cutoff=new Date(now.getFullYear(),6,1);
-  if(now<cutoff) return;
-  var flagKey='gsc_unpaid_resign_'+now.getFullYear();
-  if(localStorage.getItem(flagKey)) return;
-  var updated=false;
-  members.forEach(function(m){
-    if(m.status==='unpaid'){
-      var note={id:uid(),ts:Date.now(),text:'Auto-resigned '+now.getFullYear()+'/07/01 due to non-payment of renewal dues.',showAtCheckin:false};
-      var history=(m.notes_history||[]).concat([note]);
-      var upd=Object.assign({},m,{status:'resigned',notes_history:history});
-      saveMember(upd);
-      var i=members.findIndex(function(x){return x.id===m.id;});
-      if(i>=0) members[i]=upd;
-      updated=true;
-    }
-  });
-  localStorage.setItem(flagKey,'done');
-  if(updated){renderAll();showToast('Unpaid memberships auto-resigned as of July 1','warn');}
-}
-
-
 function checkRenewalExpiry(){
   // Run daily - flip unpaid if past Oct 1
   var now=new Date();
@@ -5323,6 +5215,29 @@ function checkRenewalExpiry(){
   });
   localStorage.setItem(flagKey,'done');
   if(updated){renderAll();showToast('Memberships expired Oct 1 — statuses updated','warn');}
+}
+
+function checkUnpaidResignation(){
+  // Run daily - on/after July 1, auto-resign any still-unpaid members
+  var now=new Date();
+  var cutoff=new Date(now.getFullYear(),6,1); // month 6 = July
+  if(now<cutoff) return; // Not yet July 1
+  var flagKey='gsc_unpaid_resign_'+now.getFullYear();
+  if(localStorage.getItem(flagKey)) return;
+  var updated=false;
+  members.forEach(function(m){
+    if(m.status==='unpaid'){
+      var note={id:uid(),ts:Date.now(),text:'Auto-resigned '+now.getFullYear()+'/07/01 due to non-payment of renewal dues.',showAtCheckin:false};
+      var history=(m.notes_history||[]).concat([note]);
+      var upd=Object.assign({},m,{status:'resigned',notes_history:history});
+      saveMember(upd);
+      var i=members.findIndex(function(x){return x.id===m.id;});
+      if(i>=0) members[i]=upd;
+      updated=true;
+    }
+  });
+  localStorage.setItem(flagKey,'done');
+  if(updated){renderAll();showToast('Unpaid memberships auto-resigned as of July 1','warn');}
 }
 
 function getMemberRenewalStatus(m){
@@ -6101,106 +6016,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 
-
-
-// Escape key closes topmost overlay
-document.addEventListener('keydown',function(e){
-  if(e.key!=='Escape') return;
-  var ovs=Array.from(document.querySelectorAll('.overlay.open'));
-  if(!ovs.length) return;
-  ovs.sort(function(a,b){return (parseInt(b.style.zIndex)||0)-(parseInt(a.style.zIndex)||0);})[0].classList.remove('open');
-});
-
-
-// ── PAYMENT LOGGING ──────────────────────────────────────────────────────────
-var _payMemberId=null;
-function openPayOverlay(memberId){requireAdminPin(function(){var m=members.find(function(x){return x.id===memberId;});if(!m)return;_payMemberId=memberId;var isNew=(m.status==='approved');document.getElementById('pay-member-name').textContent=m.first+' '+m.last+' — '+(m.type||'Family');var ds=document.getElementById('pay-discount');if(ds){Array.from(ds.options).forEach(function(o){o.disabled=false;});if(isNew){Array.from(ds.options).forEach(function(o){if(o.value==='earlybird')o.disabled=true;});}ds.value=m.serviceDiscount?'service':(isNew?'':isEarlyBird()?'earlybird':'');}updatePayBreakdown();var el=document.getElementById('pay-overlay');el.style.display='';el.classList.add('open');});}
-function updatePayBreakdown(){var m=members.find(function(x){return x.id===_payMemberId;});if(!m)return;var isNew=(m.status==='approved');var ds=document.getElementById('pay-discount');var disc=ds?ds.value:'';var calc=calcDues(m.type,isNew,disc||null);var lines=['Annual dues: $'+calc.dues.toFixed(2)];if(isNew&&calc.initiation>0)lines.push('Initiation fee: $'+calc.initiation.toFixed(2));if(calc.discount>0)lines.push('Discount: −$'+calc.discount.toFixed(2));lines.push('<strong>Total: $'+calc.total.toFixed(2)+'</strong>');document.getElementById('pay-dues-breakdown').innerHTML=lines.join('<br>');var a=document.getElementById('pay-amount');if(a)a.value=calc.total.toFixed(2);}
-function closePayOverlay(){var el=document.getElementById('pay-overlay');el.style.display='';el.classList.remove('open');_payMemberId=null;}
-function commitPayment(){var m=members.find(function(x){return x.id===_payMemberId;});if(!m)return;var amount=parseFloat(document.getElementById('pay-amount').value);var method=document.getElementById('pay-method').value;var receiver=document.getElementById('pay-receiver').value.trim();var notes=document.getElementById('pay-notes').value.trim();var disc=document.getElementById('pay-discount').value;if(isNaN(amount)||amount<0){showToast('Enter a valid amount','warn');return;}if(method!=='Square'&&!receiver){showToast('Enter who received the payment','warn');return;}var isNew=(m.status==='approved');var calc=calcDues(m.type,isNew,disc||null);var payment={id:uid(),ts:Date.now(),date:new Date().toISOString().substring(0,10),amount:amount,expectedAmount:calc.total,dues:calc.dues,initiation:calc.initiation,discount:calc.discount,discountType:disc||null,method:method,receiver:receiver||'Square',notes:notes,season:CONFIG.seasonYear||new Date().getFullYear(),isNewMember:isNew};var updated=Object.assign({},m,{status:'paid',serviceDiscount:disc==='service'?true:(m.serviceDiscount||false),renewalYear:new Date().getFullYear(),paymentHistory:(m.paymentHistory||[]).concat([payment])});saveMember(updated);var idx=members.findIndex(function(x){return x.id===m.id;});if(idx>=0)members[idx]=updated;closePayOverlay();showToast('Payment logged — '+m.first+' '+m.last+' marked Paid','ok');renderAll();if(isNew&&m.email)setTimeout(function(){promptWelcomeEmail(updated);},400);setTimeout(function(){openMember(m.id,true);},300);}
-
-// ── WELCOME EMAIL ────────────────────────────────────────────────────────────
-var _welcomeEmailMember=null;
-var DEFAULT_WELCOME_SUBJECT='Welcome to Gibsonville Swim Club!';
-var DEFAULT_WELCOME_BODY='Dear {{name}},\n\nWelcome to the Gibsonville Swim Club! Your {{type}} membership is now active for the {{season}} season.\n\nWe look forward to seeing you at the pool!\n\nGibsonville Swim Club Board\nthepool@gsrconline.com';
-var _welcomeTemplate={subject:DEFAULT_WELCOME_SUBJECT,body:DEFAULT_WELCOME_BODY};
-function loadWelcomeTemplate(){if(fbReady&&_db){_db.collection('config').doc('welcomeEmail').get().then(function(doc){if(doc.exists){var d=doc.data();_welcomeTemplate.subject=d.subject||DEFAULT_WELCOME_SUBJECT;_welcomeTemplate.body=d.body||DEFAULT_WELCOME_BODY;}}).catch(function(){});}}
-function saveWelcomeTemplate(){var subj=document.getElementById('wt-subject').value.trim();var body=document.getElementById('wt-body').value.trim();if(!subj||!body){showToast('Subject and body required','warn');return;}_welcomeTemplate={subject:subj,body:body};if(fbReady&&_db){_db.collection('config').doc('welcomeEmail').set({subject:subj,body:body}).then(function(){showToast('Template saved','ok');closeWelcomeTemplate();}).catch(function(){showToast('Save failed','err');});}else{showToast('Template saved','ok');closeWelcomeTemplate();}}
-function openWelcomeTemplate(){document.getElementById('wt-subject').value=_welcomeTemplate.subject;document.getElementById('wt-body').value=_welcomeTemplate.body;var el=document.getElementById('welcome-template-overlay');el.style.display='';el.classList.add('open');}
-function closeWelcomeTemplate(){var el=document.getElementById('welcome-template-overlay');el.style.display='';el.classList.remove('open');}
-function fillTemplate(tpl,m){var season=(CONFIG.seasonYear||new Date().getFullYear())+' Season';return tpl.replace(/{{name}}/g,m.first+' '+m.last).replace(/{{type}}/g,m.type||'Family').replace(/{{season}}/g,season);}
-function promptWelcomeEmail(m){if(!m||!m.email)return;_welcomeEmailMember=m;var desc=document.getElementById('welcome-email-desc');var prev=document.getElementById('welcome-email-preview');if(desc)desc.textContent='Send to '+m.first+' '+m.last+' at '+m.email;if(prev)prev.textContent=fillTemplate(_welcomeTemplate.body,m).substring(0,200)+'...';var el=document.getElementById('welcome-email-overlay');el.style.display='';el.classList.add('open');}
-function closeWelcomePrompt(){var el=document.getElementById('welcome-email-overlay');el.style.display='';el.classList.remove('open');_welcomeEmailMember=null;}
-function sendWelcomeEmail(){var m=_welcomeEmailMember;if(!m||!m.email){showToast('No email on file','warn');return;}if(typeof emailjs==='undefined'){showToast('Email service unavailable','err');return;}emailjs.init(EMAILJS_PUBLIC_KEY);emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{to_email:m.email,to_name:m.first+' '+m.last,from_name:'Gibsonville Swim Club',reply_to:'thepool@gsrconline.com',subject:fillTemplate(_welcomeTemplate.subject,m),message:fillTemplate(_welcomeTemplate.body,m)}).then(function(){showToast('Welcome email sent','ok');closeWelcomePrompt();}).catch(function(e){console.error(e);showToast('Failed to send email','err');closeWelcomePrompt();});}
-function sendWelcomeEmailForMember(id){var m=members.find(function(x){return x.id===id;});if(!m||!m.email){showToast('No email on file','warn');return;}promptWelcomeEmail(m);}
-
-
-// ── REBUILDDERIVED & SAVECONFIG ──────────────────────────────────────────────
-function rebuildDerivedConfig(){if(CONFIG.membershipTypes){CONFIG.membershipTypes.forEach(function(t){if(GUEST_PASSES)GUEST_PASSES[t.key]=t.guestPasses||0;});}}
-function saveConfig(cfg){CONFIG=Object.assign({},CONFIG,cfg);try{localStorage.setItem('gsc_config',JSON.stringify(CONFIG));}catch(e){}if(fbReady&&_db){_db.collection('config').doc('settings').set(cfg,{merge:true}).catch(function(e){console.error(e);});}rebuildDerivedConfig();}
-
-// Escape key closes topmost overlay
-document.addEventListener('keydown',function(e){
-  if(e.key!=='Escape') return;
-  var ovs=Array.from(document.querySelectorAll('.overlay.open'));
-  if(!ovs.length) return;
-  ovs.sort(function(a,b){return (parseInt(b.style.zIndex)||0)-(parseInt(a.style.zIndex)||0);})[0].classList.remove('open');
-});
-
 </script>
-
-<!-- Payment Log Overlay -->
-<div id="pay-overlay" class="overlay" style="z-index:1100">
-  <div class="sheet" style="max-width:480px;width:100%;padding:24px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <div style="font-size:18px;font-weight:800;color:var(--bld)">&#x1F4B3; Log Payment</div>
-      <button onclick="closePayOverlay()" style="background:var(--sand2);border:none;width:44px;height:44px;border-radius:10px;cursor:pointer;font-size:16px">&#x2715;</button>
-    </div>
-    <div id="pay-member-name" style="font-size:15px;font-weight:700;color:var(--bld);margin-bottom:4px"></div>
-    <div id="pay-dues-breakdown" style="font-size:12px;color:var(--mu);margin-bottom:16px;line-height:1.6;background:var(--sand);border-radius:8px;padding:10px 12px"></div>
-    <div class="fg" style="margin-bottom:12px"><label class="fl">Discount</label><select class="fs" id="pay-discount" onchange="updatePayBreakdown()"><option value="">No Discount</option><option value="earlybird">Early Bird (15% off dues)</option><option value="service">Service / Senior (15% off dues)</option></select></div>
-    <div class="fg" style="margin-bottom:12px"><label class="fl">Amount Received ($)</label><input class="fi" id="pay-amount" type="number" min="0" step="0.01"></div>
-    <div class="fg" style="margin-bottom:12px"><label class="fl">Payment Method</label><select class="fs" id="pay-method"><option value="Square">Square (card/ACH)</option><option value="Cash">Cash</option><option value="Check">Check</option></select></div>
-    <div class="fg" style="margin-bottom:12px"><label class="fl">Received By</label><input class="fi" id="pay-receiver" placeholder="Name of board member who received payment"></div>
-    <div class="fg" style="margin-bottom:20px"><label class="fl">Notes</label><input class="fi" id="pay-notes" placeholder="e.g. check #1042, Square ref, etc."></div>
-    <div style="display:flex;gap:10px">
-      <button onclick="commitPayment()" style="flex:1;padding:13px;background:#003087;border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">&#x2713; Log Payment &amp; Mark Paid</button>
-      <button onclick="closePayOverlay()" style="padding:13px 18px;background:var(--sand2);border:none;color:var(--bld);border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- Welcome Email Prompt -->
-<div id="welcome-email-overlay" class="overlay" style="z-index:1100">
-  <div class="sheet" style="max-width:480px;width:100%;padding:24px">
-    <div style="font-size:20px;font-weight:800;color:var(--bld);margin-bottom:6px">&#x2709;&#xFE0F; Send Welcome Email?</div>
-    <div id="welcome-email-desc" style="font-size:14px;color:var(--mu);margin-bottom:16px"></div>
-    <div id="welcome-email-preview" style="background:var(--sand);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--mu);margin-bottom:20px;line-height:1.5"></div>
-    <div style="display:flex;gap:10px">
-      <button onclick="sendWelcomeEmail()" style="flex:1;padding:13px;background:#003087;border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Send Email</button>
-      <button onclick="closeWelcomePrompt()" style="flex:1;padding:13px;background:var(--sand2);border:none;color:var(--bld);border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Skip</button>
-    </div>
-  </div>
-</div>
-
-<!-- Welcome Email Template Editor -->
-<div id="welcome-template-overlay" class="overlay" style="z-index:1100">
-  <div class="sheet" style="max-width:540px;width:100%;padding:24px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <div style="font-size:18px;font-weight:800;color:var(--bld)">&#x2709;&#xFE0F; Welcome Email Template</div>
-      <button onclick="closeWelcomeTemplate()" style="background:var(--sand2);border:none;width:44px;height:44px;border-radius:10px;cursor:pointer;font-size:16px">&#x2715;</button>
-    </div>
-    <div style="font-size:12px;color:var(--mu);margin-bottom:6px">Subject line</div>
-    <input id="wt-subject" class="fi" style="margin-bottom:14px" placeholder="Welcome to Gibsonville Swim Club!">
-    <div style="font-size:12px;color:var(--mu);margin-bottom:6px">Body — use {{name}}, {{type}}, {{season}}</div>
-    <textarea id="wt-body" style="width:100%;min-height:220px;padding:12px;border:2px solid var(--sand2);border-radius:10px;font-size:14px;font-family:Inter,sans-serif;color:var(--tx);background:var(--sand);resize:vertical;box-sizing:border-box"></textarea>
-    <div style="display:flex;gap:10px;margin-top:16px">
-      <button onclick="saveWelcomeTemplate()" style="flex:1;padding:13px;background:#003087;border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Save Template</button>
-      <button onclick="closeWelcomeTemplate()" style="padding:13px 18px;background:var(--sand2);border:none;color:var(--bld);border-radius:10px;font-size:15px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">Cancel</button>
-    </div>
-  </div>
-</div>
-
-
 </body>
 </html>
