@@ -349,7 +349,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.7.1</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.7.2</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -4500,16 +4500,32 @@ function renderRep(){
   );
 
   // Season — scheduling-focused
-  // Avg headcount per open day
   var openDays=Object.keys((function(){var m={};seasonV.forEach(function(v){m[new Date(v.ts).toDateString()]=true;});return m;})()).length||1;
   var avgDailyHeads=Math.round(seasonHeads/openDays);
-  // Peak single-day headcount
   var dayHeadMap={};
-  seasonV.forEach(function(v){
-    var ds=new Date(v.ts).toDateString();
-    dayHeadMap[ds]=(dayHeadMap[ds]||0)+(v.adults||0)+(v.children||0)+(v.guestPasses||0);
-  });
-  var peakDayHeads=Object.values(dayHeadMap).length?Math.max.apply(null,Object.values(dayHeadMap)):0;
+  seasonV.forEach(function(v){var ds=new Date(v.ts).toDateString();dayHeadMap[ds]=(dayHeadMap[ds]||0)+(v.adults||0)+(v.children||0)+(v.guestPasses||0);});
+  var dayHeadVals=Object.values(dayHeadMap);
+  var peakDayHeads=dayHeadVals.length?Math.max.apply(null,dayHeadVals):0;
+  // Last 14 days for recent trend
+  var d14=new Date(now);d14.setDate(d14.getDate()-13);d14.setHours(0,0,0,0);
+  var recent14V=visits.filter(function(v){return new Date(v.ts)>=d14;});
+  var recent14DayMap={};
+  recent14V.forEach(function(v){var ds=new Date(v.ts).toDateString();recent14DayMap[ds]=(recent14DayMap[ds]||0)+(v.adults||0)+(v.children||0)+(v.guestPasses||0);});
+  var recent14Vals=Object.values(recent14DayMap);
+  var recentOpenDays=recent14Vals.length||1;
+  var recentAvgHeads=Math.round(recent14Vals.reduce(function(a,b){return a+b;},0)/recentOpenDays);
+  var recentPeak=recent14Vals.length?Math.max.apply(null,recent14Vals):0;
+  // Recent DOW breakdown (last 28 days)
+  var d28=new Date(now);d28.setDate(d28.getDate()-27);d28.setHours(0,0,0,0);
+  var recent28V=visits.filter(function(v){return new Date(v.ts)>=d28;});
+  var rDowH=[0,0,0,0,0,0,0],rDowSet=[{},{},{},{},{},{},{}];
+  recent28V.forEach(function(v){var d=new Date(v.ts);var dow=d.getDay();var ds=d.toDateString();rDowH[dow]+=(v.adults||0)+(v.children||0)+(v.guestPasses||0);rDowSet[dow][ds]=true;});
+  var rDowAvg=rDowH.map(function(h,i){var days=Object.keys(rDowSet[i]).length;return days>0?Math.round(h/days):0;});
+  var rMaxDowAvg=Math.max.apply(null,rDowAvg)||1;
+  // Trend arrow: recent avg vs season avg
+  var trendDiff=avgDailyHeads>0?Math.round((recentAvgHeads-avgDailyHeads)/avgDailyHeads*100):0;
+  var trendArrow=trendDiff>5?'&#x2191;':trendDiff<-5?'&#x2193;':'&#x2192;';
+  var trendColor=trendDiff>5?'#86efac':trendDiff<-5?'#fca5a5':'#fcd34d';
 
   html+='<div class="rsec"><div class="rsec-title">This Season</div>';
 
@@ -4520,50 +4536,21 @@ function renderRep(){
     +stat(totalGPUsed,'Guest Passes',AM)
     +'</div>';
 
-  // Scheduling insight section
-  html+='<div style="background:var(--bld);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px">'
-    +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.5);margin-bottom:10px">Scheduling Insights</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
-    +'<div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px">'
-    +'<div style="font-size:20px;font-weight:800;color:#FA4616">'+busiestDow+'</div>'
-    +'<div style="font-size:10px;color:rgba(255,255,255,.6);margin-top:2px">BUSIEST DAY</div>'
-    +(busiestDowAvgLabel?'<div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">'+busiestDowAvgLabel+' people</div>':'')
-    
-    +'</div>'
-    +'<div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px">'
-    +'<div style="font-size:20px;font-weight:800;color:#FA4616">'+peakHLabel+'</div>'
-    +'<div style="font-size:10px;color:rgba(255,255,255,.6);margin-top:2px">PEAK HOUR</div>'
-    +(peak2Label?'<div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">2nd: '+peak2Label+'</div>':'')
-    
-    +'</div>'
-    +'<div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px">'
-    +'<div style="font-size:20px;font-weight:800;color:#86efac">'+avgDailyHeads+'</div>'
-    +'<div style="font-size:10px;color:rgba(255,255,255,.6);margin-top:2px">AVG DAILY HEADCOUNT</div>'
-    +'</div>'
-    +'<div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px">'
-    +'<div style="font-size:20px;font-weight:800;color:#fca5a5">'+peakDayHeads+'</div>'
-    +'<div style="font-size:10px;color:rgba(255,255,255,.6);margin-top:2px">PEAK DAY HEADCOUNT</div>'
-    +'</div>'
-    +'</div>'
-    +'</div>';
-
-  // Day-of-week avg headcount breakdown
-  html+='<div style="margin-bottom:4px">';
-  var dowMax=Math.max.apply(null,dowAvg)||1;
+  // Scheduling insight section — recent trends vs season for guard scheduling
+  html+='<div style="background:var(--bld);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px">'    +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.5);margin-bottom:10px">Scheduling Insights</div>'    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">'    +'<div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px">'    +'<div style="font-size:10px;color:rgba(255,255,255,.45);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Last 14 Days Avg</div>'    +'<div style="font-size:24px;font-weight:800;color:#86efac">'+recentAvgHeads+'</div>'    +'<div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:2px">people/day '    +'<span style="color:'+trendColor+';font-weight:700">'+trendArrow+' '+Math.abs(trendDiff)+'% vs season</span></div>'    +'</div>'    +'<div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px">'    +'<div style="font-size:10px;color:rgba(255,255,255,.45);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Season Avg</div>'    +'<div style="font-size:24px;font-weight:800;color:rgba(255,255,255,.8)">'+avgDailyHeads+'</div>'    +'<div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:2px">people/day &nbsp;•&nbsp; peak '+peakDayHeads+'</div>'    +'</div>'    +'<div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px">'    +'<div style="font-size:10px;color:rgba(255,255,255,.45);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Busiest Day</div>'    +'<div style="font-size:20px;font-weight:800;color:#FA4616">'+busiestDow+'</div>'    +(busiestDowAvgLabel?'<div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:2px">'+busiestDowAvgLabel+' avg (season)</div>':'')    +'</div>'    +'<div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px">'    +'<div style="font-size:10px;color:rgba(255,255,255,.45);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Peak Hour</div>'    +'<div style="font-size:20px;font-weight:800;color:#FA4616">'+peakHLabel+'</div>'    +(peak2Label?'<div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:2px">2nd: '+peak2Label+'</div>':'')    +'</div>'    +'</div>'    +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:rgba(255,255,255,.4);margin-bottom:6px">Last 28 Days vs Season — Avg Headcount by Day</div>';
   DNAMES.forEach(function(name,i){
-    var avg=dowAvg[i];
-    var days=Object.keys(dowDaySet[i]).length;
-    if(!days) return; // skip days with no data
-    var pct=Math.round((avg/dowMax)*100);
-    var barColor=avg===maxDowAvg?'#FA4616':avg>=maxDowAvg*.8?'#003087':'#6b7280';
-    html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">';
-    html+='<div style="width:30px;font-size:11px;font-weight:700;color:var(--mu);flex-shrink:0">'+name+'</div>';
-    html+='<div style="flex:1;height:18px;background:var(--sand2);border-radius:4px;overflow:hidden">';
-    html+='<div style="height:100%;width:'+pct+'%;background:'+barColor+';border-radius:4px;transition:width .3s"></div></div>';
-    html+='<div style="width:60px;font-size:11px;color:var(--bld);text-align:right;flex-shrink:0">~'+avg+' avg</div>';
-    html+='</div>';
+    var rAvg=rDowAvg[i];
+    var days=Object.keys(rDowSet[i]).length;
+    if(!days) return;
+    var pct=Math.round((rAvg/rMaxDowAvg)*100);
+    var barColor=rAvg===Math.max.apply(null,rDowAvg)?'#FA4616':rAvg>=(Math.max.apply(null,rDowAvg)*.75)?'#7dd3fc':'rgba(255,255,255,.35)';
+    var seasonAvg=dowAvg[i];
+    var diff=seasonAvg>0?Math.round((rAvg-seasonAvg)/seasonAvg*100):0;
+    var diffStr=diff>5?'<span style="color:#86efac;font-size:9px;font-weight:700"> ↑'+diff+'%</span>':diff<-5?'<span style="color:#fca5a5;font-size:9px;font-weight:700"> ↓'+Math.abs(diff)+'%</span>':'';
+    html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">'      +'<div style="width:28px;font-size:11px;font-weight:700;color:rgba(255,255,255,.6);flex-shrink:0">'+name+'</div>'      +'<div style="flex:1;height:16px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden">'      +'<div style="height:100%;width:'+pct+'%;background:'+barColor+';border-radius:4px"></div></div>'      +'<div style="width:80px;font-size:11px;color:rgba(255,255,255,.7);text-align:right;flex-shrink:0">~'+rAvg+diffStr+'</div>'      +'</div>';
   });
-  html+='</div></div>';
+  html+='</div>';
+
 
   // ── Leaderboard ─────────────────────────────────────────────────────────────
   // Most visits by membership type
@@ -4581,34 +4568,15 @@ function renderRep(){
   var typeRanked=Object.keys(typeVisits).sort(function(a,b){return typeVisits[b]-typeVisits[a];});
   var typeMax=typeRanked.length?typeVisits[typeRanked[0]]:1;
 
-  // Sort members by visits, top 5
-  var memberRanked=Object.keys(memberVisits).sort(function(a,b){return memberVisits[b]-memberVisits[a];}).slice(0,5);
+  // Sort members by visits, top 10
+  var memberRanked=Object.keys(memberVisits).sort(function(a,b){return memberVisits[b]-memberVisits[a];}).slice(0,10);
 
   html+='<div class="rsec">'
     +'<div class="rsec-title">Most Active — This Season</div>'
 
-    // Membership type breakdown
-    +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin-bottom:8px">By Membership Type</div>'
-    +'<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px">';
-
-  typeRanked.forEach(function(t){
-    var v=typeVisits[t];
-    var pct=Math.round((v/typeMax)*100);
-    html+='<div style="display:flex;align-items:center;gap:8px">'
-      +'<div style="width:80px;font-size:12px;font-weight:700;color:var(--bld);flex-shrink:0">'+t+'</div>'
-      +'<div style="flex:1;height:20px;background:var(--sand2);border-radius:4px;overflow:hidden">'
-      +'<div style="height:100%;width:'+pct+'%;background:#003087;border-radius:4px;transition:width .3s"></div></div>'
-      +'<div style="width:48px;font-size:11px;font-weight:700;color:var(--bld);text-align:right;flex-shrink:0">'+v+' visits</div>'
-      +'</div>';
-  });
-
-  html+='</div>'
-
-    // Top members
-    +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin-bottom:8px">Top Members</div>'
     +'<div style="display:flex;flex-direction:column;gap:6px">';
 
-  var medals=['🥇','🥈','🥉','4.','5.'];
+  var medals=['🥇','🥈','🥉','4.','5.','6.','7.','8.','9.','10.'];
   memberRanked.forEach(function(mid,i){
     var mem=members.find(function(x){return x.id===mid;});
     if(!mem) return;
@@ -4638,7 +4606,7 @@ function renderRep(){
     +'<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--mu);margin-bottom:4px">'
     +'<span>Dues collected</span><span style="font-weight:700;color:'+duesBarColor+'">'+duesPct+'%</span></div>'
     +'<div style="height:8px;background:var(--sand2);border-radius:4px;overflow:hidden">'
-    +'<div style="height:100%;width:'+duesPct+'%;background:'+duesBarColor+';border-radius:4px;transition:width .4s"></div>'
+    +'<div id="bar-dues" data-w="'+duesPct+'" style="height:100%;width:0%;background:'+duesBarColor+';border-radius:4px;transition:width .5s ease"></div>'
     +'</div></div>';
 
   var capBarHtml=''
@@ -4649,7 +4617,7 @@ function renderRep(){
     +'<span style="font-size:11px;font-weight:500;color:var(--mu)"> / '+MAX_MEMBERSHIPS+'</span></span>'
     +'</div>'
     +'<div style="height:11px;background:var(--sand2);border-radius:5px;overflow:hidden">'
-    +'<div style="height:100%;width:'+mbrPct+'%;background:'+mbrColor+';border-radius:5px;transition:width .4s"></div>'
+    +'<div id="bar-mbr" data-w="'+mbrPct+'" style="height:100%;width:0%;background:'+mbrColor+';border-radius:5px;transition:width .5s ease"></div>'
     +'</div>'
     +'<div style="display:flex;justify-content:space-between;margin-top:4px">'
     +'<span style="font-size:10px;color:var(--mu)">'+(MAX_MEMBERSHIPS-activeTotal)+' spots remaining</span>'
@@ -4666,7 +4634,7 @@ function renderRep(){
       +'<span style="font-size:11px;font-weight:500;color:var(--mu)"> / '+MAX_PEOPLE+'</span></span>'
       +'</div>'
       +'<div style="height:8px;background:var(--sand2);border-radius:4px;overflow:hidden">'
-      +'<div style="height:100%;width:'+peoplePct+'%;background:'+peopleColor+';border-radius:4px;transition:width .4s"></div>'
+      +'<div id="bar-ppl" data-w="'+peoplePct+'" style="height:100%;width:0%;background:'+peopleColor+';border-radius:4px;transition:width .5s ease"></div>'
       +'</div></div>'
       :'');
 
@@ -4750,6 +4718,12 @@ function renderRep(){
     +'</div>';
 
   el.innerHTML=html;
+  // Animate progress bars after paint
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    ['bar-dues','bar-mbr','bar-ppl'].forEach(function(id){
+      var b=document.getElementById(id);if(b) b.style.width=b.getAttribute('data-w')+'%';
+    });
+  });});
   if(!window._cbPreset) window._cbPreset='7d';
   if(!window._cbMetrics) window._cbMetrics={headcount:true,checkins:false,guests:false};
   renderChartBuilder();
