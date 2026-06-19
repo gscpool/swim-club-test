@@ -349,7 +349,7 @@ body.layout-laptop #dir-filter-btns > div::-webkit-scrollbar-thumb { background:
       <div>
         <div class="topbar-title">Gibsonville Swim Club</div>
         <div class="topbar-date" id="topbar-date"></div>
-        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.7.4</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.35)">v2.7.5</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -4683,6 +4683,8 @@ function renderRep(){
 
   html+='<div class="rsec"><div class="rsec-title">Member Data</div>'
     +'<div style="display:flex;flex-direction:column;gap:8px">'
+    +'<button class="btn-p" onclick="copyPaidEmails()" style="text-align:left;font-size:14px">&#x1F4CB; Copy Paid Member Emails</button>'
+    +'<div style="font-size:11px;color:var(--mu);margin-top:-4px;padding:0 2px">Copies all paid member emails to clipboard — paste into Gmail BCC</div>'
     +'<button class="exp-btn" onclick="requireAdminPin(function(){exportCSV(\'members\');})">Export Member List (CSV)</button>'
     +'<button class="imp-btn" onclick="requireAdminPin(function(){openCSVImport();})">Import Members from CSV</button>'
     +'<button class="exp-btn" onclick="requireAdminPin(function(){downloadTemplate();})">Download CSV Template</button>'
@@ -4849,6 +4851,28 @@ function showRepChart(chartId){
   overlay.style.display='flex';
 }
 
+function copyPaidEmails(){
+  var emails=members
+    .filter(function(m){return m.status==='paid'&&m.email&&m.email.trim();})
+    .map(function(m){return m.email.trim();});
+  if(!emails.length){showToast('No paid members with emails found','warn');return;}
+  var text=emails.join(', ');
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(function(){
+      showToast(emails.length+' emails copied — paste into Gmail BCC','ok');
+    }).catch(function(){fallbackCopy(text,emails.length);});
+  } else {
+    fallbackCopy(text,emails.length);
+  }
+}
+function fallbackCopy(text,count){
+  var ta=document.createElement('textarea');
+  ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  showToast(count+' emails copied — paste into Gmail BCC','ok');
+}
 function exportCSV(type){var esc=function(v){return'"'+(v===null||v===undefined?'':String(v)).replace(/"/g,'""')+'"';};var csv,fn;if(type==='members'){var h=['Last','First','Type','Status','Adults','Children','Kids Names','Passes Used','Passes Total','Email','Phone','Street','City','State','Zip','2nd First','2nd Last','2nd Phone','2nd Email'];var r=members.map(function(m){return[m.last,m.first,m.type,m.status,m.adults||0,m.kids?m.kids.length:(m.children||0),m.kids?m.kids.join(';'):'',m.guestsUsed||0,m.guestsTotal,m.email,m.phone,m.street||'',m.city||'',m.state||'',m.zip||'',m.secFirst||'',m.secLast||'',m.secPhone||'',m.secEmail||''].map(esc);});csv=[h].concat(r).map(function(x){return x.join(',');}).join('\n');fn='gsc-members-'+new Date().toISOString().slice(0,10)+'.csv';}else{var h2=['Date','Time','Last','First','Type','Adults','Children','Guest Passes','Passes Purchased'];var r2=visits.map(function(v){var m=members.find(function(x){return x.id===v.memberId;})||{last:'',first:'',type:''};return[fmtDate(v.ts),fmtTime(v.ts),m.last,m.first,m.type,v.adults||0,v.children||0,v.guestPasses||0,v.passesPurchased||0].map(esc);});csv=[h2].concat(r2).map(function(x){return x.join(',');}).join('\n');fn='gsc-visits-'+new Date().toISOString().slice(0,10)+'.csv';}var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=fn;a.click();showToast('Exported '+fn);}
 
 function exportVisitsRange(range){
